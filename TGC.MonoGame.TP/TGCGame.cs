@@ -2,7 +2,8 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-
+using TGC.MonoGame.TP.Cameras;
+using TGC.MonoGame.TP.Terrain;
 namespace TGC.MonoGame.TP;
 
 /// <summary>
@@ -18,15 +19,18 @@ public class TGCGame : Game
     public const string ContentFolderSounds = "Sounds/";
     public const string ContentFolderSpriteFonts = "SpriteFonts/";
     public const string ContentFolderTextures = "Textures/";
-    
+
     private readonly GraphicsDeviceManager _graphics;
 
+    private Camera _camera;
     private Effect _effect;
     private Model _model;
-    private Matrix _projection;
+
     private float _rotation;
     private SpriteBatch _spriteBatch;
-    private Matrix _view;
+
+    private SimpleTerrain _terrain;
+
     private Matrix _world;
 
     /// <summary>
@@ -65,9 +69,7 @@ public class TGCGame : Game
 
         // Configuramos nuestras matrices de la escena.
         _world = Matrix.Identity;
-        _view = Matrix.CreateLookAt(Vector3.UnitZ * 150, Vector3.Zero, Vector3.Up);
-        _projection =
-            Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, GraphicsDevice.Viewport.AspectRatio, 1, 250);
+        _camera = new SimpleCamera(GraphicsDevice.Viewport.AspectRatio, Vector3.UnitY * 500, 400, 1f, 1, 20000);
 
         base.Initialize();
     }
@@ -100,6 +102,22 @@ public class TGCGame : Game
             }
         }
 
+        var terrainEffect = Content.Load<Effect>(ContentFolderEffects + "Terrain");
+
+        // heights
+        var terrainHeigthmap = Content.Load<Texture2D>(ContentFolderTextures + "Heightmaps/heightmap");
+
+        // basic color
+        var terrainColorMap = Content.Load<Texture2D>(ContentFolderTextures + "Heightmaps/colormap");
+
+        // blend texture 1
+        var terrainGrass = Content.Load<Texture2D>(ContentFolderTextures + "Heightmaps/grass");
+
+        // blend texture 2
+        var terrainGround = Content.Load<Texture2D>(ContentFolderTextures + "Heightmaps/ground");
+        _terrain = new SimpleTerrain(GraphicsDevice, terrainHeigthmap, terrainColorMap, terrainGrass, terrainGround, terrainEffect);
+
+
         base.LoadContent();
     }
 
@@ -111,7 +129,7 @@ public class TGCGame : Game
     protected override void Update(GameTime gameTime)
     {
         // Aca deberiamos poner toda la logica de actualizacion del juego.
-
+        _camera.Update(gameTime);
         // Capturar Input teclado
         if (Keyboard.GetState().IsKeyDown(Keys.Escape))
         {
@@ -137,8 +155,8 @@ public class TGCGame : Game
         GraphicsDevice.Clear(Color.Black);
 
         // Para dibujar le modelo necesitamos pasarle informacion que el efecto esta esperando.
-        _effect.Parameters["View"].SetValue(_view);
-        _effect.Parameters["Projection"].SetValue(_projection);
+        _effect.Parameters["View"].SetValue(_camera.View);
+        _effect.Parameters["Projection"].SetValue(_camera.Projection);
         _effect.Parameters["DiffuseColor"].SetValue(Color.DarkBlue.ToVector3());
 
         foreach (var mesh in _model.Meshes)
@@ -146,6 +164,7 @@ public class TGCGame : Game
             _effect.Parameters["World"].SetValue(mesh.ParentBone.Transform * _world);
             mesh.Draw();
         }
+        _terrain.Draw(Matrix.Identity, _camera.View, _camera.Projection);
     }
 
     /// <summary>
