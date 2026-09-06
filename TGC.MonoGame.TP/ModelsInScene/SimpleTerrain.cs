@@ -20,12 +20,10 @@ namespace TGC.MonoGame.TP.Terrain
 
         public SimpleTerrain(ContentManager Content, Texture2D heightMap, Texture2D colorMap,
             Texture2D diffuseMap, Texture2D diffuseMap2, TerrainRenderer renderer)
-            // 1. CORRECCIÓN: Le pasamos Vector3.One a la clase padre. La matriz World ahora solo Traslada y Rota.
             : base(Content, "", Vector3.Zero, Matrix.Identity, Vector3.One, null)
         {
             _terrainRenderer = renderer;
 
-            // 2. CORRECCIÓN: Definimos la escala del terreno aquí (como estaba en tu original)
             _scaleXZ = 100f;
             _scaleY = 4f;
 
@@ -64,7 +62,6 @@ namespace TGC.MonoGame.TP.Terrain
             var dataIdx = 0;
             var data = new VertexPositionNormalTexture[totalVertices];
 
-            // 3. CORRECCIÓN: Usamos las variables _scaleXZ y _scaleY puras en vez de extraer de la matriz
             center.X = (center.X * _scaleXZ) - (width / 2f * _scaleXZ);
             center.Y = center.Y * _scaleY;
             center.Z = (center.Z * _scaleXZ) - (length / 2f * _scaleXZ);
@@ -135,7 +132,6 @@ namespace TGC.MonoGame.TP.Terrain
             var width = HeightmapData.GetLength(0);
             var length = HeightmapData.GetLength(1);
 
-            // 4. CORRECCIÓN: Usamos las mismas variables para calcular la altura
             var pos_i = (x / _scaleXZ) + (width / 2.0f);
             var pos_j = (z / _scaleXZ) + (length / 2.0f);
             var pi = (int)pos_i;
