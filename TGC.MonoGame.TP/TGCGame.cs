@@ -1,9 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using TGC.MonoGame.TP.Cameras;
 using TGC.MonoGame.TP.Terrain;
+using TGC.MonoGame.TP.ModelsInScene;
+using TGC.MonoGame.TP.Renderers;
+using TGC.MonoGame.TP.Tanks;
 namespace TGC.MonoGame.TP;
 
 /// <summary>
@@ -21,18 +25,17 @@ public class TGCGame : Game
     public const string ContentFolderTextures = "Textures/";
 
     private readonly GraphicsDeviceManager _graphics;
-
     private Camera _camera;
     private Effect _effect;
-    private Model _model;
+    private BasicRenderer _basicRenderer;
+    private TerrainRenderer _terrainRenderer;
 
-    private float _rotation;
     private SpriteBatch _spriteBatch;
 
-    private SimpleTerrain _terrain;
+    private List<SimpleTerrain> _terrains = new List<SimpleTerrain>();
 
-    private Matrix _world;
-
+    private List<Tank> _tanks = new List<Tank>();
+    private List<IEnumerable<ModelInScene>> _modelosEnEscenario = new List<IEnumerable<ModelInScene>>();
     /// <summary>
     ///     Constructor del juego.
     /// </summary>
@@ -67,10 +70,10 @@ public class TGCGame : Game
         GraphicsDevice.RasterizerState = rasterizerState;
         // Seria hasta aca.
 
-        // Configuramos nuestras matrices de la escena.
-        _world = Matrix.Identity;
         _camera = new SimpleCamera(GraphicsDevice.Viewport.AspectRatio, Vector3.UnitY * 500, 400, 1f, 1, 20000);
 
+        _modelosEnEscenario.Add(_tanks);
+        _modelosEnEscenario.Add(_terrains);
         base.Initialize();
     }
 
@@ -84,26 +87,15 @@ public class TGCGame : Game
         // Aca es donde deberiamos cargar todos los contenido necesarios antes de iniciar el juego.
         _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-        // Cargo el modelo del logo.
-        _model = Content.Load<Model>(ContentFolder3D + "tgc-logo/tgc-logo");
-
         // Cargo un efecto basico propio declarado en el Content pipeline.
         // En el juego no pueden usar BasicEffect de MG, deben usar siempre efectos propios.
         _effect = Content.Load<Effect>(ContentFolderEffects + "BasicShader");
+        _basicRenderer = new BasicRenderer(GraphicsDevice, _effect);
 
-        // Asigno el efecto que cargue a cada parte del mesh.
-        // Un modelo puede tener mas de 1 mesh internamente.
-        foreach (var mesh in _model.Meshes)
-        {
-            // Un mesh puede tener mas de 1 mesh part (cada 1 puede tener su propio efecto).
-            foreach (var meshPart in mesh.MeshParts)
-            {
-                meshPart.Effect = _effect;
-            }
-        }
-
+        //Cargo terreno
         var terrainEffect = Content.Load<Effect>(ContentFolderEffects + "Terrain");
 
+        _terrainRenderer = new TerrainRenderer(GraphicsDevice, terrainEffect);
         // heights
         var terrainHeigthmap = Content.Load<Texture2D>(ContentFolderTextures + "Heightmaps/heightmap");
 
@@ -115,12 +107,11 @@ public class TGCGame : Game
 
         // blend texture 2
         var terrainGround = Content.Load<Texture2D>(ContentFolderTextures + "Heightmaps/ground");
-        _terrain = new SimpleTerrain(GraphicsDevice, terrainHeigthmap, terrainColorMap, terrainGrass, terrainGround, terrainEffect);
-
-
+        _terrains.Add(new SimpleTerrain(Content, terrainHeigthmap, terrainColorMap, terrainGrass, terrainGround, _terrainRenderer));
+        //Cargo tanque
+        _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(0, 1000, 0), Matrix.Identity, new Vector3(1f), _basicRenderer));
         base.LoadContent();
     }
-
     /// <summary>
     ///     Se llama en cada frame.
     ///     Se debe escribir toda la logica de computo del modelo, asi como tambien verificar entradas del usuario y reacciones
@@ -137,10 +128,6 @@ public class TGCGame : Game
             Exit();
         }
 
-        // Basado en el tiempo que paso se va generando una rotacion.
-        _rotation += Convert.ToSingle(gameTime.ElapsedGameTime.TotalSeconds);
-
-        _world = Matrix.CreateRotationY(_rotation);
 
         base.Update(gameTime);
     }
@@ -153,18 +140,13 @@ public class TGCGame : Game
     {
         // Aca deberiamos poner toda la logia de renderizado del juego.
         GraphicsDevice.Clear(Color.Black);
-
-        // Para dibujar le modelo necesitamos pasarle informacion que el efecto esta esperando.
-        _effect.Parameters["View"].SetValue(_camera.View);
-        _effect.Parameters["Projection"].SetValue(_camera.Projection);
-        _effect.Parameters["DiffuseColor"].SetValue(Color.DarkBlue.ToVector3());
-
-        foreach (var mesh in _model.Meshes)
+        foreach (var lista in _modelosEnEscenario)
         {
-            _effect.Parameters["World"].SetValue(mesh.ParentBone.Transform * _world);
-            mesh.Draw();
+            foreach (var modelo in lista)
+            {
+                modelo.Draw(_camera.View, _camera.Projection);
+            }
         }
-        _terrain.Draw(Matrix.Identity, _camera.View, _camera.Projection);
     }
 
     /// <summary>
