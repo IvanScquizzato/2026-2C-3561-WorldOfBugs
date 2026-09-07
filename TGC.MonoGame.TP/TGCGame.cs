@@ -30,7 +30,7 @@ public class TGCGame : Game
     private Effect _effect;
     private BasicRenderer _basicRenderer;
     private TerrainRenderer _terrainRenderer;
-    private Random _random;
+ 
 
     private SpriteBatch _spriteBatch;
 
@@ -113,15 +113,21 @@ public class TGCGame : Game
         var terrainGround = Content.Load<Texture2D>(ContentFolderTextures + "Heightmaps/ground");
         _terrains.Add(new SimpleTerrain(Content, terrainHeigthmap, terrainColorMap, terrainGrass, terrainGround, _terrainRenderer));
         //Cargo tanque
-        _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(0, 1000, 0), Matrix.Identity, new Vector3(1f), _basicRenderer));
+        float altura_tanque = _terrains[0].Height(0,-300) + 30;
+        _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(0, altura_tanque,-300), Matrix.Identity, new Vector3(1f), _basicRenderer));
 
         //cargo arbol
         _trees.Add(new Tree(Content, ContentFolder3D + "Tree/Tree", new Vector3(200, 500, 0), Matrix.Identity, new Vector3(150f), _basicRenderer));
-        for (int i = 0; i < 100; i++)
+        Random _random_X;
+        Random _random_Z;
+        for (int i = 0; i < 200; i++)
         {
-            _random = new Random(i);
-            float x = (float)(_random.NextDouble() * 2000 - 1000);
-            _trees.Add(new Tree(Content, ContentFolder3D + "Tree/Tree", new Vector3(x, 500, 0), Matrix.Identity, new Vector3(150f), _basicRenderer));
+            _random_X = new Random();
+            _random_Z = new Random();
+            float x = (float)(_random_X.NextDouble()* 13000 - 6000);
+            float z = (float)(_random_Z.NextDouble() * 12000 - 6000);
+            float y = _terrains[0].Height(x, z) - 10;
+            _trees.Add(new Tree(Content, ContentFolder3D + "Tree/Tree", new Vector3(x, y, z), Matrix.Identity, new Vector3(150f), _basicRenderer));
         }
         base.LoadContent();
 
