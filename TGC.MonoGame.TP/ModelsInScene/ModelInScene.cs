@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
 using TGC.MonoGame.TP.Renderers;
+using System.Collections.Concurrent;
 namespace TGC.MonoGame.TP.ModelsInScene
 {
     /// <summary>
@@ -19,7 +20,10 @@ namespace TGC.MonoGame.TP.ModelsInScene
         public IModelInSceneRenderer _renderer { get; set; }
         private ContentManager _content { get; set; }
         public RasterizerState RasterizerState { get; set; } = RasterizerState.CullCounterClockwise;
-        public List<Texture2D> _textures = new List<Texture2D>();
+
+        private static ConcurrentDictionary<Type, List<Texture2D>> _texturasPorSubclase = new();
+        private static ConcurrentDictionary<Type, Model> _modeloPorSubclase = new();
+
         public Matrix _world
         {
             get { return Matrix.CreateScale(_scale) * _rotation * Matrix.CreateTranslation(_position); }
@@ -31,22 +35,34 @@ namespace TGC.MonoGame.TP.ModelsInScene
             _rotation = rotation;
             _scale = scale;
             _renderer = renderer;
-            if (modelPath != "")
+            this.cargarModelo(Content, modelPath);
+        }
+        public List<Texture2D> GetTextures()
+        {
+            return _texturasPorSubclase.GetOrAdd(this.GetType(), _ => new List<Texture2D>());
+        }
+        private void cargarModelo(ContentManager Content, String modelPath)
+        {
+            if (modelPath == null)
+            {
+                return;
+            }
+            if (!_modeloPorSubclase.TryGetValue(this.GetType(), out var model))
             {
                 _model = Content.Load<Model>(modelPath);
-                this.cargarModelo();
+                _modeloPorSubclase[this.GetType()] = _model;
+                foreach (var mesh in this._model.Meshes)
+                    foreach (var meshPart in mesh.MeshParts)
+                    {
+                        var basicEffect = (BasicEffect)meshPart.Effect;
+                        GetTextures().Add(basicEffect.Texture);
+                        meshPart.Effect = _renderer._effect;
+                    }
             }
-
-        }
-        private void cargarModelo()
-        {
-            foreach (var mesh in this._model.Meshes)
-                foreach (var meshPart in mesh.MeshParts)
-                {
-                    var basicEffect = (BasicEffect)meshPart.Effect;
-                    _textures.Add(basicEffect.Texture);
-                    meshPart.Effect = _renderer._effect;
-                }
+            else
+            {
+                _model = _modeloPorSubclase[this.GetType()];
+            }
         }
         /*private void cargarModelo()
         {

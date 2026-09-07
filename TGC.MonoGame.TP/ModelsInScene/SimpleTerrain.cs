@@ -20,7 +20,7 @@ namespace TGC.MonoGame.TP.Terrain
 
         public SimpleTerrain(ContentManager Content, Texture2D heightMap, Texture2D colorMap,
             Texture2D diffuseMap, Texture2D diffuseMap2, TerrainRenderer renderer)
-            : base(Content, "", Vector3.Zero, Matrix.Identity, Vector3.One, null)
+            : base(Content, null, Vector3.Zero, Matrix.Identity, Vector3.One, null)
         {
             _terrainRenderer = renderer;
 

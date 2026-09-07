@@ -28,18 +28,24 @@ namespace TGC.MonoGame.TP.Renderers
             var index = 0;
             foreach (var mesh in modelInScene._model.Meshes)
             {
-                Console.WriteLine(
-    $"Meshes: {modelInScene._model.Meshes.Count} | Textures: {modelInScene._textures.Count}"
-);
-                if (modelInScene._textures[index] != null)
-                {
-                    _effect.Parameters["ModelTexture"].SetValue(modelInScene._textures[index]);
-                }
-
                 var relativeTransform = modelMeshesBaseTransforms[mesh.ParentBone.Index];
                 _effect.Parameters["World"].SetValue(relativeTransform * modelInScene._world);
-                mesh.Draw();
-                index++;
+                foreach (var meshPart in mesh.MeshParts)
+                {
+                    if (modelInScene.GetTextures()[index] != null)
+                    {
+                        _effect.Parameters["ModelTexture"].SetValue(modelInScene.GetTextures()[index]);
+                    }
+                    _effect.CurrentTechnique.Passes[0].Apply();
+                    _graphicsDevice.SetVertexBuffer(meshPart.VertexBuffer);
+                    _graphicsDevice.Indices = meshPart.IndexBuffer;
+                    _graphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, meshPart.VertexOffset, meshPart.StartIndex, meshPart.PrimitiveCount);
+                    index++;
+                }
+
+
+
+
             }
         }
     }

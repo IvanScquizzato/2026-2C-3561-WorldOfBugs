@@ -117,15 +117,14 @@ public class TGCGame : Game
 
         //cargo arbol
         _trees.Add(new Tree(Content, ContentFolder3D + "Tree/Tree", new Vector3(200, 500, 0), Matrix.Identity, new Vector3(150f), _basicRenderer));
-        /*for(int i = 0; i < 100; i++)
+        for (int i = 0; i < 100; i++)
         {
             _random = new Random(i);
             float x = (float)(_random.NextDouble() * 2000 - 1000);
             _trees.Add(new Tree(Content, ContentFolder3D + "Tree/Tree", new Vector3(x, 500, 0), Matrix.Identity, new Vector3(150f), _basicRenderer));
-        }*/
+        }
         base.LoadContent();
 
-     
     }
     /// <summary>
     ///     Se llama en cada frame.
