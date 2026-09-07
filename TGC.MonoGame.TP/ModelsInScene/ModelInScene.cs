@@ -48,7 +48,18 @@ namespace TGC.MonoGame.TP.ModelsInScene
                     meshPart.Effect = _renderer._effect;
                 }
         }
+        /*private void cargarModelo()
+        {
+            foreach (var mesh in _model.Meshes)
+            {
+                foreach (var meshPart in mesh.MeshParts)
+                {
+                    Console.WriteLine(meshPart.Effect.GetType());
 
+                    meshPart.Effect = _renderer._effect;
+                }
+            }
+        }*/
         public virtual void Draw(Matrix view, Matrix projection)
         {
             _renderer.Draw(this, view, projection);

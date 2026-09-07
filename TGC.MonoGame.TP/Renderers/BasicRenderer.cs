@@ -28,6 +28,9 @@ namespace TGC.MonoGame.TP.Renderers
             var index = 0;
             foreach (var mesh in modelInScene._model.Meshes)
             {
+                Console.WriteLine(
+    $"Meshes: {modelInScene._model.Meshes.Count} | Textures: {modelInScene._textures.Count}"
+);
                 if (modelInScene._textures[index] != null)
                 {
                     _effect.Parameters["ModelTexture"].SetValue(modelInScene._textures[index]);

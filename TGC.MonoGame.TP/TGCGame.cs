@@ -8,6 +8,7 @@ using TGC.MonoGame.TP.Terrain;
 using TGC.MonoGame.TP.ModelsInScene;
 using TGC.MonoGame.TP.Renderers;
 using TGC.MonoGame.TP.Tanks;
+using TGC.MonoGame.TP.Trees;
 namespace TGC.MonoGame.TP;
 
 /// <summary>
@@ -29,12 +30,14 @@ public class TGCGame : Game
     private Effect _effect;
     private BasicRenderer _basicRenderer;
     private TerrainRenderer _terrainRenderer;
+    private Random _random;
 
     private SpriteBatch _spriteBatch;
 
     private List<SimpleTerrain> _terrains = new List<SimpleTerrain>();
 
     private List<Tank> _tanks = new List<Tank>();
+    private List<Tree> _trees = new List<Tree>();
     private List<IEnumerable<ModelInScene>> _modelosEnEscenario = new List<IEnumerable<ModelInScene>>();
     /// <summary>
     ///     Constructor del juego.
@@ -73,6 +76,7 @@ public class TGCGame : Game
         _camera = new SimpleCamera(GraphicsDevice.Viewport.AspectRatio, Vector3.UnitY * 500, 400, 1f, 1, 20000);
 
         _modelosEnEscenario.Add(_tanks);
+        _modelosEnEscenario.Add(_trees);
         _modelosEnEscenario.Add(_terrains);
         base.Initialize();
     }
@@ -110,7 +114,18 @@ public class TGCGame : Game
         _terrains.Add(new SimpleTerrain(Content, terrainHeigthmap, terrainColorMap, terrainGrass, terrainGround, _terrainRenderer));
         //Cargo tanque
         _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(0, 1000, 0), Matrix.Identity, new Vector3(1f), _basicRenderer));
+
+        //cargo arbol
+        _trees.Add(new Tree(Content, ContentFolder3D + "Tree/Tree", new Vector3(200, 500, 0), Matrix.Identity, new Vector3(150f), _basicRenderer));
+        /*for(int i = 0; i < 100; i++)
+        {
+            _random = new Random(i);
+            float x = (float)(_random.NextDouble() * 2000 - 1000);
+            _trees.Add(new Tree(Content, ContentFolder3D + "Tree/Tree", new Vector3(x, 500, 0), Matrix.Identity, new Vector3(150f), _basicRenderer));
+        }*/
         base.LoadContent();
+
+     
     }
     /// <summary>
     ///     Se llama en cada frame.
