@@ -149,7 +149,7 @@ public class TGCGame : Game
             //Salgo del juego.
             Exit();
         }
-
+        _tanks[0].Update(gameTime);
 
         base.Update(gameTime);
     }

@@ -20,7 +20,7 @@ namespace TGC.MonoGame.TP.ModelsInScene
         public IModelInSceneRenderer _renderer { get; set; }
         private ContentManager _content { get; set; }
         public RasterizerState RasterizerState { get; set; } = RasterizerState.CullCounterClockwise;
-
+        public float _width { get; set; }
         private static ConcurrentDictionary<Type, List<Texture2D>> _texturasPorSubclase = new();
         private static ConcurrentDictionary<Type, Model> _modeloPorSubclase = new();
 
@@ -35,6 +35,7 @@ namespace TGC.MonoGame.TP.ModelsInScene
             _rotation = rotation;
             _scale = scale;
             _renderer = renderer;
+
             this.cargarModelo(Content, modelPath);
         }
         public List<Texture2D> GetTextures()
@@ -63,6 +64,55 @@ namespace TGC.MonoGame.TP.ModelsInScene
             {
                 _model = _modeloPorSubclase[this.GetType()];
             }
+            _width = this.getWitdth();
+        }
+        public float getWitdth()
+        {
+            // Obtenemos las transformaciones base (huesos) para que la posición sea real
+            Matrix[] transformaciones = new Matrix[_model.Bones.Count];
+            _model.CopyAbsoluteBoneTransformsTo(transformaciones);
+
+            Vector3 min = new Vector3(float.MaxValue);
+            Vector3 max = new Vector3(float.MinValue);
+
+            // Iteramos por cada Mesh y sus partes
+            foreach (ModelMesh mesh in _model.Meshes)
+            {
+                Matrix transformacion = transformaciones[mesh.ParentBone.Index];
+
+                foreach (ModelMeshPart meshPart in mesh.MeshParts)
+                {
+                    // Datos del buffer
+                    int cantidadVertices = meshPart.NumVertices;
+                    int stride = meshPart.VertexBuffer.VertexDeclaration.VertexStride;
+
+                    // Arreglo para guardar SOLO las posiciones
+                    Vector3[] posiciones = new Vector3[cantidadVertices];
+
+                    // Extraemos los datos: Pedimos Vector3, saltando la cantidad de bytes dictada por el stride
+                    meshPart.VertexBuffer.GetData(
+                        meshPart.VertexOffset * stride, // Dónde empezar a leer en bytes
+                        posiciones,                     // Dónde guardar la información
+                        0,                              // Índice inicial de nuestro arreglo
+                        cantidadVertices,               // Cuántos vértices leer
+                        stride                          // Cuántos bytes saltar entre lecturas
+                    );
+
+                    // Analizamos cada vértice para encontrar los extremos
+                    for (int i = 0; i < posiciones.Length; i++)
+                    {
+                        // Aplicamos la rotación/escala original de esta parte del modelo
+                        Vector3 posicionReal = Vector3.Transform(posiciones[i], transformacion);
+
+                        // Expandimos nuestra caja contenedora
+                        min = Vector3.Min(min, posicionReal);
+                        max = Vector3.Max(max, posicionReal);
+                    }
+                }
+            }
+
+            // El ancho total es la distancia entre el punto mínimo y máximo en X
+            return max.X - min.X;
         }
         /*private void cargarModelo()
         {
