@@ -27,10 +27,11 @@ public class TGCGame : Game
 
     private readonly GraphicsDeviceManager _graphics;
     private Camera _camera;
+    private Camera _camera2;
+
     private Effect _effect;
     private BasicRenderer _basicRenderer;
     private TerrainRenderer _terrainRenderer;
- 
 
     private SpriteBatch _spriteBatch;
 
@@ -74,7 +75,6 @@ public class TGCGame : Game
         // Seria hasta aca.
 
         _camera = new SimpleCamera(GraphicsDevice.Viewport.AspectRatio, Vector3.UnitY * 500, 400, 1f, 1, 20000);
-
         _modelosEnEscenario.Add(_tanks);
         _modelosEnEscenario.Add(_trees);
         _modelosEnEscenario.Add(_terrains);
@@ -113,8 +113,9 @@ public class TGCGame : Game
         var terrainGround = Content.Load<Texture2D>(ContentFolderTextures + "Heightmaps/ground");
         _terrains.Add(new SimpleTerrain(Content, terrainHeigthmap, terrainColorMap, terrainGrass, terrainGround, _terrainRenderer));
         //Cargo tanque
-        float altura_tanque = _terrains[0].Height(0,-300) + 30;
-        _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(0, altura_tanque,-300), Matrix.Identity, new Vector3(1f), _basicRenderer));
+        float altura_tanque = _terrains[0].Height(0, -300) + 30;
+        _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(0, altura_tanque, -300), Matrix.Identity, new Vector3(1f), _basicRenderer));
+        _camera2 = new ThirdPersonCamera(_tanks[0], 1000f, 0.005f, GraphicsDevice.Viewport.AspectRatio, 500f, 400f, 1f, 20000f, GraphicsDevice);
 
         //cargo arbol
         _trees.Add(new Tree(Content, ContentFolder3D + "Tree/Tree", new Vector3(200, 500, 0), Matrix.Identity, new Vector3(150f), _basicRenderer));
@@ -124,7 +125,7 @@ public class TGCGame : Game
         {
             _random_X = new Random();
             _random_Z = new Random();
-            float x = (float)(_random_X.NextDouble()* 13000 - 6000);
+            float x = (float)(_random_X.NextDouble() * 13000 - 6000);
             float z = (float)(_random_Z.NextDouble() * 12000 - 6000);
             float y = _terrains[0].Height(x, z) - 10;
             _trees.Add(new Tree(Content, ContentFolder3D + "Tree/Tree", new Vector3(x, y, z), Matrix.Identity, new Vector3(150f), _basicRenderer));
@@ -141,6 +142,7 @@ public class TGCGame : Game
     {
         // Aca deberiamos poner toda la logica de actualizacion del juego.
         _camera.Update(gameTime);
+        _camera2.Update(gameTime);
         // Capturar Input teclado
         if (Keyboard.GetState().IsKeyDown(Keys.Escape))
         {
@@ -158,13 +160,18 @@ public class TGCGame : Game
     /// </summary>
     protected override void Draw(GameTime gameTime)
     {
+        var vista = _camera.View;
+        if (Keyboard.GetState().IsKeyDown(Keys.C))
+        {
+            vista = _camera2.View;
+        }
         // Aca deberiamos poner toda la logia de renderizado del juego.
         GraphicsDevice.Clear(Color.Black);
         foreach (var lista in _modelosEnEscenario)
         {
             foreach (var modelo in lista)
             {
-                modelo.Draw(_camera.View, _camera.Projection);
+                modelo.Draw(vista, _camera.Projection);
             }
         }
     }
