@@ -9,6 +9,7 @@ using TGC.MonoGame.TP.ModelsInScene;
 using TGC.MonoGame.TP.Renderers;
 using TGC.MonoGame.TP.Tanks;
 using TGC.MonoGame.TP.Trees;
+using TGC.MonoGame.TP.Forces;
 namespace TGC.MonoGame.TP;
 
 /// <summary>
@@ -117,11 +118,11 @@ public class TGCGame : Game
         _terrains.Add(new SimpleTerrain(Content, terrainHeigthmap, terrainColorMap, terrainGrass, terrainGround, _terrainRenderer));
         //Cargo tanque
         float altura_tanque = _terrains[0].Height(0, -300) + 30;
-        _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(0, altura_tanque + 300, -300), Matrix.Identity, new Vector3(0.5f), _basicRenderer));
+        _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(0, altura_tanque + 300, -300), Matrix.Identity, new Vector3(0.5f), _basicRenderer, 6.5f, 1000f));
         _camera2 = new ThirdPersonCamera(_tanks[0], 1000f, 0.005f, GraphicsDevice.Viewport.AspectRatio, 500f, 400f, 1f, 20000f, GraphicsDevice);
 
         //cargo arbol
-        _trees.Add(new Tree(Content, ContentFolder3D + "Tree/Tree", new Vector3(200, 500, 0), Matrix.Identity, new Vector3(150f), _basicRenderer));
+        _trees.Add(new Tree(Content, ContentFolder3D + "Tree/Tree", new Vector3(200, 500, 0), Matrix.Identity, new Vector3(150f), _basicRenderer, 0f, 10f));
         Random _random_X;
         Random _random_Z;
         for (int i = 0; i < 200; i++)
@@ -131,7 +132,7 @@ public class TGCGame : Game
             float x = (float)(_random_X.NextDouble() * 13000 - 6000);
             float z = (float)(_random_Z.NextDouble() * 12000 - 6000);
             float y = _terrains[0].Height(x, z) - 10;
-            _trees.Add(new Tree(Content, ContentFolder3D + "Tree/Tree", new Vector3(x, y, z), Matrix.Identity, new Vector3(150f), _basicRenderer));
+            _trees.Add(new Tree(Content, ContentFolder3D + "Tree/Tree", new Vector3(x, y, z), Matrix.Identity, new Vector3(150f), _basicRenderer, 0f, 10f));
         }
         base.LoadContent();
 
@@ -165,6 +166,7 @@ public class TGCGame : Game
             Exit();
         }
         _tanks[0].Update(gameTime);
+
         _previousKeyboardState = currentKeyboardState;
         base.Update(gameTime);
     }
