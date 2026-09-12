@@ -48,13 +48,22 @@ namespace TGC.MonoGame.TP.Tanks
             _currentRightSpeedPerSec += _currentRightAccelerationPerSec * elapsedSeconds;
 
             this.limitSpeeds();
+            float angleIncrement = elapsedSeconds * (_currentLeftSpeedPerSec - _currentRightSpeedPerSec) / (-Width);
 
-            _angle += elapsedSeconds * (_currentLeftSpeedPerSec - _currentRightSpeedPerSec) / (-Width);
 
             _currentSpeedPerSec = (_currentLeftSpeedPerSec + _currentRightSpeedPerSec) * 0.5f;
+            if ((_currentLeftSpeedPerSec - _currentRightSpeedPerSec) == 0)
+            {
+                _position += new Vector3(MathF.Sin(_angle), 0, MathF.Cos(_angle)) * _currentSpeedPerSec * elapsedSeconds;
+            }
+            else
+            {
+                float radius = -Width * _currentRightSpeedPerSec / (_currentLeftSpeedPerSec - _currentRightSpeedPerSec);
+                //_position += new Vector3(MathF.Sin(_angle + angleIncrement) - MathF.Sin(_angle), 0, MathF.Cos(_angle + angleIncrement) - MathF.Cos(_angle)) * radius;
+                _position += new Vector3(-MathF.Cos(_angle + angleIncrement) + MathF.Cos(_angle), 0, MathF.Sin(_angle + angleIncrement) - MathF.Sin(_angle)) * radius;
 
-            _position += new Vector3(MathF.Sin(_angle), 0, MathF.Cos(_angle)) * _currentSpeedPerSec * elapsedSeconds;
-
+            }
+            _angle += angleIncrement;
             _rotation = Matrix.CreateRotationY(_angle);
         }
         private void setUserAccelerations()
