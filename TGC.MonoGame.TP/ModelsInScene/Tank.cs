@@ -1,22 +1,33 @@
 using System;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Graphics;
 using TGC.MonoGame.TP.ModelsInScene;
 using TGC.MonoGame.TP.Renderers;
-using Microsoft.Xna.Framework.Input;
-using System.Security.Cryptography.X509Certificates;
 namespace TGC.MonoGame.TP.Tanks
 {
     public class Tank : ModelInScene
     {
-        public float _accelerationPerSec { get; set; } = 60f;
+        public enum EstadoDeMovimiento
+        {
+            AVANZANDO_IZQUIERDA,
+            AVANZANDO_DERECHA,
+            RETROCEDIENDO_IZQUIERDA,
+            RETROCEDIENDO_DERECHA,
+            AVANZANDO,
+            RETROCEDIENDO,
+            QUIETO
+        }
+        public EstadoDeMovimiento _estado = EstadoDeMovimiento.QUIETO;
+        public float _accelerationPerSec { get; set; } = 200f;
+        public float _maxSpeed { get; set; } = 5000f;
+        public float _maxSpeedDifference { get; set; } = 1000f;
         public float _currentAccelerationPerSec { get; set; } = 0f;
         public float _currentLeftAccelerationPerSec { get; set; } = 0f;
         public float _currentRightAccelerationPerSec { get; set; } = 0f;
         public float _currentSpeedPerSec { get; set; } = 0f;
+        public float _accelerationToRotateMultiplier { get; set; } = 0.2f;
+        public float _stabilizerAccelerationMultiplier { get; set; } = 0.1f;
         public float _friction { get; set; } = 50f;
         public float _angle { get; set; } = 0f;
         public float _currentLeftSpeedPerSec { get; set; } = 0f;
@@ -28,15 +39,39 @@ namespace TGC.MonoGame.TP.Tanks
         public void Update(GameTime gameTime)
         {
             float elapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            this.setUserAccelerations();
+            this.stabilize();
+            this.addFriction(elapsedSeconds);
+
+            _currentLeftSpeedPerSec += _currentLeftAccelerationPerSec * elapsedSeconds;
+            _currentRightSpeedPerSec += _currentRightAccelerationPerSec * elapsedSeconds;
+
+            this.limitSpeeds();
+
+            _angle += elapsedSeconds * (_currentLeftSpeedPerSec - _currentRightSpeedPerSec) / (-_width);
+
+            _currentSpeedPerSec = (_currentLeftSpeedPerSec + _currentRightSpeedPerSec) * 0.5f;
+
+            _position += new Vector3(MathF.Sin(_angle), 0, MathF.Cos(_angle)) * _currentSpeedPerSec * elapsedSeconds;
+
+            _rotation = Matrix.CreateRotationY(_angle);
+        }
+        private void setUserAccelerations()
+        {
+            float accelerationToRotate = MathF.Abs(_currentSpeedPerSec) * _accelerationToRotateMultiplier;
+
             KeyboardState keyboardState = Keyboard.GetState();
 
             _currentLeftAccelerationPerSec = 0;
             _currentRightAccelerationPerSec = 0;
+            var multiplierToInvert = 1;
             if (keyboardState.IsKeyDown(Keys.W))
             {
                 _currentLeftAccelerationPerSec = _accelerationPerSec;
                 _currentRightAccelerationPerSec = _accelerationPerSec;
             }
+
             if (keyboardState.IsKeyDown(Keys.S))
             {
                 _currentLeftAccelerationPerSec = -_accelerationPerSec;
@@ -44,44 +79,64 @@ namespace TGC.MonoGame.TP.Tanks
             }
             if (keyboardState.IsKeyDown(Keys.A))
             {
-                _currentLeftAccelerationPerSec -= 25f;
-                _currentRightAccelerationPerSec += 25f;
+                _currentRightAccelerationPerSec += multiplierToInvert * accelerationToRotate;
+                _currentLeftAccelerationPerSec -= multiplierToInvert * accelerationToRotate;
             }
             if (keyboardState.IsKeyDown(Keys.D))
             {
-                _currentLeftAccelerationPerSec += 25f;
-                _currentRightAccelerationPerSec -= 25f;
+                _currentLeftAccelerationPerSec += multiplierToInvert * accelerationToRotate;
+                _currentRightAccelerationPerSec -= multiplierToInvert * accelerationToRotate;
             }
 
-            if (MathF.Abs(_currentLeftSpeedPerSec) < _friction * elapsedSeconds)
+        }
+        private void stabilize()
+        {
+            float stabilizerAcceleration = MathF.Abs(_currentSpeedPerSec) * _stabilizerAccelerationMultiplier;
+
+            KeyboardState keyboardState = Keyboard.GetState();
+            if (!keyboardState.IsKeyDown(Keys.A) && !keyboardState.IsKeyDown(Keys.D))
             {
-                _currentLeftSpeedPerSec = 0f; // Si la velocidad es casi 0, la clavamos en 0
+                float speedDifference = _currentLeftSpeedPerSec - _currentRightSpeedPerSec;
+                if (MathF.Abs(speedDifference) > 0.1f)
+                {
+                    float correction = MathF.Sign(speedDifference) * stabilizerAcceleration;
+                    _currentLeftAccelerationPerSec -= correction;
+                    _currentRightAccelerationPerSec += correction;
+                }
+
             }
+        }
+        private void addFriction(float elapsedSeconds)
+        {
+            float frictionDrop = _friction * elapsedSeconds;
+
+            if (MathF.Abs(_currentLeftSpeedPerSec) <= frictionDrop)
+                _currentLeftSpeedPerSec = 0f;
             else
-            {
-                // MathF.Sign devuelve 1 o -1, asegurando que la fricción siempre empuje en contra
-                _currentLeftAccelerationPerSec -= MathF.Sign(_currentLeftSpeedPerSec) * _friction;
-            }
+                _currentLeftSpeedPerSec -= MathF.Sign(_currentLeftSpeedPerSec) * frictionDrop;
 
-            // Freno Oruga Derecha
-            if (MathF.Abs(_currentRightSpeedPerSec) < _friction * elapsedSeconds)
-            {
+            if (MathF.Abs(_currentRightSpeedPerSec) <= frictionDrop)
                 _currentRightSpeedPerSec = 0f;
-            }
             else
+                _currentRightSpeedPerSec -= MathF.Sign(_currentRightSpeedPerSec) * frictionDrop;
+        }
+        private void limitSpeeds()
+        {
+            _currentLeftSpeedPerSec = Math.Clamp(_currentLeftSpeedPerSec, -_maxSpeed, _maxSpeed);
+            _currentRightSpeedPerSec = Math.Clamp(_currentRightSpeedPerSec, -_maxSpeed, _maxSpeed);
+
+            var speedDiference = MathF.Abs(_currentLeftSpeedPerSec - _currentRightSpeedPerSec);
+            if (speedDiference > 1000f)
             {
-                _currentRightAccelerationPerSec -= MathF.Sign(_currentRightSpeedPerSec) * _friction;
+                if (Math.Abs(_currentLeftSpeedPerSec) > Math.Abs(_currentRightSpeedPerSec))
+                {
+                    _currentLeftSpeedPerSec -= Math.Sign(_currentLeftSpeedPerSec) * (speedDiference - _maxSpeedDifference);
+                }
+                else
+                {
+                    _currentRightSpeedPerSec -= Math.Sign(_currentRightSpeedPerSec) * (speedDiference - _maxSpeedDifference);
+                }
             }
-
-            _currentLeftSpeedPerSec += _currentLeftAccelerationPerSec * elapsedSeconds;
-            _currentRightSpeedPerSec += _currentRightAccelerationPerSec * elapsedSeconds;
-
-            _angle += elapsedSeconds * (_currentLeftSpeedPerSec - _currentRightSpeedPerSec) / (-_width);
-
-            _currentSpeedPerSec = (_currentLeftSpeedPerSec + _currentRightSpeedPerSec) * 0.5f;
-            _position += new Vector3(MathF.Sin(_angle), 0, MathF.Cos(_angle)) * _currentSpeedPerSec * elapsedSeconds;
-
-            _rotation = Matrix.CreateRotationY(_angle);
         }
     }
 }
