@@ -59,12 +59,12 @@ namespace TGC.MonoGame.TP.ModelsInScene
         public float _mass { get; set; }
         private static ConcurrentDictionary<Type, List<Texture2D>> _texturasPorSubclase = new();
         private static ConcurrentDictionary<Type, Model> _modeloPorSubclase = new();
-
+        public float _linearDrag { get; set; } = 2.5f;
         public Matrix _world
         {
             get { return Matrix.CreateScale(_scale) * _rotation * Matrix.CreateTranslation(_position); }
         }
-        public ModelInScene(ContentManager Content, String modelPath, Vector3 position, Matrix rotation, Vector3 scale, IModelInSceneRenderer renderer, float angularDrag, float mass)
+        public ModelInScene(ContentManager Content, String modelPath, Vector3 position, Matrix rotation, Vector3 scale, IModelInSceneRenderer renderer, float linearDrag, float angularDrag, float mass)
         {
             _content = Content;
             _position = position;
@@ -73,6 +73,7 @@ namespace TGC.MonoGame.TP.ModelsInScene
             _renderer = renderer;
             _angularDrag = angularDrag;
             _mass = mass;
+            _linearDrag = linearDrag;
             this.cargarModelo(Content, modelPath);
         }
         public List<Texture2D> GetTextures()
@@ -190,6 +191,10 @@ namespace TGC.MonoGame.TP.ModelsInScene
         public void aplicarFuerzas(float time)
         {
             List<Force> forces = _fuerzasAAplicar;
+
+            Vector3 linearDragForce = -_velocity * _mass * _linearDrag;
+            forces.Add(new Force(linearDragForce, Vector3.Zero));
+
             Vector3 fuerzaTotal = Vector3.Zero;
             foreach (Force forceVector in forces)
             {
@@ -204,7 +209,8 @@ namespace TGC.MonoGame.TP.ModelsInScene
             Vector3 torqueNeto = Vector3.Zero;
             foreach (Force force in forces)
             {
-                torqueNeto += Vector3.Cross(force._applicationPoint, force._vector);
+                Vector3 applicationPointRotated = Vector3.Transform(force._applicationPoint, _rotation);
+                torqueNeto += Vector3.Cross(applicationPointRotated, force._vector);
             }
             Matrix worldToLocalRotation = Matrix.Invert(_rotation);
 

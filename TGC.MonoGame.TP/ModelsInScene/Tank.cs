@@ -12,11 +12,11 @@ namespace TGC.MonoGame.TP.Tanks
 
         public float _engineThrust { get; set; } = 500000f;
 
-        public float _linearDrag { get; set; } = 2.5f;
+
 
         public float _lateralFriction { get; set; } = 15f;
-        public Tank(ContentManager Content, String modelPath, Vector3 position, Matrix rotation, Vector3 scale, IModelInSceneRenderer renderer, float angularDrag, float mass)
-            : base(Content, modelPath, position, rotation, scale, renderer, angularDrag, mass)
+        public Tank(ContentManager Content, String modelPath, Vector3 position, Matrix rotation, Vector3 scale, IModelInSceneRenderer renderer, float linearDrag, float angularDrag, float mass)
+            : base(Content, modelPath, position, rotation, scale, renderer, linearDrag, angularDrag, mass)
         {
         }
         public void Update(GameTime gameTime)
@@ -34,8 +34,8 @@ namespace TGC.MonoGame.TP.Tanks
             if (keyboardState.IsKeyDown(Keys.D)) { leftThrust += 1; rightThrust -= 1; }
             if (keyboardState.IsKeyDown(Keys.A)) { leftThrust -= 1; rightThrust += 1; }
 
-            Vector3 leftTrackLocalPos = -_right * Width / 2f;
-            Vector3 rightTrackLocalPos = _right * Width / 2f;
+            Vector3 leftTrackLocalPos = new Vector3(1, 0, 0) * Width / 2f;
+            Vector3 rightTrackLocalPos = new Vector3(-1, 0, 0) * Width / 2f;
 
             this.agregarFuerzaAAplicar(new Force(_forward * leftThrust * _engineThrust, leftTrackLocalPos));
             this.agregarFuerzaAAplicar(new Force(_forward * rightThrust * _engineThrust, rightTrackLocalPos));
@@ -52,8 +52,7 @@ namespace TGC.MonoGame.TP.Tanks
             Vector3 lateralForce = -_right * appliedFrictionMag;
             this.agregarFuerzaAAplicar(new Force(lateralForce, Vector3.Zero));
 
-            Vector3 linearDragForce = -_velocity * _mass * _linearDrag;
-            this.agregarFuerzaAAplicar(new Force(linearDragForce, Vector3.Zero));
+
 
             this.aplicarFuerzas(elapsedSeconds);
         }
