@@ -20,7 +20,13 @@ namespace TGC.MonoGame.TP.ModelsInScene
         public IModelInSceneRenderer _renderer { get; set; }
         private ContentManager _content { get; set; }
         public RasterizerState RasterizerState { get; set; } = RasterizerState.CullCounterClockwise;
-        public float _width { get; set; }
+        private float _width;
+
+        public float Width
+        {
+            get { return _width * _scale.X; }
+            set { _width = value; }
+        }
         private static ConcurrentDictionary<Type, List<Texture2D>> _texturasPorSubclase = new();
         private static ConcurrentDictionary<Type, Model> _modeloPorSubclase = new();
 
@@ -64,9 +70,9 @@ namespace TGC.MonoGame.TP.ModelsInScene
             {
                 _model = _modeloPorSubclase[this.GetType()];
             }
-            _width = this.getWitdth();
+            _width = this.calculateWitdth();
         }
-        public float getWitdth()
+        public float calculateWitdth()
         {
             // Obtenemos las transformaciones base (huesos) para que la posición sea real
             Matrix[] transformaciones = new Matrix[_model.Bones.Count];

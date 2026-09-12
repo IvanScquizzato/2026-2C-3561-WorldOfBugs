@@ -21,7 +21,7 @@ namespace TGC.MonoGame.TP.Tanks
         public EstadoDeMovimiento _estado = EstadoDeMovimiento.QUIETO;
         public float _accelerationPerSec { get; set; } = 200f;
         public float _maxSpeed { get; set; } = 5000f;
-        public float _maxSpeedDifference { get; set; } = 1000f;
+        public float _maxSpeedDifference { get; set; } = 500f;
         public float _currentAccelerationPerSec { get; set; } = 0f;
         public float _currentLeftAccelerationPerSec { get; set; } = 0f;
         public float _currentRightAccelerationPerSec { get; set; } = 0f;
@@ -49,7 +49,7 @@ namespace TGC.MonoGame.TP.Tanks
 
             this.limitSpeeds();
 
-            _angle += elapsedSeconds * (_currentLeftSpeedPerSec - _currentRightSpeedPerSec) / (-_width);
+            _angle += elapsedSeconds * (_currentLeftSpeedPerSec - _currentRightSpeedPerSec) / (-Width);
 
             _currentSpeedPerSec = (_currentLeftSpeedPerSec + _currentRightSpeedPerSec) * 0.5f;
 
@@ -65,7 +65,6 @@ namespace TGC.MonoGame.TP.Tanks
 
             _currentLeftAccelerationPerSec = 0;
             _currentRightAccelerationPerSec = 0;
-            var multiplierToInvert = 1;
             if (keyboardState.IsKeyDown(Keys.W))
             {
                 _currentLeftAccelerationPerSec = _accelerationPerSec;
@@ -79,13 +78,13 @@ namespace TGC.MonoGame.TP.Tanks
             }
             if (keyboardState.IsKeyDown(Keys.A))
             {
-                _currentRightAccelerationPerSec += multiplierToInvert * accelerationToRotate;
-                _currentLeftAccelerationPerSec -= multiplierToInvert * accelerationToRotate;
+                _currentRightAccelerationPerSec += accelerationToRotate;
+                _currentLeftAccelerationPerSec -= accelerationToRotate;
             }
             if (keyboardState.IsKeyDown(Keys.D))
             {
-                _currentLeftAccelerationPerSec += multiplierToInvert * accelerationToRotate;
-                _currentRightAccelerationPerSec -= multiplierToInvert * accelerationToRotate;
+                _currentLeftAccelerationPerSec += accelerationToRotate;
+                _currentRightAccelerationPerSec -= accelerationToRotate;
             }
 
         }
@@ -126,7 +125,7 @@ namespace TGC.MonoGame.TP.Tanks
             _currentRightSpeedPerSec = Math.Clamp(_currentRightSpeedPerSec, -_maxSpeed, _maxSpeed);
 
             var speedDiference = MathF.Abs(_currentLeftSpeedPerSec - _currentRightSpeedPerSec);
-            if (speedDiference > 1000f)
+            if (speedDiference > _maxSpeedDifference)
             {
                 if (Math.Abs(_currentLeftSpeedPerSec) > Math.Abs(_currentRightSpeedPerSec))
                 {

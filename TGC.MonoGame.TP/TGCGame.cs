@@ -117,7 +117,7 @@ public class TGCGame : Game
         _terrains.Add(new SimpleTerrain(Content, terrainHeigthmap, terrainColorMap, terrainGrass, terrainGround, _terrainRenderer));
         //Cargo tanque
         float altura_tanque = _terrains[0].Height(0, -300) + 30;
-        _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(0, altura_tanque + 300, -300), Matrix.Identity, new Vector3(1f), _basicRenderer));
+        _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(0, altura_tanque + 300, -300), Matrix.Identity, new Vector3(0.5f), _basicRenderer));
         _camera2 = new ThirdPersonCamera(_tanks[0], 1000f, 0.005f, GraphicsDevice.Viewport.AspectRatio, 500f, 400f, 1f, 20000f, GraphicsDevice);
 
         //cargo arbol
