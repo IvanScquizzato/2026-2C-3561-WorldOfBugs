@@ -127,7 +127,7 @@ namespace TGC.MonoGame.TP.Terrain
             return heightmap;
         }
 
-        public float Height(float x, float z)
+        public new float Height(float x, float z)
         {
             var width = HeightmapData.GetLength(0);
             var length = HeightmapData.GetLength(1);

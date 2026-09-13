@@ -77,7 +77,7 @@ public class TGCGame : Game
         GraphicsDevice.RasterizerState = rasterizerState;
         // Seria hasta aca.
 
-        _camera = new SimpleCamera(GraphicsDevice.Viewport.AspectRatio, Vector3.UnitY * 500, 400, 1f, 1, 20000);
+        _camera = new SimpleCamera(GraphicsDevice.Viewport.AspectRatio, Vector3.UnitY * 500, 400, 1f, 1, 1000000);
         _modelosEnEscenario.Add(_tanks);
         _modelosEnEscenario.Add(_trees);
         _modelosEnEscenario.Add(_terrains);
