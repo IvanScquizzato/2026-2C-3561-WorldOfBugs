@@ -46,7 +46,6 @@ struct VertexShaderOutput
 
 struct PixelShaderInput
 {
-    float4 PixelPosition : SV_POSITION;
     float2 TexCoord       : TEXCOORD0; 
 };
 
@@ -66,7 +65,7 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 
 float4 MainPS(PixelShaderInput input) : COLOR
 {
-    float4 textureColor = tex2D(TextureSampler, input.TexCoord);
+	float4 textureColor = tex2D(TextureSampler, input.TexCoord);
 	return textureColor;
 }
 
