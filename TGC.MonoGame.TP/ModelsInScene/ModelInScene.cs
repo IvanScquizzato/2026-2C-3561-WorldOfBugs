@@ -55,9 +55,6 @@ namespace TGC.MonoGame.TP.ModelsInScene
                     foreach (var meshPart in mesh.MeshParts)
                     {
                         var basicEffect = (BasicEffect)meshPart.Effect;
-                        Console.WriteLine(
-                        $"{GetType().Name} - Texture = {basicEffect.Texture}"
-                            );
                         GetTextures().Add(basicEffect.Texture);
                         meshPart.Effect = _renderer._effect;
                     }
