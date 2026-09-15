@@ -164,7 +164,7 @@ public class TGCGame : Game
             float y = _terrains[0].Height(x, z) - 10;
             _decor.Add(new Debris(Content, ContentFolder3D + "Ruins/Rocks_medium", new Vector3(x, y, z), Matrix.Identity, new Vector3(1f), _basicRenderer));
         }
-        
+*/
         for (int i = 0; i < 100; i++)
         {
             _random_X = new Random();
@@ -172,14 +172,14 @@ public class TGCGame : Game
             float x = (float)(_random_X.NextDouble() * 13000 - 6000);
             float z = (float)(_random_Z.NextDouble() * 12000 - 6000);
             float y = _terrains[0].Height(x, z) - 10;
-            _decor.Add(new DeadBush(Content, ContentFolder3D + "Ruins/deadbush", new Vector3(x, y, z), Matrix.Identity, new Vector3(50f), _basicRenderer));
+            _decor.Add(new DeadBush(Content, ContentFolder3D + "DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0", new Vector3(x, y, z), Matrix.Identity, new Vector3(1f), _basicRenderer));
         }
-        */
+
         _decor.Add(new AbandonedCar(Content, ContentFolder3D + "Car/source/car_low", new Vector3(1700, _terrains[0].Height(1700, 4500) - 10, 4500), Matrix.Identity, new Vector3(.7f), _basicRenderer));
         _decor.Add(new AbandonedCar(Content, ContentFolder3D + "Car/source/car_low", new Vector3(3000, _terrains[0].Height(3000, 1500) - 10, 1500), Matrix.Identity, new Vector3(.7f), _basicRenderer));
-        /*
-        _decor.Add(new Obelisc(Content, ContentFolder3D + "Ruins/source/Monumento", new Vector3(2000,  _terrains[0].Height(2000, 5000) - 10, 5000), Matrix.Identity, new Vector3(6f), _basicRenderer));
-        
+
+        //_decor.Add(new Obelisc(Content, ContentFolder3D + "Ruins/source/Monumento", new Vector3(2000, _terrains[0].Height(2000, 5000) - 10, 5000), Matrix.Identity, new Vector3(6f), _basicRenderer));
+
         for (int i = 0; i < 200; i++)
         {
             _random_X = new Random();
@@ -187,9 +187,9 @@ public class TGCGame : Game
             float x = (float)(_random_X.NextDouble() * 13000 - 6000);
             float z = (float)(_random_Z.NextDouble() * 12000 - 6000);
             float y = _terrains[0].Height(x, z) - 10;
-            _decor.Add(new  Grass(Content, ContentFolder3D + "Ruins/grassExampleScene", new Vector3(x, y, z), Matrix.Identity, new Vector3(.5f), _basicRenderer));
+            _decor.Add(new Grass(Content, ContentFolder3D + "Grass/source/grassExampleScene", new Vector3(x, y, z), Matrix.Identity, new Vector3(.5f), _basicRenderer));
         }
-        */
+
         base.LoadContent();
 
     }
