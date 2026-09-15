@@ -27,8 +27,9 @@ sampler2D TextureSampler = sampler_state
 	Texture = (ModelTexture);
 	MagFilter = Linear;
 	MinFilter = Linear;
-	AddressU = Clamp;
-	AddressV = Clamp;
+	MipFilter = Linear;
+	AddressU = Wrap;
+	AddressV = Wrap;
 };
 
 struct VertexShaderInput
@@ -60,6 +61,7 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
     float4 textureColor = tex2D(TextureSampler, input.TexCoord);
+	clip(textureColor.a - 0.01f);
 	return textureColor;
 }
 
