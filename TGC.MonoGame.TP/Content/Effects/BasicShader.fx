@@ -65,7 +65,8 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 
 float4 MainPS(PixelShaderInput input) : COLOR
 {
-	float4 textureColor = tex2D(TextureSampler, input.TexCoord);
+    float4 textureColor = tex2D(TextureSampler, input.TexCoord);
+	clip(textureColor.a -0.1f);
 	return textureColor;
 }
 

@@ -17,6 +17,7 @@ namespace TGC.MonoGame.TP.ModelsInScene
     public abstract class ModelInScene
     {
         public Model _model { get; set; }
+        public string _modelPath { get; private set; }
         public Vector3 _position { get; set; }
         public Vector3 _velocity { get; set; } = new Vector3(0, 0, 0);
         public Vector3 _angularVelocity { get; set; } = Vector3.Zero;
@@ -57,9 +58,11 @@ namespace TGC.MonoGame.TP.ModelsInScene
             set { _depth = value; }
         }
         public float _mass { get; set; }
-        private static ConcurrentDictionary<Type, List<Texture2D>> _texturasPorSubclase = new();
-        private static ConcurrentDictionary<Type, Model> _modeloPorSubclase = new();
+   
         public float _linearDrag { get; set; } = 2.5f;
+        private static ConcurrentDictionary<string, List<Texture2D>> _texturasPorPath = new();
+        private static ConcurrentDictionary<string, Model> _modeloPorPath = new();
+        private static readonly object _lockObj = new object();
         public Matrix _world
         {
             get { return Matrix.CreateScale(_scale) * _rotation * Matrix.CreateTranslation(_position); }
@@ -74,11 +77,17 @@ namespace TGC.MonoGame.TP.ModelsInScene
             _angularDrag = angularDrag;
             _mass = mass;
             _linearDrag = linearDrag;
+            _modelPath = modelPath;
             this.cargarModelo(Content, modelPath);
         }
         public List<Texture2D> GetTextures()
         {
-            return _texturasPorSubclase.GetOrAdd(this.GetType(), _ => new List<Texture2D>());
+            // Buscamos por el path del modelo
+            if (_modelPath != null && _texturasPorPath.TryGetValue(_modelPath, out var texturas))
+            {
+                return texturas;
+            }
+            return new List<Texture2D>();
         }
         private void cargarModelo(ContentManager Content, String modelPath)
         {
@@ -86,21 +95,37 @@ namespace TGC.MonoGame.TP.ModelsInScene
             {
                 return;
             }
-            if (!_modeloPorSubclase.TryGetValue(this.GetType(), out var model))
+
+            lock (_lockObj)
             {
-                _model = Content.Load<Model>(modelPath);
-                _modeloPorSubclase[this.GetType()] = _model;
-                foreach (var mesh in this._model.Meshes)
-                    foreach (var meshPart in mesh.MeshParts)
+                if (!_modeloPorPath.TryGetValue(modelPath, out var model))
+                {
+                    _model = Content.Load<Model>(modelPath);
+                    _modeloPorPath[modelPath] = _model;
+                    var texturasExtraidas = new List<Texture2D>();
+                    foreach (var mesh in this._model.Meshes)
                     {
-                        var basicEffect = (BasicEffect)meshPart.Effect;
-                        GetTextures().Add(basicEffect.Texture);
-                        meshPart.Effect = _renderer._effect;
+                        foreach (var meshPart in mesh.MeshParts)
+                        {
+                            if (meshPart.Effect is BasicEffect basicEffect)
+                            {
+                                texturasExtraidas.Add(basicEffect.Texture);
+                            }
+                            else
+                            {
+                                texturasExtraidas.Add(null);
+                            }
+
+                            meshPart.Effect = _renderer._effect;
+                        }
                     }
-            }
-            else
-            {
-                _model = _modeloPorSubclase[this.GetType()];
+                    _texturasPorPath[modelPath] = texturasExtraidas;
+                }
+
+                else
+                {
+                    _model = _modeloPorPath[modelPath];
+                }
             }
             this.calculateDimentions();
             this.calculateInertia();

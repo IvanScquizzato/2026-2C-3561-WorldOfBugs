@@ -3,13 +3,21 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using TGC.MonoGame.TP.Bush;
 using TGC.MonoGame.TP.Cameras;
+using TGC.MonoGame.TP.Car;
+using TGC.MonoGame.TP.Debri;
+using TGC.MonoGame.TP.Fences;
+using TGC.MonoGame.TP.Ground;
 using TGC.MonoGame.TP.Terrain;
 using TGC.MonoGame.TP.ModelsInScene;
+using TGC.MonoGame.TP.Monument;
 using TGC.MonoGame.TP.Renderers;
 using TGC.MonoGame.TP.Tanks;
 using TGC.MonoGame.TP.Trees;
 using TGC.MonoGame.TP.Forces;
+using TGC.MonoGame.TP.Plants;
+using TGC.MonoGame.TP.RuinHouse;
 namespace TGC.MonoGame.TP;
 
 /// <summary>
@@ -42,6 +50,8 @@ public class TGCGame : Game
 
     private List<Tank> _tanks = new List<Tank>();
     private List<Tree> _trees = new List<Tree>();
+    private List<Plant> _plants = new List<Plant>();
+    private List<ModelInScene> _decor = new List<ModelInScene>();
     private List<IEnumerable<ModelInScene>> _modelosEnEscenario = new List<IEnumerable<ModelInScene>>();
     /// <summary>
     ///     Constructor del juego.
@@ -80,8 +90,10 @@ public class TGCGame : Game
         _camera = new SimpleCamera(GraphicsDevice.Viewport.AspectRatio, Vector3.UnitY * 500, 400, 1f, 1, 1000000);
         _modelosEnEscenario.Add(_tanks);
         _modelosEnEscenario.Add(_trees);
+        _modelosEnEscenario.Add(_plants);
         _modelosEnEscenario.Add(_terrains);
         _currentCamera = _camera;
+        _modelosEnEscenario.Add(_decor);
         base.Initialize();
     }
 
@@ -121,10 +133,59 @@ public class TGCGame : Game
         _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(0, altura_tanque + 300, -300), Matrix.Identity, new Vector3(0.5f), _basicRenderer, 4f, 6.5f, 1000f));
         _camera2 = new ThirdPersonCamera(_tanks[0], 1000f, 0.005f, GraphicsDevice.Viewport.AspectRatio, 500f, 400f, 1f, 20000f, GraphicsDevice);
 
+        Random _rng = new Random();
+
         //cargo arbol
-        _trees.Add(new Tree(Content, ContentFolder3D + "Tree/Tree", new Vector3(200, 500, 0), Matrix.Identity, new Vector3(150f), _basicRenderer, 4f, 0f, 10f));
+        _trees.Add(new Tree(Content, ContentFolder3D + "Tree/Tree", new Vector3(200, 500, 0), Matrix.Identity, new Vector3(150f), _basicRenderer));
+        for (int i = 0; i < 200; i++)
+        {
+            float x = (float)(_rng.NextDouble() * 13000 - 6000);
+            float z = (float)(_rng.NextDouble() * 12000 - 6000);
+            float y = _terrains[0].Height(x, z) - 10;
+            _trees.Add(new Tree(Content, ContentFolder3D + "Tree/Tree", new Vector3(x, y, z), Matrix.Identity, new Vector3(150f), _basicRenderer));
+        }
+
+        // Estructuras de relleno
+        _decor.Add(new RuinHouse1(Content, ContentFolder3D + "AbandonedHouse/source/abandonhouse", new Vector3(400, _terrains[0].Height(400, -5000) - 10, -5000), Matrix.Identity, new Vector3(1f), _basicRenderer));
+        _decor.Add(new RuinHouse1(Content, ContentFolder3D + "AbandonedHouse/source/abandonhouse", new Vector3(5100, _terrains[0].Height(5100, 5000) - 10, 5000), Matrix.Identity, new Vector3(1f), _basicRenderer));
+        _decor.Add(new RuinHouse1(Content, ContentFolder3D + "AbandonedHouse/source/abandonhouse", new Vector3(400, _terrains[0].Height(400, 5000) - 10, 5000), Matrix.Identity, new Vector3(1f), _basicRenderer));
         Random _random_X;
         Random _random_Z;
+        for (int i = 0; i < 20; i++)
+        {
+            _random_X = new Random();
+            _random_Z = new Random();
+            float x = (float)(_random_X.NextDouble() * 13000 - 6000);
+            float z = (float)(_random_Z.NextDouble() * 12000 - 6000);
+            float y = _terrains[0].Height(x, z) - 10;
+            _decor.Add(new Fence(Content, ContentFolder3D + "Rocks/source/stone_fence_old_low", new Vector3(x, y, z), Matrix.Identity, new Vector3(1f), _basicRenderer));
+        }
+
+        for (int i = 0; i < 10; i++)
+        {
+            _random_X = new Random();
+            _random_Z = new Random();
+            float x = (float)(_random_X.NextDouble() * 13000 - 6000);
+            float z = (float)(_random_Z.NextDouble() * 12000 - 6000);
+            float y = _terrains[0].Height(x, z) - 10;
+            _decor.Add(new Debris(Content, ContentFolder3D + "RocksMedium/source/Rocks_medium/Rocks_medium", new Vector3(x, y, z), Matrix.Identity, new Vector3(1f), _basicRenderer));
+        }
+
+        for (int i = 0; i < 100; i++)
+        {
+            _random_X = new Random();
+            _random_Z = new Random();
+            float x = (float)(_random_X.NextDouble() * 13000 - 6000);
+            float z = (float)(_random_Z.NextDouble() * 12000 - 6000);
+            float y = _terrains[0].Height(x, z) - 10;
+            _decor.Add(new DeadBush(Content, ContentFolder3D + "DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0", new Vector3(x, y, z), Matrix.Identity, new Vector3(1f), _basicRenderer));
+        }
+
+        _decor.Add(new AbandonedCar(Content, ContentFolder3D + "Car/source/car_low", new Vector3(1700, _terrains[0].Height(1700, 4500) - 10, 4500), Matrix.Identity, new Vector3(.7f), _basicRenderer));
+        _decor.Add(new AbandonedCar(Content, ContentFolder3D + "Car/source/car_low", new Vector3(3000, _terrains[0].Height(3000, 1500) - 10, 1500), Matrix.Identity, new Vector3(.7f), _basicRenderer));
+
+        _decor.Add(new Obelisc(Content, ContentFolder3D + "Monumento/source/Monumento", new Vector3(2000, _terrains[0].Height(2000, 5000), 5000), Matrix.Identity, new Vector3(6f), _basicRenderer));
+
         for (int i = 0; i < 200; i++)
         {
             _random_X = new Random();
@@ -132,8 +193,22 @@ public class TGCGame : Game
             float x = (float)(_random_X.NextDouble() * 13000 - 6000);
             float z = (float)(_random_Z.NextDouble() * 12000 - 6000);
             float y = _terrains[0].Height(x, z) - 10;
-            _trees.Add(new Tree(Content, ContentFolder3D + "Tree/Tree", new Vector3(x, y, z), Matrix.Identity, new Vector3(150f), _basicRenderer, 4f, 0f, 10f));
+            _decor.Add(new Grass(Content, ContentFolder3D + "Grass/source/grassExampleScene", new Vector3(x, y, z), Matrix.Identity, new Vector3(.5f), _basicRenderer));
         }
+
+        base.LoadContent();
+
+        //cargo planta
+        /*
+        _plants.Add(new Plant(Content, ContentFolder3D + "Plant/source/plant1_afsTREE_xlod00", new Vector3(200, 500, 0), Matrix.Identity, new Vector3(0.5f), _basicRenderer));
+        for (int i = 0; i < 200; i++)
+        {
+            float x = (float)(_rng.NextDouble() * 13000 - 6000);
+            float z = (float)(_rng.NextDouble() * 12000 - 6000);
+            float y = _terrains[0].Height(x, z) - 10;
+            _plants.Add(new Plant(Content, ContentFolder3D + "Plant/source/plant1_afsTREE_xlod00", new Vector3(x, y, z), Matrix.Identity, new Vector3(0.5f), _basicRenderer));
+        }
+        */
         base.LoadContent();
 
     }
