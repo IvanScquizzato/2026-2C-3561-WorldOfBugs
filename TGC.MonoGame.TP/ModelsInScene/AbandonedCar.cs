@@ -11,7 +11,7 @@ namespace TGC.MonoGame.TP.Car
     public class AbandonedCar : ModelInScene
     {
         public AbandonedCar(ContentManager Content, String modelPath, Vector3 position, Matrix rotation, Vector3 scale, IModelInSceneRenderer renderer)
-            : base(Content, modelPath, position, rotation, scale, renderer)
+            : base(Content, modelPath, position, rotation, scale, renderer, 0f, 0f, 1f)
         {
         }
     }
