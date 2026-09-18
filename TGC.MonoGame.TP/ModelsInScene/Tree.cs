@@ -10,8 +10,8 @@ namespace TGC.MonoGame.TP.Trees
 {
     public class Tree : ModelInScene
     {
-        public Tree(ContentManager Content, String modelPath, Vector3 position, Matrix rotation, Vector3 scale, IModelInSceneRenderer renderer)
-            : base(Content, modelPath, position, rotation, scale, renderer)
+        public Tree(ContentManager Content, String modelPath, Vector3 position, Matrix rotation, Vector3 scale, IModelInSceneRenderer renderer, float linearDrag, float angularDrag, float mass)
+            : base(Content, modelPath, position, rotation, scale, renderer, linearDrag, angularDrag, mass)
         {
         }
     }
