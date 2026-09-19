@@ -5,10 +5,16 @@ using Microsoft.Xna.Framework.Input;
 using TGC.MonoGame.TP.ModelsInScene;
 using TGC.MonoGame.TP.Renderers;
 using TGC.MonoGame.TP.Forces;
+using TGC.MonoGame.TP.Contact;
+using System.Collections.Generic;
+using NumericVector = System.Numerics.Vector3;
 namespace TGC.MonoGame.TP.Tanks
 {
     public class Tank : ModelInScene
     {
+
+        public List<ContactPoint> leftContactPoints { get; } = new List<ContactPoint>();
+        public List<ContactPoint> rightContactPoints { get; } = new List<ContactPoint>();
 
         public float _engineThrust { get; set; } = 5000000f;
 
@@ -35,8 +41,25 @@ namespace TGC.MonoGame.TP.Tanks
             Vector3 leftTrackLocalPos = -_right * Width / 2f;
             Vector3 rightTrackLocalPos = _right * Width / 2f;
 
-            this.agregarFuerzaAAplicar(new Force(_forward * leftThrust * _engineThrust, leftTrackLocalPos), elapsedSeconds);
-            this.agregarFuerzaAAplicar(new Force(_forward * rightThrust * _engineThrust, rightTrackLocalPos), elapsedSeconds);
+            var leftContactPointsSize = leftContactPoints.Count;
+            var rightContactPointsSize = rightContactPoints.Count;
+
+            foreach (ContactPoint contact in leftContactPoints)
+            {
+                Vector3 forceDirection = Vector3.Normalize(_forward - contact._normal * Vector3.Dot(_forward, contact._normal) / MathF.Pow(contact._normal.Length(), 2));
+                Vector3 forceInThatPoint = forceDirection * (leftThrust * _engineThrust / leftContactPointsSize);
+                this.agregarFuerzaAAplicar(new Force(forceInThatPoint, contact._point), elapsedSeconds);
+            }
+            foreach (ContactPoint contact in rightContactPoints)
+            {
+                Vector3 forceDirection = Vector3.Normalize(_forward - contact._normal * Vector3.Dot(_forward, contact._normal) / MathF.Pow(contact._normal.Length(), 2));
+                Vector3 forceInThatPoint = forceDirection * (rightThrust * _engineThrust / rightContactPointsSize);
+                this.agregarFuerzaAAplicar(new Force(forceInThatPoint, contact._point), elapsedSeconds);
+            }
+
+
+            leftContactPoints.Clear();
+            rightContactPoints.Clear();
 
             float sidewaysSpeed = Vector3.Dot(_velocity, _right);
             float exactForceToStop = (_mass * sidewaysSpeed) / elapsedSeconds;
@@ -52,7 +75,14 @@ namespace TGC.MonoGame.TP.Tanks
 
             //this.aplicarFuerzas(elapsedSeconds);
         }
-
+        public void AddLeftContact(ContactPoint contact)
+        {
+            leftContactPoints.Add(contact);
+        }
+        public void AddRightContact(ContactPoint contact)
+        {
+            rightContactPoints.Add(contact);
+        }
         public override void Draw(Matrix view, Matrix projection)
         {
             _renderer.Draw(this, view, projection);

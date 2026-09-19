@@ -67,6 +67,7 @@ public class TGCGame : Game
     private VertexBuffer boxVertexBuffer;
     private IndexBuffer boxIndexBuffer;
     private BasicEffect basicEffect;
+    public static Dictionary<CollidableReference, object> PhysicsToGameObjects = new Dictionary<CollidableReference, object>();
     /// <summary>
     ///     Constructor del juego.
     /// </summary>
@@ -147,7 +148,7 @@ public class TGCGame : Game
         _terrains.Add(new SimpleTerrain(Content, terrainHeigthmap, terrainColorMap, terrainGrass, terrainGround, _terrainRenderer));
         //Cargo tanque
         float altura_tanque = _terrains[0].Height(0, -300) + 30;
-        _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(0, altura_tanque + 300, -300), Matrix.Identity, new Vector3(0.5f), _basicRenderer, 4f, 6.5f, 10000f));
+        _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(0, altura_tanque + 300, -600), Matrix.Identity, new Vector3(0.5f), _basicRenderer, 4f, 6.5f, 11000f));
         _camera2 = new ThirdPersonCamera(_tanks[0], 1000f, 0.005f, GraphicsDevice.Viewport.AspectRatio, 500f, 400f, 1f, 20000f, GraphicsDevice);
 
         Random _rng = new Random();
@@ -241,17 +242,54 @@ public class TGCGame : Game
         StaticDescription staticDescription = new StaticDescription(NumericVector3.Zero, shapeIndex);
         _simulation.Statics.Add(staticDescription);
 
-        var tankShape = new Box(_tanks[0].Width, _tanks[0].Height * 1f, _tanks[0].Depth * 0.6f);
+
+
+        var tankShape = new Box(_tanks[0].Width * 0.9f, _tanks[0].Height * 0.7f, _tanks[0].Depth * 0.5f);
         var tankInertia = tankShape.ComputeInertia(_tanks[0]._mass);
         var tankIndex = _simulation.Shapes.Add(tankShape);
+
+
+
+        var trackShape = new Box(_tanks[0].Width * 0.17f, 0.5f, _tanks[0].Depth * 0.36f);
+        var trackIndex = _simulation.Shapes.Add(trackShape);
+
+        using var compoundBuilder = new CompoundBuilder(_bufferPool, _simulation.Shapes, 3);
+        compoundBuilder.Add(tankShape, RigidPose.Identity, _tanks[0]._mass);
+
+        var leftTrackOffset = new NumericVector3(-_tanks[0].Width * 0.39f, -_tanks[0].Height * 0.5f, -_tanks[0].Depth * 0.0005f);
+        compoundBuilder.Add(trackShape, new RigidPose(leftTrackOffset), 0.1f);
+
+        var rightTrackOffset = new NumericVector3(_tanks[0].Width * 0.39f, -_tanks[0].Height * 0.5f, -_tanks[0].Depth * 0.0005f);
+        compoundBuilder.Add(trackShape, new RigidPose(rightTrackOffset), 0.1f);
+
+        var fowardTrackShape = new Box(_tanks[0].Width * 0.17f, 0.5f, _tanks[0].Depth * 0.09f);
+
+        var leftTrackFowardOffset = new NumericVector3(-_tanks[0].Width * 0.39f, -_tanks[0].Height * 0.45f, _tanks[0].Depth * 0.22f);
+        var leftTrackFowardRotation = System.Numerics.Quaternion.CreateFromAxisAngle(
+            new NumericVector3(1, 0, 0),
+            -MathHelper.Pi / 10f
+        );
+        compoundBuilder.Add(fowardTrackShape, new RigidPose(leftTrackFowardOffset, leftTrackFowardRotation), 0.1f);
+
+        var rightTrackFowardOffset = new NumericVector3(_tanks[0].Width * 0.39f, -_tanks[0].Height * 0.45f, _tanks[0].Depth * 0.22f);
+        var rightTrackFowardRotation = System.Numerics.Quaternion.CreateFromAxisAngle(
+            new NumericVector3(1, 0, 0),
+            -MathHelper.Pi / 10f
+        );
+        compoundBuilder.Add(fowardTrackShape, new RigidPose(rightTrackFowardOffset, rightTrackFowardRotation), 0.1f);
+
+        compoundBuilder.BuildKinematicCompound(out var compoundChildren);
+        var compoundShape = new Compound(compoundChildren);
+        var compoundIndex = _simulation.Shapes.Add(compoundShape);
         var tankBoxHandle = _simulation.Bodies.Add(BodyDescription.CreateDynamic(
             new NumericVector3(_tanks[0]._position.X, _tanks[0]._position.Y, _tanks[0]._position.Z),
             tankInertia,
-            new CollidableDescription(tankIndex, 0.1f),
+            new CollidableDescription(compoundIndex, 0.1f),
             new BodyActivityDescription(0.01f)
         ));
-        var tankBody = _simulation.Bodies.GetBodyReference(tankBoxHandle);
-        _tanks[0]._bodyReference = tankBody;
+        _tanks[0]._bodyReference = _simulation.Bodies.GetBodyReference(tankBoxHandle);
+        var tankCollidableRef = new CollidableReference(CollidableMobility.Dynamic, tankBoxHandle);
+        PhysicsToGameObjects.Add(tankCollidableRef, _tanks[0]);
 
 
         basicEffect = new BasicEffect(GraphicsDevice)
@@ -334,7 +372,54 @@ public class TGCGame : Game
         _tanks[0].updateBodyPosition();
         base.Update(gameTime);
     }
+    private void RenderTank(Tank tank)
+    {
 
+        TypedIndex shapeIndex = tank._bodyReference.Collidable.Shape;
+
+        ref Compound compoundShape = ref _simulation.Shapes.GetShape<Compound>(shapeIndex.Index);
+
+        var bepuPose = tank._bodyReference.Pose;
+        Vector3 physicsPos = new Vector3(bepuPose.Position.X, bepuPose.Position.Y, bepuPose.Position.Z);
+        Quaternion physicsRot = new Quaternion(bepuPose.Orientation.X, bepuPose.Orientation.Y, bepuPose.Orientation.Z, bepuPose.Orientation.W);
+
+
+        for (var i = 0; i < compoundShape.Children.Length; i++)
+        {
+            ref CompoundChild chassisChild = ref compoundShape.Children[i];
+            ref Box chassisBox = ref _simulation.Shapes.GetShape<Box>(chassisChild.ShapeIndex.Index);
+            float realWidth = chassisBox.HalfWidth * 2f;
+            float realHeight = chassisBox.HalfHeight * 2f;
+            float realDepth = chassisBox.HalfLength * 2f;
+            Vector3 physicsScale = new Vector3(realWidth, realHeight, realDepth);
+            Vector3 realPhysicsPos = physicsPos + Vector3.Transform(chassisChild.LocalPose.Position, physicsRot);
+            Quaternion childPhysicsRotation = chassisChild.LocalPose.Orientation;
+            Matrix debugWorldMatrix = Matrix.CreateScale(physicsScale) *
+                                    Matrix.CreateFromQuaternion(childPhysicsRotation) *
+                                   Matrix.CreateFromQuaternion(physicsRot) *
+                                  Matrix.CreateTranslation(realPhysicsPos);
+
+            basicEffect.World = debugWorldMatrix;
+            basicEffect.View = _currentCamera.View;
+            basicEffect.Projection = _currentCamera.Projection;
+
+            GraphicsDevice.SetVertexBuffer(boxVertexBuffer);
+            GraphicsDevice.Indices = boxIndexBuffer;
+
+            // Aplicamos el efecto de depuración (NO _effect)
+            foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes)
+            {
+                pass.Apply();
+                GraphicsDevice.DrawIndexedPrimitives(
+                    primitiveType: PrimitiveType.LineList,
+                    baseVertex: 0,
+                    startIndex: 0,
+                    primitiveCount: 12
+                );
+            }
+        }
+
+    }
     /// <summary>
     ///     Se llama cada vez que hay que refrescar la pantalla.
     ///     Escribir aqui el codigo referido al renderizado.
@@ -351,38 +436,7 @@ public class TGCGame : Game
                 modelo.Draw(_currentCamera.View, _currentCamera.Projection);
             }
         }
-        // Obtenemos la posición y rotación REAL y PURA desde BepuPhysics
-        var bepuPose = _tanks[0]._bodyReference.Pose;
-        Vector3 physicsPos = new Vector3(bepuPose.Position.X, bepuPose.Position.Y, bepuPose.Position.Z);
-        Quaternion physicsRot = new Quaternion(bepuPose.Orientation.X, bepuPose.Orientation.Y, bepuPose.Orientation.Z, bepuPose.Orientation.W);
-
-        // Construimos la matriz de escala según las dimensiones que le diste a la caja de colisión de Bepu
-        Vector3 physicsScale = new Vector3(_tanks[0].Width, _tanks[0].Height * 1f, _tanks[0].Depth * 0.6f);
-
-        // Armamos la matriz World para el Debug: Escala -> Rotacion -> Traslacion
-        Matrix debugWorldMatrix = Matrix.CreateScale(physicsScale) *
-                                  Matrix.CreateFromQuaternion(physicsRot) *
-                                  Matrix.CreateTranslation(physicsPos);
-
-        // Configuramos nuestro _debugEffect
-        basicEffect.World = debugWorldMatrix;
-        basicEffect.View = _currentCamera.View;
-        basicEffect.Projection = _currentCamera.Projection;
-
-        GraphicsDevice.SetVertexBuffer(boxVertexBuffer);
-        GraphicsDevice.Indices = boxIndexBuffer;
-
-        // Aplicamos el efecto de depuración (NO _effect)
-        foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes)
-        {
-            pass.Apply();
-            GraphicsDevice.DrawIndexedPrimitives(
-                primitiveType: PrimitiveType.LineList,
-                baseVertex: 0,
-                startIndex: 0,
-                primitiveCount: 12
-            );
-        }
+        RenderTank(_tanks[0]);
     }
 
     /// <summary>
