@@ -9,6 +9,10 @@ using System.Collections.Concurrent;
 using TGC.MonoGame.TP.Forces;
 using System.Linq;
 using System.Runtime.Intrinsics;
+using BepuPhysics;
+using TGC.MonoGame.Utils;
+using NumericVector3 = System.Numerics.Vector3;
+
 namespace TGC.MonoGame.TP.ModelsInScene
 {
     /// <summary>
@@ -18,8 +22,19 @@ namespace TGC.MonoGame.TP.ModelsInScene
     {
         public Model _model { get; set; }
         public string _modelPath { get; private set; }
-        public Vector3 _position { get; set; }
-        public Vector3 _velocity { get; set; } = new Vector3(0, 0, 0);
+        public Vector3 _position
+        {
+            get;
+            set;
+        }
+        public Vector3 _velocity
+        {
+            get
+            {
+                return _bodyReference.Velocity.Linear;
+            }
+
+        }
         public Vector3 _angularVelocity { get; set; } = Vector3.Zero;
         public Vector3 _scale { get; set; }
         public Matrix _rotation { get; set; }
@@ -30,11 +45,14 @@ namespace TGC.MonoGame.TP.ModelsInScene
         {
             get { return -_rotation.Forward; }
         }
+        public Vector3 _up
+        {
+            get { return _rotation.Up; }
+        }
         public Vector3 _right
         {
             get { return -_rotation.Right; }
         }
-        public List<Force> _fuerzasAAplicar { get; set; } = [];
         public IModelInSceneRenderer _renderer { get; set; }
         private ContentManager _content { get; set; }
         public RasterizerState RasterizerState { get; set; } = RasterizerState.CullCounterClockwise;
@@ -58,11 +76,17 @@ namespace TGC.MonoGame.TP.ModelsInScene
             set { _depth = value; }
         }
         public float _mass { get; set; }
-   
+        public BodyReference _bodyReference { get; set; }
         public float _linearDrag { get; set; } = 2.5f;
         private static ConcurrentDictionary<string, List<Texture2D>> _texturasPorPath = new();
         private static ConcurrentDictionary<string, Model> _modeloPorPath = new();
         private static readonly object _lockObj = new object();
+
+        protected Vector3 _midpoint
+        {
+            get;
+            set;
+        }
         public Matrix _world
         {
             get { return Matrix.CreateScale(_scale) * _rotation * Matrix.CreateTranslation(_position); }
@@ -128,7 +152,7 @@ namespace TGC.MonoGame.TP.ModelsInScene
                 }
             }
             this.calculateDimentions();
-            this.calculateInertia();
+            //this.calculateInertia();
         }
         public void calculateDimentions()
         {
@@ -191,8 +215,14 @@ namespace TGC.MonoGame.TP.ModelsInScene
             _width = maxX - minX;
             _height = maxY - minY;
             _depth = maxZ - minZ;
-        }
 
+            _midpoint = new Vector3(
+            (minX + maxX) / 2f,
+            (minY + maxY) / 2f,
+            (minZ + maxZ) / 2f
+    );
+        }
+        /*
         private void calculateInertia()
         {
             if (_mass <= 0 || Width <= 0 || Height <= 0 || Depth <= 0)
@@ -257,14 +287,31 @@ namespace TGC.MonoGame.TP.ModelsInScene
                 _rotation = Matrix.CreateFromAxisAngle(eje, anguloDeRotacion) * _rotation;
             }
             _fuerzasAAplicar.Clear();
-        }
-        public void agregarFuerzaAAplicar(Force force)
+        }*/
+        public void updateBodyPosition()
         {
-            _fuerzasAAplicar.Add(force);
+            var position = _bodyReference.Pose.Position;
+            var quaternion = _bodyReference.Pose.Orientation;
+            _rotation = Matrix.CreateFromQuaternion(quaternion);
+
+            _position = position + Correction();
+        }
+        public void agregarFuerzaAAplicar(Force force, float seconds)
+        {
+            NumericVector3 numericForceVector = UtilsClass.ToNumericVector(force._vector);
+            NumericVector3 numericApplicationVector = UtilsClass.ToNumericVector(force._applicationPoint);
+            var bodyReference = _bodyReference;
+            bodyReference.Awake = true;
+            bodyReference.ApplyImpulse(numericForceVector * seconds, numericApplicationVector);
+            //_fuerzasAAplicar.Add(force);
         }
         public virtual void Draw(Matrix view, Matrix projection)
         {
             _renderer.Draw(this, view, projection);
+        }
+        public virtual Vector3 Correction()
+        {
+            return Vector3.Zero;
         }
     }
 }

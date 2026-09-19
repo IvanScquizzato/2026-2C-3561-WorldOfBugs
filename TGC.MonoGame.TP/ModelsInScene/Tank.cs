@@ -10,9 +10,7 @@ namespace TGC.MonoGame.TP.Tanks
     public class Tank : ModelInScene
     {
 
-        public float _engineThrust { get; set; } = 500000f;
-
-
+        public float _engineThrust { get; set; } = 5000000f;
 
         public float _lateralFriction { get; set; } = 15f;
         public Tank(ContentManager Content, String modelPath, Vector3 position, Matrix rotation, Vector3 scale, IModelInSceneRenderer renderer, float linearDrag, float angularDrag, float mass)
@@ -34,11 +32,11 @@ namespace TGC.MonoGame.TP.Tanks
             if (keyboardState.IsKeyDown(Keys.D)) { leftThrust += 1; rightThrust -= 1; }
             if (keyboardState.IsKeyDown(Keys.A)) { leftThrust -= 1; rightThrust += 1; }
 
-            Vector3 leftTrackLocalPos = new Vector3(1, 0, 0) * Width / 2f;
-            Vector3 rightTrackLocalPos = new Vector3(-1, 0, 0) * Width / 2f;
+            Vector3 leftTrackLocalPos = -_right * Width / 2f;
+            Vector3 rightTrackLocalPos = _right * Width / 2f;
 
-            this.agregarFuerzaAAplicar(new Force(_forward * leftThrust * _engineThrust, leftTrackLocalPos));
-            this.agregarFuerzaAAplicar(new Force(_forward * rightThrust * _engineThrust, rightTrackLocalPos));
+            this.agregarFuerzaAAplicar(new Force(_forward * leftThrust * _engineThrust, leftTrackLocalPos), elapsedSeconds);
+            this.agregarFuerzaAAplicar(new Force(_forward * rightThrust * _engineThrust, rightTrackLocalPos), elapsedSeconds);
 
             float sidewaysSpeed = Vector3.Dot(_velocity, _right);
             float exactForceToStop = (_mass * sidewaysSpeed) / elapsedSeconds;
@@ -50,12 +48,19 @@ namespace TGC.MonoGame.TP.Tanks
             appliedFrictionMag *= MathF.Sign(frictionMagnitude);
 
             Vector3 lateralForce = -_right * appliedFrictionMag;
-            this.agregarFuerzaAAplicar(new Force(lateralForce, Vector3.Zero));
+            this.agregarFuerzaAAplicar(new Force(lateralForce, Vector3.Zero), elapsedSeconds);
 
-
-
-            this.aplicarFuerzas(elapsedSeconds);
+            //this.aplicarFuerzas(elapsedSeconds);
         }
 
+        public override void Draw(Matrix view, Matrix projection)
+        {
+            _renderer.Draw(this, view, projection);
+        }
+        public override Vector3 Correction()
+        {
+            return -_up * Height * 0.5f;
+        }
     }
+
 }

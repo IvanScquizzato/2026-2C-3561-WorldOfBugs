@@ -18,6 +18,14 @@ using TGC.MonoGame.TP.Trees;
 using TGC.MonoGame.TP.Forces;
 using TGC.MonoGame.TP.Plants;
 using TGC.MonoGame.TP.RuinHouse;
+using BepuPhysics;
+using BepuPhysics.Collidables;
+using BepuPhysics.Constraints;
+using TGC.MonoGame.TP.Physics.Bepu;
+using BepuUtilities.Memory;
+using NumericVector3 = System.Numerics.Vector3;
+using TGC.MonoGame.Utils;
+using System.Linq;
 namespace TGC.MonoGame.TP;
 
 /// <summary>
@@ -34,6 +42,8 @@ public class TGCGame : Game
     public const string ContentFolderSpriteFonts = "SpriteFonts/";
     public const string ContentFolderTextures = "Textures/";
 
+    private Simulation _simulation;
+    private BufferPool _bufferPool;
 
     private readonly GraphicsDeviceManager _graphics;
     private Camera _camera;
@@ -53,6 +63,10 @@ public class TGCGame : Game
     private List<Plant> _plants = new List<Plant>();
     private List<ModelInScene> _decor = new List<ModelInScene>();
     private List<IEnumerable<ModelInScene>> _modelosEnEscenario = new List<IEnumerable<ModelInScene>>();
+    private List<BodyHandle> _tanksHandles = new List<BodyHandle>();
+    private VertexBuffer boxVertexBuffer;
+    private IndexBuffer boxIndexBuffer;
+    private BasicEffect basicEffect;
     /// <summary>
     ///     Constructor del juego.
     /// </summary>
@@ -94,6 +108,9 @@ public class TGCGame : Game
         _modelosEnEscenario.Add(_terrains);
         _currentCamera = _camera;
         _modelosEnEscenario.Add(_decor);
+
+        _bufferPool = new BufferPool();
+
         base.Initialize();
     }
 
@@ -130,7 +147,7 @@ public class TGCGame : Game
         _terrains.Add(new SimpleTerrain(Content, terrainHeigthmap, terrainColorMap, terrainGrass, terrainGround, _terrainRenderer));
         //Cargo tanque
         float altura_tanque = _terrains[0].Height(0, -300) + 30;
-        _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(0, altura_tanque + 300, -300), Matrix.Identity, new Vector3(0.5f), _basicRenderer, 4f, 6.5f, 1000f));
+        _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(0, altura_tanque + 300, -300), Matrix.Identity, new Vector3(0.5f), _basicRenderer, 4f, 6.5f, 10000f));
         _camera2 = new ThirdPersonCamera(_tanks[0], 1000f, 0.005f, GraphicsDevice.Viewport.AspectRatio, 500f, 400f, 1f, 20000f, GraphicsDevice);
 
         Random _rng = new Random();
@@ -209,6 +226,74 @@ public class TGCGame : Game
             _plants.Add(new Plant(Content, ContentFolder3D + "Plant/source/plant1_afsTREE_xlod00", new Vector3(x, y, z), Matrix.Identity, new Vector3(0.5f), _basicRenderer));
         }
         */
+        _simulation = Simulation.Create(_bufferPool, new NarrowPhaseCallbacks(new SpringSettings(30, 1)),
+        new PoseIntegratorCallbacks(new NumericVector3(0, -1000, 0)), new SolveDescription(8, 1));
+
+
+        //Añado terreno
+        _bufferPool.Take(_terrains[0].triangles.Count, out Buffer<Triangle> triangles);
+        for (int i = 0; i < _terrains[0].triangles.Count; i++)
+        {
+            triangles[i] = _terrains[0].triangles[i];
+        }
+        Mesh terrainMesh = new Mesh(triangles, NumericVector3.One, _bufferPool);
+        TypedIndex shapeIndex = _simulation.Shapes.Add(terrainMesh);
+        StaticDescription staticDescription = new StaticDescription(NumericVector3.Zero, shapeIndex);
+        _simulation.Statics.Add(staticDescription);
+
+        var tankShape = new Box(_tanks[0].Width, _tanks[0].Height * 1f, _tanks[0].Depth * 0.6f);
+        var tankInertia = tankShape.ComputeInertia(_tanks[0]._mass);
+        var tankIndex = _simulation.Shapes.Add(tankShape);
+        var tankBoxHandle = _simulation.Bodies.Add(BodyDescription.CreateDynamic(
+            new NumericVector3(_tanks[0]._position.X, _tanks[0]._position.Y, _tanks[0]._position.Z),
+            tankInertia,
+            new CollidableDescription(tankIndex, 0.1f),
+            new BodyActivityDescription(0.01f)
+        ));
+        var tankBody = _simulation.Bodies.GetBodyReference(tankBoxHandle);
+        _tanks[0]._bodyReference = tankBody;
+
+
+        basicEffect = new BasicEffect(GraphicsDevice)
+        {
+            VertexColorEnabled = true,
+            LightingEnabled = false
+        };
+
+        // 2. Definir los 8 vértices del cubo
+        VertexPositionColor[] vertices = new VertexPositionColor[8];
+        Vector3[] corners = new Vector3[]
+        {
+            new Vector3(-0.5f,  0.5f, -0.5f), // 0: Arriba, Izquierda, Atrás
+            new Vector3( 0.5f,  0.5f, -0.5f), // 1: Arriba, Derecha, Atrás
+            new Vector3( 0.5f,  0.5f,  0.5f), // 2: Arriba, Derecha, Frente
+            new Vector3(-0.5f,  0.5f,  0.5f), // 3: Arriba, Izquierda, Frente
+            new Vector3(-0.5f, -0.5f, -0.5f), // 4: Abajo, Izquierda, Atrás
+            new Vector3( 0.5f, -0.5f, -0.5f), // 5: Abajo, Derecha, Atrás
+            new Vector3( 0.5f, -0.5f,  0.5f), // 6: Abajo, Derecha, Frente
+            new Vector3(-0.5f, -0.5f,  0.5f)  // 7: Abajo, Izquierda, Frente
+        };
+        Color boxColor = Color.LimeGreen;
+        for (int i = 0; i < 8; i++)
+            vertices[i] = new VertexPositionColor(corners[i], boxColor);
+
+        boxVertexBuffer = new VertexBuffer(GraphicsDevice, typeof(VertexPositionColor), 8, BufferUsage.WriteOnly);
+        boxVertexBuffer.SetData(vertices);
+
+        // 3. Definir los índices para las 12 líneas (24 índices en total)
+        short[] indices = new short[]
+        {
+            // Cuadrado superior
+            0, 1, 1, 2, 2, 3, 3, 0,
+            // Cuadrado inferior
+            4, 5, 5, 6, 6, 7, 7, 4,
+            // Pilares verticales conectando arriba y abajo
+            0, 4, 1, 5, 2, 6, 3, 7
+        };
+
+        boxIndexBuffer = new IndexBuffer(GraphicsDevice, typeof(short), 24, BufferUsage.WriteOnly);
+        boxIndexBuffer.SetData(indices);
+
         base.LoadContent();
 
     }
@@ -243,6 +328,10 @@ public class TGCGame : Game
         _tanks[0].Update(gameTime);
 
         _previousKeyboardState = currentKeyboardState;
+
+        _simulation.Timestep(1 / 60f);
+
+        _tanks[0].updateBodyPosition();
         base.Update(gameTime);
     }
 
@@ -261,6 +350,38 @@ public class TGCGame : Game
             {
                 modelo.Draw(_currentCamera.View, _currentCamera.Projection);
             }
+        }
+        // Obtenemos la posición y rotación REAL y PURA desde BepuPhysics
+        var bepuPose = _tanks[0]._bodyReference.Pose;
+        Vector3 physicsPos = new Vector3(bepuPose.Position.X, bepuPose.Position.Y, bepuPose.Position.Z);
+        Quaternion physicsRot = new Quaternion(bepuPose.Orientation.X, bepuPose.Orientation.Y, bepuPose.Orientation.Z, bepuPose.Orientation.W);
+
+        // Construimos la matriz de escala según las dimensiones que le diste a la caja de colisión de Bepu
+        Vector3 physicsScale = new Vector3(_tanks[0].Width, _tanks[0].Height * 1f, _tanks[0].Depth * 0.6f);
+
+        // Armamos la matriz World para el Debug: Escala -> Rotacion -> Traslacion
+        Matrix debugWorldMatrix = Matrix.CreateScale(physicsScale) *
+                                  Matrix.CreateFromQuaternion(physicsRot) *
+                                  Matrix.CreateTranslation(physicsPos);
+
+        // Configuramos nuestro _debugEffect
+        basicEffect.World = debugWorldMatrix;
+        basicEffect.View = _currentCamera.View;
+        basicEffect.Projection = _currentCamera.Projection;
+
+        GraphicsDevice.SetVertexBuffer(boxVertexBuffer);
+        GraphicsDevice.Indices = boxIndexBuffer;
+
+        // Aplicamos el efecto de depuración (NO _effect)
+        foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes)
+        {
+            pass.Apply();
+            GraphicsDevice.DrawIndexedPrimitives(
+                primitiveType: PrimitiveType.LineList,
+                baseVertex: 0,
+                startIndex: 0,
+                primitiveCount: 12
+            );
         }
     }
 
