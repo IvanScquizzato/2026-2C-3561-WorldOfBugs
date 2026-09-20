@@ -1,5 +1,6 @@
 using System;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using TGC.MonoGame.TP.ModelsInScene;
@@ -9,11 +10,10 @@ namespace TGC.MonoGame.TP.Tanks
 {
     public class Tank : ModelInScene
     {
-
+        private MouseState _previousMouseState;
         public float _engineThrust { get; set; } = 500000f;
-
-
-
+        public float TurretYaw = 0f;
+        public float CannonPitch = 0f;
         public float _lateralFriction { get; set; } = 15f;
         public Tank(ContentManager Content, String modelPath, Vector3 position, Matrix rotation, Vector3 scale, IModelInSceneRenderer renderer, float linearDrag, float angularDrag, float mass)
             : base(Content, modelPath, position, rotation, scale, renderer, linearDrag, angularDrag, mass)
@@ -21,6 +21,10 @@ namespace TGC.MonoGame.TP.Tanks
         }
         public void Update(GameTime gameTime)
         {
+            MouseState mouse = Mouse.GetState();
+            float deltaX = mouse.X - _previousMouseState.X;
+            float deltaY = mouse.Y - _previousMouseState.Y;
+            _previousMouseState = mouse;
             float elapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (elapsedSeconds <= 0.0001f)
                 return;
@@ -33,6 +37,13 @@ namespace TGC.MonoGame.TP.Tanks
 
             if (keyboardState.IsKeyDown(Keys.D)) { leftThrust += 1; rightThrust -= 1; }
             if (keyboardState.IsKeyDown(Keys.A)) { leftThrust -= 1; rightThrust += 1; }
+            
+            //logica canon y torreta siguiendo el mouse
+            
+            TurretYaw -= deltaX * 0.1f * elapsedSeconds;
+            CannonPitch += deltaY * 0.1f * elapsedSeconds;
+
+            CannonPitch = MathHelper.Clamp(CannonPitch,-0.5f,0f);
 
             Vector3 leftTrackLocalPos = new Vector3(1, 0, 0) * Width / 2f;
             Vector3 rightTrackLocalPos = new Vector3(-1, 0, 0) * Width / 2f;

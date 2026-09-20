@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using TGC.MonoGame.TP.ModelsInScene;
+using TGC.MonoGame.TP.Tanks;
 namespace TGC.MonoGame.TP.Renderers
 {
     public class BasicRenderer : IModelInSceneRenderer
@@ -29,7 +30,35 @@ namespace TGC.MonoGame.TP.Renderers
             foreach (var mesh in modelInScene._model.Meshes)
             {
                 var relativeTransform = modelMeshesBaseTransforms[mesh.ParentBone.Index];
-                _effect.Parameters["World"].SetValue(relativeTransform * modelInScene._world);
+
+                Matrix world = modelInScene._world;
+
+                if (modelInScene is Tank tank)
+                {
+                    if (mesh.Name == "Turret")
+                    {
+                        world =
+                            relativeTransform *
+                            Matrix.CreateRotationY(tank.TurretYaw) *
+                            modelInScene._world;
+                    }
+                    else if (mesh.Name == "Cannon")
+                    {
+                        world =
+                            relativeTransform *
+                            Matrix.CreateRotationX(tank.CannonPitch) *
+                            Matrix.CreateRotationY(tank.TurretYaw) *
+                            modelInScene._world;
+                    }
+                    else
+                    {
+                        world =
+                            relativeTransform *
+                            modelInScene._world;
+                    }
+                }
+
+                _effect.Parameters["World"].SetValue(world);
                 foreach (var meshPart in mesh.MeshParts)
                 {
                     if (modelInScene.GetTextures()[index] != null)
