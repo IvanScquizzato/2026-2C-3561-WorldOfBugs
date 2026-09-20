@@ -26,6 +26,7 @@ using BepuUtilities.Memory;
 using NumericVector3 = System.Numerics.Vector3;
 using TGC.MonoGame.Utils;
 using System.Linq;
+using TGC.MonoGame.TP.TankRaycasts;
 namespace TGC.MonoGame.TP;
 
 /// <summary>
@@ -102,7 +103,7 @@ public class TGCGame : Game
         GraphicsDevice.RasterizerState = rasterizerState;
         // Seria hasta aca.
 
-        _camera = new SimpleCamera(GraphicsDevice.Viewport.AspectRatio, Vector3.UnitY * 500, 400, 1f, 1, 1000000);
+        _camera = new SimpleCamera(GraphicsDevice.Viewport.AspectRatio, Vector3.UnitY * 500, 200, 1f, 1, 1000000);
         _modelosEnEscenario.Add(_tanks);
         _modelosEnEscenario.Add(_trees);
         _modelosEnEscenario.Add(_plants);
@@ -229,7 +230,7 @@ public class TGCGame : Game
         */
         _simulation = Simulation.Create(_bufferPool, new NarrowPhaseCallbacks(new SpringSettings(30, 1)),
         new PoseIntegratorCallbacks(new NumericVector3(0, -1000, 0)), new SolveDescription(8, 1));
-
+        _tanks[0].LoadRaycastPoints(_simulation);
 
         //Añado terreno
         _bufferPool.Take(_terrains[0].triangles.Count, out Buffer<Triangle> triangles);
@@ -244,18 +245,58 @@ public class TGCGame : Game
 
 
 
-        var tankShape = new Box(_tanks[0].Width * 0.9f, _tanks[0].Height * 0.7f, _tanks[0].Depth * 0.5f);
-        var tankInertia = tankShape.ComputeInertia(_tanks[0]._mass);
-        var tankIndex = _simulation.Shapes.Add(tankShape);
+        var tankBodyShape = new Box(_tanks[0].Width * 0.58f, _tanks[0].Height * 0.3f, _tanks[0].Depth * 0.5f);
+        var tankInertia = tankBodyShape.ComputeInertia(_tanks[0]._mass);
+        var tankIndex = _simulation.Shapes.Add(tankBodyShape);
+        var tinyBox = new Box(1f, 1f, 1f);
+        _simulation.Shapes.Add(tinyBox);
 
+        var tankCenterShape = new Box(_tanks[0].Width * 0.9f, _tanks[0].Height * 0.1f, _tanks[0].Depth * 0.58f);
+        var tankCenterIndex = _simulation.Shapes.Add(tankCenterShape);
 
+        var tankUpperShape = new Box(_tanks[0].Width * 0.9f, _tanks[0].Height * 0.18f, _tanks[0].Depth * 0.51f);
+        var tankUpperIndex = _simulation.Shapes.Add(tankUpperShape);
 
         var trackShape = new Box(_tanks[0].Width * 0.17f, 0.5f, _tanks[0].Depth * 0.36f);
         var trackIndex = _simulation.Shapes.Add(trackShape);
 
-        using var compoundBuilder = new CompoundBuilder(_bufferPool, _simulation.Shapes, 3);
-        compoundBuilder.Add(tankShape, RigidPose.Identity, _tanks[0]._mass);
+        using var compoundBuilder = new CompoundBuilder(_bufferPool, _simulation.Shapes, 4000);
+        compoundBuilder.Add(tankBodyShape, new RigidPose(new NumericVector3(0, -_tanks[0].Height * 0.2f, 0)), _tanks[0]._mass);
+        compoundBuilder.Add(tankCenterShape, new RigidPose(new NumericVector3(0, -_tanks[0].Height * 0.1f, 0)), 0f);
+        compoundBuilder.Add(tankUpperShape, new RigidPose(new NumericVector3(0, _tanks[0].Height * 0.04f, -_tanks[0].Depth * 0.033f)), 0f);
 
+        /*foreach (TankRaycast raycast in _tanks[0].raycastPointsLeft)
+        {
+            compoundBuilder.Add(tinyBox, new RigidPose(UtilsClass.ToNumericVector(raycast._positionLocal)), 0f);
+        }*/
+        /*
+        compoundBuilder.Add(tinyBox, new RigidPose(new NumericVector3(_tanks[0].Width * 0.46f, -_tanks[0].Height * 0.49f, -_tanks[0].Depth * 0.18f) + UtilsClass.ToNumericVector(_tanks[0].Correction())), 1f);
+        compoundBuilder.Add(tinyBox, new RigidPose(new NumericVector3(_tanks[0].Width * 0.31f, -_tanks[0].Height * 0.49f, -_tanks[0].Depth * 0.18f)), 1f);
+        compoundBuilder.Add(tinyBox, new RigidPose(new NumericVector3(_tanks[0].Width * 0.31f, -_tanks[0].Height * 0.49f, _tanks[0].Depth * 0.18f)), 1f);
+        compoundBuilder.Add(tinyBox, new RigidPose(new NumericVector3(_tanks[0].Width * 0.46f, -_tanks[0].Height * 0.49f, _tanks[0].Depth * 0.18f)), 1f);
+
+        var rotacionFoward = System.Numerics.Quaternion.CreateFromAxisAngle(
+            new NumericVector3(1, 0, 0),
+            -MathHelper.Pi / 9.7f
+        );
+
+        compoundBuilder.Add(tinyBox, new RigidPose(new NumericVector3(_tanks[0].Width * 0.46f, -_tanks[0].Height * 0.47f, _tanks[0].Depth * 0.2f), rotacionFoward), 1f);
+        compoundBuilder.Add(tinyBox, new RigidPose(new NumericVector3(_tanks[0].Width * 0.31f, -_tanks[0].Height * 0.47f, _tanks[0].Depth * 0.2f), rotacionFoward), 1f);
+
+        compoundBuilder.Add(tinyBox, new RigidPose(new NumericVector3(_tanks[0].Width * 0.46f, -_tanks[0].Height * 0.47f, _tanks[0].Depth * 0.2f) + NumericVector3.Transform(new NumericVector3(0, 0, _tanks[0].Depth * 0.06f), rotacionFoward), rotacionFoward), 1f);
+        compoundBuilder.Add(tinyBox, new RigidPose(new NumericVector3(_tanks[0].Width * 0.31f, -_tanks[0].Height * 0.47f, _tanks[0].Depth * 0.2f) + NumericVector3.Transform(new NumericVector3(0, 0, _tanks[0].Depth * 0.06f), rotacionFoward), rotacionFoward), 1f);
+
+        var rotacionBack = System.Numerics.Quaternion.CreateFromAxisAngle(
+            new NumericVector3(1, 0, 0),
+            MathHelper.Pi / 13f
+        );
+        compoundBuilder.Add(tinyBox, new RigidPose(new NumericVector3(_tanks[0].Width * 0.46f, -_tanks[0].Height * 0.48f, -_tanks[0].Depth * 0.2f), rotacionBack), 1f);
+        compoundBuilder.Add(tinyBox, new RigidPose(new NumericVector3(_tanks[0].Width * 0.31f, -_tanks[0].Height * 0.48f, -_tanks[0].Depth * 0.2f), rotacionBack), 1f);
+
+        compoundBuilder.Add(tinyBox, new RigidPose(new NumericVector3(_tanks[0].Width * 0.46f, -_tanks[0].Height * 0.48f, -_tanks[0].Depth * 0.2f) + NumericVector3.Transform(new NumericVector3(0, 0, -_tanks[0].Depth * 0.07f), rotacionBack), rotacionBack), 1f);
+        compoundBuilder.Add(tinyBox, new RigidPose(new NumericVector3(_tanks[0].Width * 0.31f, -_tanks[0].Height * 0.48f, -_tanks[0].Depth * 0.2f) + NumericVector3.Transform(new NumericVector3(0, 0, -_tanks[0].Depth * 0.07f), rotacionBack), rotacionBack), 1f);
+*/
+        /*
         var leftTrackOffset = new NumericVector3(-_tanks[0].Width * 0.39f, -_tanks[0].Height * 0.5f, -_tanks[0].Depth * 0.0005f);
         compoundBuilder.Add(trackShape, new RigidPose(leftTrackOffset), 0.1f);
 
@@ -277,7 +318,7 @@ public class TGCGame : Game
             -MathHelper.Pi / 10f
         );
         compoundBuilder.Add(fowardTrackShape, new RigidPose(rightTrackFowardOffset, rightTrackFowardRotation), 0.1f);
-
+        */
         compoundBuilder.BuildKinematicCompound(out var compoundChildren);
         var compoundShape = new Compound(compoundChildren);
         var compoundIndex = _simulation.Shapes.Add(compoundShape);
@@ -407,6 +448,43 @@ public class TGCGame : Game
             GraphicsDevice.Indices = boxIndexBuffer;
 
             // Aplicamos el efecto de depuración (NO _effect)
+            foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes)
+            {
+                pass.Apply();
+                GraphicsDevice.DrawIndexedPrimitives(
+                    primitiveType: PrimitiveType.LineList,
+                    baseVertex: 0,
+                    startIndex: 0,
+                    primitiveCount: 12
+                );
+            }
+        }
+        //bepuPose = tank._bodyReference.Pose;
+        //physicsPos = new Vector3(bepuPose.Position.X, bepuPose.Position.Y, bepuPose.Position.Z);
+        //physicsRot = new Quaternion(bepuPose.Orientation.X, bepuPose.Orientation.Y, bepuPose.Orientation.Z, bepuPose.Orientation.W);
+
+        // 2. Crear la matriz base del tanque
+        Matrix tankWorldMatrix = _tanks[0]._world;
+
+        GraphicsDevice.SetVertexBuffer(boxVertexBuffer);
+        GraphicsDevice.Indices = boxIndexBuffer;
+
+        // 3. Juntar ambas listas (asumo que tenés raycastPointsRight también)
+        var allRaycasts = tank.raycastPointsLeft.Concat(tank.raycastPointsRight);
+
+        foreach (TankRaycast raycast in allRaycasts)
+        {
+            // 4. Transformar la posición local del raycast a la posición global actual
+            Vector3 globalRaycastPos = Vector3.Transform(raycast._positionLocal, tankWorldMatrix);
+
+            // 5. Crear la matriz del cubito (escala de 1x1x1 como era tu tinyBox original)
+            // Nota: Podés achicar el CreateScale(0.2f) si el cubo de 1x1x1 es muy grande visualmente
+            Matrix debugWorldMatrix = Matrix.CreateScale(1f) * Matrix.CreateTranslation(globalRaycastPos);
+
+            basicEffect.World = debugWorldMatrix;
+            basicEffect.View = _currentCamera.View;
+            basicEffect.Projection = _currentCamera.Projection;
+
             foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes)
             {
                 pass.Apply();

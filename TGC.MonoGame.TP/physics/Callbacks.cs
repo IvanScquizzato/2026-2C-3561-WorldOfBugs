@@ -1,7 +1,7 @@
 using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-
+using BepuPhysics.Trees;
 using BepuPhysics;
 using BepuPhysics.Collidables;
 using BepuPhysics.CollisionDetection;
@@ -9,6 +9,7 @@ using BepuPhysics.Constraints;
 using TGC.MonoGame.TP.Tanks;
 using BepuUtilities;
 using TGC.MonoGame.TP.Contact;
+using System.Diagnostics;
 namespace TGC.MonoGame.TP.Physics.Bepu;
 
 public struct PoseIntegratorCallbacks : IPoseIntegratorCallbacks
@@ -124,7 +125,45 @@ public struct PoseIntegratorCallbacks : IPoseIntegratorCallbacks
         velocity.Angular *= AngularDampingDt;
     }
 }
+public struct ClosestHitHandler : IRayHitHandler
+{
+    public bool Hit;
+    public float T; // Distancia desde el origen
+    public Vector3 Normal;
+    public CollidableReference Collidable;
+    public BodyHandle TankToIgnore;
 
+    // Filtro de fase amplia (BroadPhase). Decide si vale la pena probar la colisión con este objeto.
+    public bool AllowTest(CollidableReference collidable)
+    {
+        return true; // true para probar colisión contra todos los objetos
+    }
+
+    // Filtro de fase estrecha para sub-objetos (como los triángulos de una malla).
+    public bool AllowTest(CollidableReference collidable, int childIndex)
+    {
+        if (collidable.Mobility != CollidableMobility.Static && collidable.BodyHandle == TankToIgnore)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    // Se ejecuta cada vez que el rayo impacta algo
+    public void OnRayHit(in RayData ray, ref float maximumT, float t, in Vector3 normal, CollidableReference collidable, int childIndex)
+    {
+        Hit = true;
+        T = t;
+        Normal = normal;
+        Collidable = collidable;
+        //Debug.WriteLine("chocp");
+        // Clave para obtener el impacto más cercano:
+        // Reducimos maximumT a la distancia de este impacto. 
+        // Bepu dejará de buscar objetos que estén más lejos que este nuevo maximumT.
+        if (t < maximumT)
+            maximumT = t;
+    }
+}
 public struct NarrowPhaseCallbacks : INarrowPhaseCallbacks
 {
     private SpringSettings ContactSpringiness { get; set; }
@@ -193,6 +232,7 @@ public struct NarrowPhaseCallbacks : INarrowPhaseCallbacks
     public bool ConfigureContactManifold(int workerIndex, CollidablePair pair, int childIndexA, int childIndexB,
         ref ConvexContactManifold manifold)
     {
+        /*
         bool foundA = TGCGame.PhysicsToGameObjects.TryGetValue(pair.A, out object objectA);
         bool foundB = TGCGame.PhysicsToGameObjects.TryGetValue(pair.B, out object objectB);
 
@@ -265,8 +305,10 @@ public struct NarrowPhaseCallbacks : INarrowPhaseCallbacks
             }
 
         }
+        */
         return true;
     }
+
     /// <inheritdoc/>
     public void Dispose()
     {

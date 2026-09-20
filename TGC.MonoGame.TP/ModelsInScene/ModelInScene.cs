@@ -56,24 +56,24 @@ namespace TGC.MonoGame.TP.ModelsInScene
         public IModelInSceneRenderer _renderer { get; set; }
         private ContentManager _content { get; set; }
         public RasterizerState RasterizerState { get; set; } = RasterizerState.CullCounterClockwise;
-        private float _width;
+        public float _widthLocal { get; set; }
 
         public float Width
         {
-            get { return _width * _scale.X; }
-            set { _width = value; }
+            get { return _widthLocal * _scale.X; }
+            set { _widthLocal = value; }
         }
-        private float _height;
+        public float _heightLocal { get; set; }
         public float Height
         {
-            get { return _height * _scale.Y; }
-            set { _height = value; }
+            get { return _heightLocal * _scale.Y; }
+            set { _heightLocal = value; }
         }
-        private float _depth;
+        public float _depthLocal { get; set; }
         public float Depth
         {
-            get { return _depth * _scale.Z; }
-            set { _depth = value; }
+            get { return _depthLocal * _scale.Z; }
+            set { _depthLocal = value; }
         }
         public float _mass { get; set; }
         public BodyReference _bodyReference { get; set; }
@@ -212,9 +212,9 @@ namespace TGC.MonoGame.TP.ModelsInScene
                 }
 
             }
-            _width = maxX - minX;
-            _height = maxY - minY;
-            _depth = maxZ - minZ;
+            _widthLocal = maxX - minX;
+            _heightLocal = maxY - minY;
+            _depthLocal = maxZ - minZ;
 
             _midpoint = new Vector3(
             (minX + maxX) / 2f,
@@ -303,7 +303,6 @@ namespace TGC.MonoGame.TP.ModelsInScene
             var bodyReference = _bodyReference;
             bodyReference.Awake = true;
             bodyReference.ApplyImpulse(numericForceVector * seconds, numericApplicationVector);
-            //_fuerzasAAplicar.Add(force);
         }
         public virtual void Draw(Matrix view, Matrix projection)
         {
