@@ -18,6 +18,15 @@ using TGC.MonoGame.TP.Trees;
 using TGC.MonoGame.TP.Forces;
 using TGC.MonoGame.TP.Plants;
 using TGC.MonoGame.TP.RuinHouse;
+using BepuPhysics;
+using BepuPhysics.Collidables;
+using BepuPhysics.Constraints;
+using TGC.MonoGame.TP.Physics.Bepu;
+using BepuUtilities.Memory;
+using NumericVector3 = System.Numerics.Vector3;
+using TGC.MonoGame.Utils;
+using System.Linq;
+using TGC.MonoGame.TP.TankRaycasts;
 namespace TGC.MonoGame.TP;
 
 /// <summary>
@@ -34,6 +43,8 @@ public class TGCGame : Game
     public const string ContentFolderSpriteFonts = "SpriteFonts/";
     public const string ContentFolderTextures = "Textures/";
 
+    private Simulation _simulation;
+    private BufferPool _bufferPool;
 
     private readonly GraphicsDeviceManager _graphics;
     private Camera _camera;
@@ -53,6 +64,9 @@ public class TGCGame : Game
     private List<Plant> _plants = new List<Plant>();
     private List<ModelInScene> _decor = new List<ModelInScene>();
     private List<IEnumerable<ModelInScene>> _modelosEnEscenario = new List<IEnumerable<ModelInScene>>();
+    private List<BodyHandle> _tanksHandles = new List<BodyHandle>();
+
+    public static Dictionary<CollidableReference, object> PhysicsToGameObjects = new Dictionary<CollidableReference, object>();
     /// <summary>
     ///     Constructor del juego.
     /// </summary>
@@ -87,13 +101,16 @@ public class TGCGame : Game
         GraphicsDevice.RasterizerState = rasterizerState;
         // Seria hasta aca.
 
-        _camera = new SimpleCamera(GraphicsDevice.Viewport.AspectRatio, Vector3.UnitY * 500, 400, 1f, 1, 1000000);
+        _camera = new SimpleCamera(GraphicsDevice.Viewport.AspectRatio, Vector3.UnitY * 500, 200, 1f, 1, 1000000);
         _modelosEnEscenario.Add(_tanks);
         _modelosEnEscenario.Add(_trees);
         _modelosEnEscenario.Add(_plants);
         _modelosEnEscenario.Add(_terrains);
         _currentCamera = _camera;
         _modelosEnEscenario.Add(_decor);
+
+        _bufferPool = new BufferPool();
+
         base.Initialize();
     }
 
@@ -130,7 +147,7 @@ public class TGCGame : Game
         _terrains.Add(new SimpleTerrain(Content, terrainHeigthmap, terrainColorMap, terrainGrass, terrainGround, _terrainRenderer));
         //Cargo tanque
         float altura_tanque = _terrains[0].Height(0, -300) + 30;
-        _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(0, altura_tanque + 300, -300), Matrix.Identity, new Vector3(0.5f), _basicRenderer, 4f, 6.5f, 1000f));
+        _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(0, altura_tanque + 300, -600), Matrix.Identity, new Vector3(0.5f), _basicRenderer, 11000f));
         _camera2 = new ThirdPersonCamera(_tanks[0], 1000f, 0.005f, GraphicsDevice.Viewport.AspectRatio, 500f, 400f, 1f, 20000f, GraphicsDevice);
         _currentCamera = _camera2;
         Random _rng = new Random();
@@ -209,9 +226,27 @@ public class TGCGame : Game
             _plants.Add(new Plant(Content, ContentFolder3D + "Plant/source/plant1_afsTREE_xlod00", new Vector3(x, y, z), Matrix.Identity, new Vector3(0.5f), _basicRenderer));
         }
         */
-       
+        _simulation = Simulation.Create(_bufferPool, new NarrowPhaseCallbacks(new SpringSettings(30, 1), 1.5f, 0.5f),
+        new PoseIntegratorCallbacks(new NumericVector3(0, -1000, 0)), new SolveDescription(8, 1));
+        _tanks[0].LoadRaycastPoints(_simulation);
+
+        //Añado terreno
+        _bufferPool.Take(_terrains[0].triangles.Count, out Buffer<Triangle> triangles);
+        for (int i = 0; i < _terrains[0].triangles.Count; i++)
+        {
+            triangles[i] = _terrains[0].triangles[i];
+        }
+        Mesh terrainMesh = new Mesh(triangles, NumericVector3.One, _bufferPool);
+        TypedIndex shapeIndex = _simulation.Shapes.Add(terrainMesh);
+        StaticDescription staticDescription = new StaticDescription(NumericVector3.Zero, shapeIndex);
+        _simulation.Statics.Add(staticDescription);
+
+        _tanks[0].SetCollider(_simulation, PhysicsToGameObjects, _bufferPool, _effect, GraphicsDevice);
+
+        base.LoadContent();
 
     }
+
     /// <summary>
     ///     Se llama en cada frame.
     ///     Se debe escribir toda la logica de computo del modelo, asi como tambien verificar entradas del usuario y reacciones
@@ -245,9 +280,50 @@ public class TGCGame : Game
         _camera.Update(gameTime);
         _camera2.Update(gameTime);
         _previousKeyboardState = currentKeyboardState;
+
+        _simulation.Timestep(1 / 60f);
+
+        _tanks[0].updateBodyPosition();
         base.Update(gameTime);
     }
+    private void RenderTank(Tank tank)
+    {
+        /*
+        // 2. Crear la matriz base del tanque
+        Matrix tankWorldMatrix = _tanks[0]._world;
 
+        GraphicsDevice.SetVertexBuffer(boxVertexBuffer);
+        GraphicsDevice.Indices = boxIndexBuffer;
+
+        // 3. Juntar ambas listas (asumo que tenés raycastPointsRight también)
+        var allRaycasts = tank.raycastPointsLeft.Concat(tank.raycastPointsRight);
+
+        foreach (TankRaycast raycast in allRaycasts)
+        {
+            // 4. Transformar la posición local del raycast a la posición global actual
+            Vector3 globalRaycastPos = Vector3.Transform(raycast._positionLocal, tankWorldMatrix);
+
+            // 5. Crear la matriz del cubito (escala de 1x1x1 como era tu tinyBox original)
+            // Nota: Podés achicar el CreateScale(0.2f) si el cubo de 1x1x1 es muy grande visualmente
+            Matrix debugWorldMatrix = Matrix.CreateScale(1f) * Matrix.CreateTranslation(globalRaycastPos);
+
+            basicEffect.World = debugWorldMatrix;
+            basicEffect.View = _currentCamera.View;
+            basicEffect.Projection = _currentCamera.Projection;
+
+            foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes)
+            {
+                pass.Apply();
+                GraphicsDevice.DrawIndexedPrimitives(
+                    primitiveType: PrimitiveType.LineList,
+                    baseVertex: 0,
+                    startIndex: 0,
+                    primitiveCount: 12
+                );
+            }
+        }
+*/
+    }
     /// <summary>
     ///     Se llama cada vez que hay que refrescar la pantalla.
     ///     Escribir aqui el codigo referido al renderizado.
@@ -264,6 +340,7 @@ public class TGCGame : Game
                 modelo.Draw(_currentCamera.View, _currentCamera.Projection);
             }
         }
+        //RenderTank(_tanks[0]);
     }
 
     /// <summary>

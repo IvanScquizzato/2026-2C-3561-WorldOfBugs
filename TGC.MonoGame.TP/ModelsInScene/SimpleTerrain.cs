@@ -3,7 +3,11 @@ using Microsoft.Xna.Framework.Graphics;
 using TGC.MonoGame.TP.Renderers;
 using TGC.MonoGame.TP.ModelsInScene;
 using Microsoft.Xna.Framework.Content;
-
+using System.Collections.Generic;
+using BepuPhysics.Collidables;
+using System.Runtime.CompilerServices;
+using XnaVector3 = Microsoft.Xna.Framework.Vector3;
+using BepuVector3 = System.Numerics.Vector3;
 namespace TGC.MonoGame.TP.Terrain
 {
     public class SimpleTerrain : ModelInScene
@@ -12,6 +16,7 @@ namespace TGC.MonoGame.TP.Terrain
         public readonly Texture2D terrainTexture;
         public readonly Texture2D terrainTexture2;
         public VertexBuffer vbTerrain;
+        public List<Triangle> triangles { get; set; } = new List<Triangle>();
         public TerrainRenderer _terrainRenderer { get; set; }
 
         // Variables para guardar la escala pura del terreno
@@ -20,7 +25,7 @@ namespace TGC.MonoGame.TP.Terrain
 
         public SimpleTerrain(ContentManager Content, Texture2D heightMap, Texture2D colorMap,
             Texture2D diffuseMap, Texture2D diffuseMap2, TerrainRenderer renderer)
-            : base(Content, null, Vector3.Zero, Matrix.Identity, Vector3.One, null, 0, 0, 0)
+            : base(Content, null, Vector3.Zero, Matrix.Identity, Vector3.One, null, 0)
         {
             _terrainRenderer = renderer;
 
@@ -105,8 +110,22 @@ namespace TGC.MonoGame.TP.Terrain
 
             vbTerrain = new VertexBuffer(this._terrainRenderer._graphicsDevice, VertexPositionNormalTexture.VertexDeclaration, totalVertices, BufferUsage.WriteOnly);
             vbTerrain.SetData(data);
+            LoadTriangles(data);
         }
-
+        private void LoadTriangles(VertexPositionNormalTexture[] data)
+        {
+            for (var i = 0; i < data.Length / 3; i++)
+            {
+                XnaVector3 v1 = data[i * 3].Position;
+                XnaVector3 v2 = data[i * 3 + 1].Position;
+                XnaVector3 v3 = data[i * 3 + 2].Position;
+                triangles.Add(new Triangle(
+                    new BepuVector3(v1.X, v1.Y, v1.Z),
+                    new BepuVector3(v3.X, v3.Y, v3.Z),
+                    new BepuVector3(v2.X, v2.Y, v2.Z)
+                ));
+            }
+        }
         protected int[,] LoadHeightMap(Texture2D texture)
         {
             var width = texture.Width;

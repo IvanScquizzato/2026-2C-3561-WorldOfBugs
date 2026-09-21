@@ -44,9 +44,14 @@ struct VertexShaderOutput
 	float2 TexCoord : TEXCOORD0;
 };
 
-struct PixelShaderInput
+struct SolidVertexInput
 {
-    float2 TexCoord       : TEXCOORD0; 
+    float4 Position : POSITION0; 
+};
+
+struct SolidVertexOutput
+{
+    float4 Position : SV_POSITION;
 };
 
 VertexShaderOutput MainVS(in VertexShaderInput input)
@@ -63,18 +68,37 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
     return output;
 }
 
-float4 MainPS(PixelShaderInput input) : COLOR
+float4 MainPS(VertexShaderOutput input) : COLOR
 {
     float4 textureColor = tex2D(TextureSampler, input.TexCoord);
 	clip(textureColor.a -0.1f);
 	return textureColor;
 }
+SolidVertexOutput SolidVS(in SolidVertexInput input)
+{
+    SolidVertexOutput output = (SolidVertexOutput)0;
+    float4 worldPosition = mul(input.Position, World);
+    float4 viewPosition = mul(worldPosition, View); 
+    output.Position = mul(viewPosition, Projection);
+    return output;
+}
 
+// El Pixel Shader ya no recibe TexCoord
+float4 SolidColorPS(SolidVertexOutput input) : COLOR
+{
+    return float4(DiffuseColor, 1.0f);
+}
 technique BasicColorDrawing
 {
 	pass P0
 	{
 		VertexShader = compile VS_SHADERMODEL MainVS();
 		PixelShader = compile PS_SHADERMODEL MainPS();
+	}
+};
+technique SolidColorDrawing{
+	pass P0{
+		VertexShader = compile VS_SHADERMODEL SolidVS();
+		PixelShader = compile PS_SHADERMODEL SolidColorPS();
 	}
 };

@@ -11,7 +11,7 @@ namespace TGC.MonoGame.TP.Debri
     public class Debris : ModelInScene
     {
         public Debris(ContentManager Content, String modelPath, Vector3 position, Matrix rotation, Vector3 scale, IModelInSceneRenderer renderer)
-            : base(Content, modelPath, position, rotation, scale, renderer, 0f, 0f, 1f)
+            : base(Content, modelPath, position, rotation, scale, renderer, 1f)
         {
         }
     }
