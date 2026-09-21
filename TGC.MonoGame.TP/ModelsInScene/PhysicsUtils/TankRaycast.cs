@@ -34,7 +34,7 @@ namespace TGC.MonoGame.TP.TankRaycasts
 
             var hitHandler = new ClosestHitHandler();
 
-            hitHandler.TankToIgnore = tank._bodyReference.Handle;
+            hitHandler.TankToIgnore = tank._collider._bodyReference.Handle;
             _simulation.RayCast(position, direction, maxDistance, ref hitHandler);
             //Debug.WriteLine($"Ray Pos: {position}, Dir: {direction}");
             if (hitHandler.Hit)

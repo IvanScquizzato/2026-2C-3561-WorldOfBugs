@@ -13,6 +13,10 @@ using TGC.MonoGame.TP.TankRaycasts;
 using BepuPhysics;
 using Microsoft.VisualBasic;
 using TGC.MonoGame.Utils;
+using TGC.MonoGame.TP.Colliders;
+using BepuPhysics.Collidables;
+using BepuUtilities.Memory;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace TGC.MonoGame.TP.Tanks
 {
@@ -21,16 +25,16 @@ namespace TGC.MonoGame.TP.Tanks
 
         //public List<ContactPoint> leftContactPoints { get; } = new List<ContactPoint>();
         //public List<ContactPoint> rightContactPoints { get; } = new List<ContactPoint>();
-        public Vector3 centerOfMass { get; set; } = Vector3.Zero;
         public List<TankRaycast> raycastPointsLeft = new List<TankRaycast>();
         public List<TankRaycast> raycastPointsRight = new List<TankRaycast>();
         public float _maxSpeed { get; set; } = 500f;
         public float _engineThrust { get; set; } = 7000000f;
 
         public float _lateralFriction { get; set; } = 15f;
-        public Tank(ContentManager Content, String modelPath, Vector3 position, Matrix rotation, Vector3 scale, IModelInSceneRenderer renderer, float linearDrag, float angularDrag, float mass)
-            : base(Content, modelPath, position, rotation, scale, renderer, linearDrag, angularDrag, mass)
+        public Tank(ContentManager Content, String modelPath, Vector3 position, Matrix rotation, Vector3 scale, IModelInSceneRenderer renderer, float mass)
+            : base(Content, modelPath, position, rotation, scale, renderer, mass)
         {
+
         }
         public void Update(GameTime gameTime)
         {
@@ -40,7 +44,7 @@ namespace TGC.MonoGame.TP.Tanks
             float leftThrust = 0f;
             float rightThrust = 0f;
             KeyboardState keyboardState = Keyboard.GetState();
-            bool estaGirando = false;
+
             if (keyboardState.IsKeyDown(Keys.W))
             {
                 leftThrust += 1;
@@ -48,8 +52,8 @@ namespace TGC.MonoGame.TP.Tanks
             }
             if (keyboardState.IsKeyDown(Keys.S)) { leftThrust -= 1f; rightThrust -= 1f; }
 
-            if (keyboardState.IsKeyDown(Keys.D)) { leftThrust += 0.5f; rightThrust -= 0.5f; estaGirando = true; }
-            if (keyboardState.IsKeyDown(Keys.A)) { leftThrust -= 0.5f; rightThrust += 0.5f; estaGirando = true; }
+            if (keyboardState.IsKeyDown(Keys.D)) { leftThrust += 0.5f; rightThrust -= 0.5f; }
+            if (keyboardState.IsKeyDown(Keys.A)) { leftThrust -= 0.5f; rightThrust += 0.5f; }
 
             Vector3 leftTrackGlobalPos = Vector3.Transform(new Vector3(_widthLocal * 0.385f, 0, 0), Matrix.CreateScale(_scale) * _rotation); ;
             Vector3 rightTrackGlobalPos = Vector3.Transform(new Vector3(-_widthLocal * 0.385f, 0, 0), Matrix.CreateScale(_scale) * _rotation);
@@ -85,8 +89,6 @@ namespace TGC.MonoGame.TP.Tanks
             }
             if (totalRaycastInContact > 0)
             {
-
-
                 float sidewaysSpeed = Vector3.Dot(_velocity, _right);
                 float exactForceToStop = (_mass * sidewaysSpeed) / elapsedSeconds;
 
@@ -162,8 +164,8 @@ namespace TGC.MonoGame.TP.Tanks
             List<Vector3> points = new List<Vector3> { point1, point2, point3, point4 };
 
             points = points.OrderBy(p => (p - point1).Length()).ToList();
-            var dx = (points[1] - points[0]).Length() / 16f;
-            var dy = (points[2] - points[0]).Length() / 32f;
+            var dx = (points[1] - points[0]).Length() / 4f;
+            var dy = (points[2] - points[0]).Length() / 8f;
             var unitX = Vector3.Normalize(points[1] - points[0]) * dx;
             var unitY = Vector3.Normalize(points[2] - points[0]) * dy;
             var result = new List<Vector3>();
@@ -176,13 +178,14 @@ namespace TGC.MonoGame.TP.Tanks
             }
             return result;
         }
-        public override void Draw(Matrix view, Matrix projection)
-        {
-            _renderer.Draw(this, view, projection);
-        }
+
         public override Vector3 Correction()
         {
-            return Vector3.Transform(centerOfMass * 3.1f, Matrix.CreateScale(_scale) * _rotation);
+            return Vector3.Transform(_collider._centerOfMass * 3.1f, Matrix.CreateScale(_scale) * _rotation);
+        }
+        public void SetCollider(Simulation simulation, Dictionary<CollidableReference, object> physicsToGameObjects, BufferPool bufferPool, Effect effect, GraphicsDevice graphicsDevice)
+        {
+            _collider = new TankCollider(this, simulation, physicsToGameObjects, bufferPool, effect, graphicsDevice);
         }
     }
 

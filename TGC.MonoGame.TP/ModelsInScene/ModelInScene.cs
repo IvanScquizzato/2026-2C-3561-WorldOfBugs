@@ -12,6 +12,7 @@ using System.Runtime.Intrinsics;
 using BepuPhysics;
 using TGC.MonoGame.Utils;
 using NumericVector3 = System.Numerics.Vector3;
+using TGC.MonoGame.TP.Colliders;
 
 namespace TGC.MonoGame.TP.ModelsInScene
 {
@@ -31,15 +32,12 @@ namespace TGC.MonoGame.TP.ModelsInScene
         {
             get
             {
-                return _bodyReference.Velocity.Linear;
+                return _collider._bodyReference.Velocity.Linear;
             }
-
         }
         public Vector3 _angularVelocity { get; set; } = Vector3.Zero;
         public Vector3 _scale { get; set; }
         public Matrix _rotation { get; set; }
-        public Matrix _inertia { get; set; }
-        public Matrix _inertiaInverse { get; set; }
         public float _angularDrag { get; set; }
         public Vector3 _forward
         {
@@ -76,8 +74,7 @@ namespace TGC.MonoGame.TP.ModelsInScene
             set { _depthLocal = value; }
         }
         public float _mass { get; set; }
-        public BodyReference _bodyReference { get; set; }
-        public float _linearDrag { get; set; } = 2.5f;
+
         private static ConcurrentDictionary<string, List<Texture2D>> _texturasPorPath = new();
         private static ConcurrentDictionary<string, Model> _modeloPorPath = new();
         private static readonly object _lockObj = new object();
@@ -91,16 +88,15 @@ namespace TGC.MonoGame.TP.ModelsInScene
         {
             get { return Matrix.CreateScale(_scale) * _rotation * Matrix.CreateTranslation(_position); }
         }
-        public ModelInScene(ContentManager Content, String modelPath, Vector3 position, Matrix rotation, Vector3 scale, IModelInSceneRenderer renderer, float linearDrag, float angularDrag, float mass)
+        public Collider _collider = null;
+        public ModelInScene(ContentManager Content, String modelPath, Vector3 position, Matrix rotation, Vector3 scale, IModelInSceneRenderer renderer, float mass)
         {
             _content = Content;
             _position = position;
             _rotation = rotation;
             _scale = scale;
             _renderer = renderer;
-            _angularDrag = angularDrag;
             _mass = mass;
-            _linearDrag = linearDrag;
             _modelPath = modelPath;
             this.cargarModelo(Content, modelPath);
         }
@@ -222,76 +218,11 @@ namespace TGC.MonoGame.TP.ModelsInScene
             (minZ + maxZ) / 2f
     );
         }
-        /*
-        private void calculateInertia()
-        {
-            if (_mass <= 0 || Width <= 0 || Height <= 0 || Depth <= 0)
-            {
-                _inertia = Matrix.Identity;
-                return;
-            }
 
-            float m11 = (1f / 12f) * _mass * (MathF.Pow(Height, 2) + MathF.Pow(Depth, 2));
-            float m22 = (1f / 12f) * _mass * (MathF.Pow(Width, 2) + MathF.Pow(Depth, 2));
-            float m33 = (1f / 12f) * _mass * (MathF.Pow(Width, 2) + MathF.Pow(Height, 2));
-
-            _inertia = new Matrix(
-                m11: m11, m12: 0f, m13: 0f, m14: 0f,
-                m21: 0f, m22: m22, m23: 0f, m24: 0f,
-                m31: 0f, m32: 0f, m33: m33, m34: 0f,
-                m41: 0f, m42: 0f, m43: 0f, m44: 1f
-            );
-            _inertiaInverse = Matrix.Invert(_inertia);
-        }
-        public void aplicarFuerzas(float time)
-        {
-            List<Force> forces = _fuerzasAAplicar;
-
-            Vector3 linearDragForce = -_velocity * _mass * _linearDrag;
-            forces.Add(new Force(linearDragForce, Vector3.Zero));
-
-            Vector3 fuerzaTotal = Vector3.Zero;
-            foreach (Force forceVector in forces)
-            {
-                fuerzaTotal += forceVector._vector;
-            }
-            Vector3 aceleracionTotal = fuerzaTotal / _mass;
-
-            _velocity += aceleracionTotal * time;
-
-            _position += _velocity * time;
-
-            Vector3 torqueNeto = Vector3.Zero;
-            foreach (Force force in forces)
-            {
-                Vector3 applicationPointRotated = Vector3.Transform(force._applicationPoint, _rotation);
-                torqueNeto += Vector3.Cross(applicationPointRotated, force._vector);
-            }
-            Matrix worldToLocalRotation = Matrix.Invert(_rotation);
-
-            Vector3 localTorque = Vector3.TransformNormal(torqueNeto, worldToLocalRotation);
-
-            Vector3 localAngularAcceleration = Vector3.Transform(localTorque, _inertiaInverse);
-
-            Vector3 aceleracionAngular = Vector3.TransformNormal(localAngularAcceleration, _rotation);
-
-            _angularVelocity += aceleracionAngular * time;
-
-            float angularDamping = MathF.Exp(-_angularDrag * time);
-            _angularVelocity *= angularDamping;
-
-            float anguloDeRotacion = _angularVelocity.Length() * time;
-            if (anguloDeRotacion > 0.0001f)
-            {
-                Vector3 eje = Vector3.Normalize(_angularVelocity);
-                _rotation = Matrix.CreateFromAxisAngle(eje, anguloDeRotacion) * _rotation;
-            }
-            _fuerzasAAplicar.Clear();
-        }*/
         public void updateBodyPosition()
         {
-            var position = _bodyReference.Pose.Position;
-            var quaternion = _bodyReference.Pose.Orientation;
+            var position = _collider._bodyReference.Pose.Position;
+            var quaternion = _collider._bodyReference.Pose.Orientation;
             _rotation = Matrix.CreateFromQuaternion(quaternion);
 
             _position = position + Correction();
@@ -300,13 +231,17 @@ namespace TGC.MonoGame.TP.ModelsInScene
         {
             NumericVector3 numericForceVector = UtilsClass.ToNumericVector(force._vector);
             NumericVector3 numericApplicationVector = UtilsClass.ToNumericVector(force._applicationPoint);
-            var bodyReference = _bodyReference;
+            var bodyReference = _collider._bodyReference;
             bodyReference.Awake = true;
             bodyReference.ApplyImpulse(numericForceVector * seconds, numericApplicationVector);
         }
         public virtual void Draw(Matrix view, Matrix projection)
         {
             _renderer.Draw(this, view, projection);
+            if (_collider != null)
+            {
+                _collider.Draw(view, projection);
+            }
         }
         public virtual Vector3 Correction()
         {

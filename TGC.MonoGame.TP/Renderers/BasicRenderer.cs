@@ -21,7 +21,7 @@ namespace TGC.MonoGame.TP.Renderers
         {
             _effect.Parameters["View"].SetValue(view);
             _effect.Parameters["Projection"].SetValue(projection);
-
+            _effect.CurrentTechnique = _effect.Techniques["BasicColorDrawing"];
 
             var modelMeshesBaseTransforms = new Matrix[modelInScene._model.Bones.Count];
             modelInScene._model.CopyAbsoluteBoneTransformsTo(modelMeshesBaseTransforms);
