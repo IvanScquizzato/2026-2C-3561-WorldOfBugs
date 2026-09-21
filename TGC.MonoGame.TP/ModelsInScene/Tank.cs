@@ -40,7 +40,7 @@ namespace TGC.MonoGame.TP.Tanks
             float leftThrust = 0f;
             float rightThrust = 0f;
             KeyboardState keyboardState = Keyboard.GetState();
-
+            bool estaGirando = false;
             if (keyboardState.IsKeyDown(Keys.W))
             {
                 leftThrust += 1;
@@ -48,14 +48,16 @@ namespace TGC.MonoGame.TP.Tanks
             }
             if (keyboardState.IsKeyDown(Keys.S)) { leftThrust -= 1f; rightThrust -= 1f; }
 
-            if (keyboardState.IsKeyDown(Keys.D)) { leftThrust += 0.5f; rightThrust -= 0.5f; }
-            if (keyboardState.IsKeyDown(Keys.A)) { leftThrust -= 0.5f; rightThrust += 0.5f; }
+            if (keyboardState.IsKeyDown(Keys.D)) { leftThrust += 0.5f; rightThrust -= 0.5f; estaGirando = true; }
+            if (keyboardState.IsKeyDown(Keys.A)) { leftThrust -= 0.5f; rightThrust += 0.5f; estaGirando = true; }
 
-            Vector3 leftTrackLocalPos = -_right * Width / 2f;
-            Vector3 rightTrackLocalPos = _right * Width / 2f;
+            Vector3 leftTrackGlobalPos = Vector3.Transform(new Vector3(_widthLocal * 0.385f, 0, 0), Matrix.CreateScale(_scale) * _rotation); ;
+            Vector3 rightTrackGlobalPos = Vector3.Transform(new Vector3(-_widthLocal * 0.385f, 0, 0), Matrix.CreateScale(_scale) * _rotation);
 
             float currentForwardSpeed = Vector3.Dot(_velocity, _forward);
 
+            Vector3 applicationPoint = leftTrackGlobalPos;
+            float totalRaycastInContact = 0;
             foreach ((List<TankRaycast>, float) listThrust in GetBothRaycastLists(leftThrust, rightThrust))
             {
                 var list = listThrust.Item1;
@@ -63,7 +65,8 @@ namespace TGC.MonoGame.TP.Tanks
                 var raycastsCount = list.Count;
                 var raycastsInContact = list.Where(r => r.CalculateRaycast(this)).ToList();
                 float raycastsInContactCount = raycastsInContact.Count;
-
+                totalRaycastInContact += raycastsInContactCount;
+                if (raycastsInContactCount == 0) continue; // Si la oruga no toca el suelo, no tracciona
                 float speedInThrustDir = currentForwardSpeed * MathF.Sign(thrust);
                 float torqueMultiplier = 1f;
 
@@ -74,29 +77,28 @@ namespace TGC.MonoGame.TP.Tanks
                     torqueMultiplier = MathF.Max(0f, 1f - (speedInThrustDir / _maxSpeed));
                 }
 
+                Vector3 force = _forward * (thrust * _engineThrust * torqueMultiplier);
 
-                foreach (TankRaycast raycast in raycastsInContact)
-                {
-                    var raycastDir = Vector3.Transform(raycast._directionLocal, _rotation);
-                    Vector3 forceDirection = Vector3.Normalize(_forward - raycastDir * Vector3.Dot(_forward, raycastDir) / MathF.Pow(raycastDir.Length(), 2));
-                    Vector3 force = forceDirection * (thrust * _engineThrust * torqueMultiplier / raycastsInContactCount);
-                    this.agregarFuerzaAAplicar(new Force(force, raycast.PositionGlobalRelativeToCenter(this)), elapsedSeconds);
-                }
 
+                this.agregarFuerzaAAplicar(new Force(force, applicationPoint), elapsedSeconds);
+                applicationPoint = rightTrackGlobalPos;
             }
+            if (totalRaycastInContact > 0)
+            {
 
-            float sidewaysSpeed = Vector3.Dot(_velocity, _right);
-            float exactForceToStop = (_mass * sidewaysSpeed) / elapsedSeconds;
 
-            float frictionMagnitude = sidewaysSpeed * _mass * _lateralFriction;
+                float sidewaysSpeed = Vector3.Dot(_velocity, _right);
+                float exactForceToStop = (_mass * sidewaysSpeed) / elapsedSeconds;
 
-            float appliedFrictionMag = MathF.Min(MathF.Abs(frictionMagnitude), MathF.Abs(exactForceToStop));
+                float frictionMagnitude = sidewaysSpeed * _mass * _lateralFriction;
 
-            appliedFrictionMag *= MathF.Sign(frictionMagnitude);
+                float appliedFrictionMag = MathF.Min(MathF.Abs(frictionMagnitude), MathF.Abs(exactForceToStop));
 
-            Vector3 lateralForce = -_right * appliedFrictionMag;
-            this.agregarFuerzaAAplicar(new Force(lateralForce, Vector3.Zero), elapsedSeconds);
+                appliedFrictionMag *= MathF.Sign(frictionMagnitude);
 
+                Vector3 lateralForce = -_right * appliedFrictionMag;
+                this.agregarFuerzaAAplicar(new Force(lateralForce, Vector3.Zero), elapsedSeconds);
+            }
         }
         private List<(List<TankRaycast>, float)> GetBothRaycastLists(float leftThrust, float rightThrust)
         {
