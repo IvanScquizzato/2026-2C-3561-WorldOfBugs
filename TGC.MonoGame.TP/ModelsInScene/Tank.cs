@@ -1,5 +1,6 @@
 using System;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using TGC.MonoGame.TP.ModelsInScene;
@@ -30,6 +31,9 @@ namespace TGC.MonoGame.TP.Tanks
         public float _maxSpeed { get; set; } = 500f;
         public float _engineThrust { get; set; } = 7000000f;
 
+        private MouseState _previousMouseState;
+        public float TurretYaw = 0f;
+        public float CannonPitch = 0f;
         public float _lateralFriction { get; set; } = 15f;
         public Tank(ContentManager Content, String modelPath, Vector3 position, Matrix rotation, Vector3 scale, IModelInSceneRenderer renderer, float mass)
             : base(Content, modelPath, position, rotation, scale, renderer, mass)
@@ -38,6 +42,10 @@ namespace TGC.MonoGame.TP.Tanks
         }
         public void Update(GameTime gameTime)
         {
+            MouseState mouse = Mouse.GetState();
+            float deltaX = mouse.X - _previousMouseState.X;
+            float deltaY = mouse.Y - _previousMouseState.Y;
+            _previousMouseState = mouse;
             float elapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (elapsedSeconds <= 0.0001f)
                 return;
@@ -54,7 +62,14 @@ namespace TGC.MonoGame.TP.Tanks
 
             if (keyboardState.IsKeyDown(Keys.D)) { leftThrust += 0.5f; rightThrust -= 0.5f; }
             if (keyboardState.IsKeyDown(Keys.A)) { leftThrust -= 0.5f; rightThrust += 0.5f; }
+            
+            //logica canon y torreta siguiendo el mouse
+            
+            TurretYaw -= deltaX * 0.1f * elapsedSeconds;
+            CannonPitch += deltaY * 0.1f * elapsedSeconds;
 
+            CannonPitch = MathHelper.Clamp(CannonPitch,-0.5f,0f);
+            
             Vector3 leftTrackGlobalPos = Vector3.Transform(new Vector3(_widthLocal * 0.385f, 0, 0), Matrix.CreateScale(_scale) * _rotation); ;
             Vector3 rightTrackGlobalPos = Vector3.Transform(new Vector3(-_widthLocal * 0.385f, 0, 0), Matrix.CreateScale(_scale) * _rotation);
 

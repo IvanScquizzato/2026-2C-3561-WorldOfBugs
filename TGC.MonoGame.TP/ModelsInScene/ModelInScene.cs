@@ -135,7 +135,7 @@ namespace TGC.MonoGame.TP.ModelsInScene
                             {
                                 texturasExtraidas.Add(null);
                             }
-
+                            Console.WriteLine(mesh.Name);
                             meshPart.Effect = _renderer._effect;
                         }
                     }

@@ -68,35 +68,24 @@ namespace TGC.MonoGame.TP.Cameras
         /// <param name="angle">The angle of movement.</param>
         private void BuildView(Vector3 position, float speed, float angle)
         {
-            Mouse.SetPosition(graphicsDevice.Viewport.Width / 2, graphicsDevice.Viewport.Height / 2);
-            float cosPitch = MathF.Cos(_pitch);
-
-            Position = new Vector3(MathF.Cos(_turn) * cosPitch, MathF.Sin(_pitch), MathF.Sin(_turn) * cosPitch) * distanceToModel; ;
             FrontDirection = DefaultWorldFrontVector;
             Speed = speed;
             Angle = angle;
-            View = Matrix.CreateLookAt(modelThatFollows._position + Position, modelThatFollows._position, DefaultWorldUpVector);
         }
 
         /// <inheritdoc />
         public override void Update(GameTime gameTime)
         {
+            Position =
+        -modelThatFollows._forward * distanceToModel +
+            Vector3.Up * (distanceToModel * 0.5f);
 
-            _currentMouseState = Mouse.GetState();
-
-            float deltaX = (_currentMouseState.X - graphicsDevice.Viewport.Width / 2) * _sensitivity;
-            float deltaY = (_currentMouseState.Y - graphicsDevice.Viewport.Height / 2) * _sensitivity;
-
-            Mouse.SetPosition(graphicsDevice.Viewport.Width / 2, graphicsDevice.Viewport.Height / 2);
-
-            _turn += deltaX;
-            _pitch = MathHelper.Clamp(_pitch + deltaY, -MathHelper.PiOver2 + 0.01f, MathHelper.PiOver2 - 0.05f);
-
-            float cosPitch = MathF.Cos(_pitch);
-
-            Position = new Vector3(MathF.Cos(_turn) * cosPitch, MathF.Sin(_pitch), MathF.Sin(_turn) * cosPitch) * distanceToModel;
-
-            View = Matrix.CreateLookAt(modelThatFollows._position + Position, modelThatFollows._position, DefaultWorldUpVector);
+            View = Matrix.CreateLookAt(
+            modelThatFollows._position + Position,
+            modelThatFollows._position,
+            Vector3.Up);
         }
+
+
     }
 }

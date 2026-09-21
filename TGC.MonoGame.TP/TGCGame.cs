@@ -149,7 +149,7 @@ public class TGCGame : Game
         float altura_tanque = _terrains[0].Height(0, -300) + 30;
         _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(0, altura_tanque + 300, -600), Matrix.Identity, new Vector3(0.5f), _basicRenderer, 11000f));
         _camera2 = new ThirdPersonCamera(_tanks[0], 1000f, 0.005f, GraphicsDevice.Viewport.AspectRatio, 500f, 400f, 1f, 20000f, GraphicsDevice);
-
+        _currentCamera = _camera2;
         Random _rng = new Random();
 
         //cargo arbol
@@ -255,8 +255,9 @@ public class TGCGame : Game
     protected override void Update(GameTime gameTime)
     {
         // Aca deberiamos poner toda la logica de actualizacion del juego.
-        _camera.Update(gameTime);
-        _camera2.Update(gameTime);
+  
+   
+   
         KeyboardState currentKeyboardState = Keyboard.GetState();
         if (currentKeyboardState.IsKeyDown(Keys.C) && _previousKeyboardState.IsKeyUp(Keys.C))
         {
@@ -276,7 +277,8 @@ public class TGCGame : Game
             Exit();
         }
         _tanks[0].Update(gameTime);
-
+        _camera.Update(gameTime);
+        _camera2.Update(gameTime);
         _previousKeyboardState = currentKeyboardState;
 
         _simulation.Timestep(1 / 60f);
