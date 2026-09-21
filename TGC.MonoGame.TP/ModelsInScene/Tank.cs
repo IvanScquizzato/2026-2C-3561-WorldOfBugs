@@ -21,10 +21,11 @@ namespace TGC.MonoGame.TP.Tanks
 
         //public List<ContactPoint> leftContactPoints { get; } = new List<ContactPoint>();
         //public List<ContactPoint> rightContactPoints { get; } = new List<ContactPoint>();
+        public Vector3 centerOfMass { get; set; } = Vector3.Zero;
         public List<TankRaycast> raycastPointsLeft = new List<TankRaycast>();
         public List<TankRaycast> raycastPointsRight = new List<TankRaycast>();
-
-        public float _engineThrust { get; set; } = 500000f;
+        public float _maxSpeed { get; set; } = 500f;
+        public float _engineThrust { get; set; } = 7000000f;
 
         public float _lateralFriction { get; set; } = 15f;
         public Tank(ContentManager Content, String modelPath, Vector3 position, Matrix rotation, Vector3 scale, IModelInSceneRenderer renderer, float linearDrag, float angularDrag, float mass)
@@ -45,13 +46,15 @@ namespace TGC.MonoGame.TP.Tanks
                 leftThrust += 1;
                 rightThrust += 1;
             }
-            if (keyboardState.IsKeyDown(Keys.S)) { leftThrust -= 1; rightThrust -= 1; }
+            if (keyboardState.IsKeyDown(Keys.S)) { leftThrust -= 1f; rightThrust -= 1f; }
 
-            if (keyboardState.IsKeyDown(Keys.D)) { leftThrust += 1; rightThrust -= 1; }
-            if (keyboardState.IsKeyDown(Keys.A)) { leftThrust -= 1; rightThrust += 1; }
+            if (keyboardState.IsKeyDown(Keys.D)) { leftThrust += 0.5f; rightThrust -= 0.5f; }
+            if (keyboardState.IsKeyDown(Keys.A)) { leftThrust -= 0.5f; rightThrust += 0.5f; }
 
             Vector3 leftTrackLocalPos = -_right * Width / 2f;
             Vector3 rightTrackLocalPos = _right * Width / 2f;
+
+            float currentForwardSpeed = Vector3.Dot(_velocity, _forward);
 
             foreach ((List<TankRaycast>, float) listThrust in GetBothRaycastLists(leftThrust, rightThrust))
             {
@@ -59,38 +62,29 @@ namespace TGC.MonoGame.TP.Tanks
                 var thrust = listThrust.Item2;
                 var raycastsCount = list.Count;
                 var raycastsInContact = list.Where(r => r.CalculateRaycast(this)).ToList();
-                var raycastsInContactCount = raycastsInContact.Count;
+                float raycastsInContactCount = raycastsInContact.Count;
+
+                float speedInThrustDir = currentForwardSpeed * MathF.Sign(thrust);
+                float torqueMultiplier = 1f;
+
+                // Solo limitamos el motor si estamos yendo a favor del movimiento y superando el límite
+                if (speedInThrustDir > 0)
+                {
+                    // Interpola de 1 a 0 a medida que speedInThrustDir se acerca a _maxSpeed
+                    torqueMultiplier = MathF.Max(0f, 1f - (speedInThrustDir / _maxSpeed));
+                }
+
+
                 foreach (TankRaycast raycast in raycastsInContact)
                 {
-
                     var raycastDir = Vector3.Transform(raycast._directionLocal, _rotation);
                     Vector3 forceDirection = Vector3.Normalize(_forward - raycastDir * Vector3.Dot(_forward, raycastDir) / MathF.Pow(raycastDir.Length(), 2));
-                    Vector3 force = forceDirection * thrust * _engineThrust * raycastsInContactCount / raycastsCount;
+                    Vector3 force = forceDirection * (thrust * _engineThrust * torqueMultiplier / raycastsInContactCount);
                     this.agregarFuerzaAAplicar(new Force(force, raycast.PositionGlobalRelativeToCenter(this)), elapsedSeconds);
                 }
 
             }
-            /*
-            var leftContactPointsSize = leftContactPoints.Count;
-            var rightContactPointsSize = rightContactPoints.Count;
 
-            foreach (ContactPoint contact in leftContactPoints)
-            {
-                Vector3 forceDirection = Vector3.Normalize(_forward - contact._normal * Vector3.Dot(_forward, contact._normal) / MathF.Pow(contact._normal.Length(), 2));
-                Vector3 forceInThatPoint = forceDirection * (leftThrust * _engineThrust / leftContactPointsSize);
-                this.agregarFuerzaAAplicar(new Force(forceInThatPoint, contact._point), elapsedSeconds);
-            }
-            foreach (ContactPoint contact in rightContactPoints)
-            {
-                Vector3 forceDirection = Vector3.Normalize(_forward - contact._normal * Vector3.Dot(_forward, contact._normal) / MathF.Pow(contact._normal.Length(), 2));
-                Vector3 forceInThatPoint = forceDirection * (rightThrust * _engineThrust / rightContactPointsSize);
-                this.agregarFuerzaAAplicar(new Force(forceInThatPoint, contact._point), elapsedSeconds);
-            }
-
-
-            leftContactPoints.Clear();
-            rightContactPoints.Clear();
-            */
             float sidewaysSpeed = Vector3.Dot(_velocity, _right);
             float exactForceToStop = (_mass * sidewaysSpeed) / elapsedSeconds;
 
@@ -166,8 +160,8 @@ namespace TGC.MonoGame.TP.Tanks
             List<Vector3> points = new List<Vector3> { point1, point2, point3, point4 };
 
             points = points.OrderBy(p => (p - point1).Length()).ToList();
-            var dx = (points[1] - points[0]).Length() / 2f;
-            var dy = (points[2] - points[0]).Length() / 5f;
+            var dx = (points[1] - points[0]).Length() / 16f;
+            var dy = (points[2] - points[0]).Length() / 32f;
             var unitX = Vector3.Normalize(points[1] - points[0]) * dx;
             var unitY = Vector3.Normalize(points[2] - points[0]) * dy;
             var result = new List<Vector3>();
@@ -186,7 +180,7 @@ namespace TGC.MonoGame.TP.Tanks
         }
         public override Vector3 Correction()
         {
-            return -_up * Height * 0.5f;
+            return Vector3.Transform(centerOfMass * 3.1f, Matrix.CreateScale(_scale) * _rotation);
         }
     }
 

@@ -67,6 +67,9 @@ public class TGCGame : Game
     private List<BodyHandle> _tanksHandles = new List<BodyHandle>();
     private VertexBuffer boxVertexBuffer;
     private IndexBuffer boxIndexBuffer;
+
+    private VertexBuffer cylinderVertexBuffer;
+    private IndexBuffer cylinderIndexBuffer;
     private BasicEffect basicEffect;
     public static Dictionary<CollidableReference, object> PhysicsToGameObjects = new Dictionary<CollidableReference, object>();
     /// <summary>
@@ -228,7 +231,7 @@ public class TGCGame : Game
             _plants.Add(new Plant(Content, ContentFolder3D + "Plant/source/plant1_afsTREE_xlod00", new Vector3(x, y, z), Matrix.Identity, new Vector3(0.5f), _basicRenderer));
         }
         */
-        _simulation = Simulation.Create(_bufferPool, new NarrowPhaseCallbacks(new SpringSettings(30, 1)),
+        _simulation = Simulation.Create(_bufferPool, new NarrowPhaseCallbacks(new SpringSettings(30, 1), 2f, 0.5f),
         new PoseIntegratorCallbacks(new NumericVector3(0, -1000, 0)), new SolveDescription(8, 1));
         _tanks[0].LoadRaycastPoints(_simulation);
 
@@ -242,93 +245,67 @@ public class TGCGame : Game
         TypedIndex shapeIndex = _simulation.Shapes.Add(terrainMesh);
         StaticDescription staticDescription = new StaticDescription(NumericVector3.Zero, shapeIndex);
         _simulation.Statics.Add(staticDescription);
-
-
-
+        // 1. Definir las formas (y corregí un pequeño bug donde repetías backTrackShape en fowardTrackIndex)
         var tankBodyShape = new Box(_tanks[0].Width * 0.58f, _tanks[0].Height * 0.3f, _tanks[0].Depth * 0.5f);
-        var tankInertia = tankBodyShape.ComputeInertia(_tanks[0]._mass);
-        var tankIndex = _simulation.Shapes.Add(tankBodyShape);
-        var tinyBox = new Box(1f, 1f, 1f);
-        _simulation.Shapes.Add(tinyBox);
-
-        var tankCenterShape = new Box(_tanks[0].Width * 0.9f, _tanks[0].Height * 0.1f, _tanks[0].Depth * 0.58f);
-        var tankCenterIndex = _simulation.Shapes.Add(tankCenterShape);
-
+        var tankCenterShape = new Box(_tanks[0].Width * 0.9f, _tanks[0].Height * 0.1f, _tanks[0].Depth * 0.57f);
         var tankUpperShape = new Box(_tanks[0].Width * 0.9f, _tanks[0].Height * 0.18f, _tanks[0].Depth * 0.51f);
-        var tankUpperIndex = _simulation.Shapes.Add(tankUpperShape);
+        var trackShape = new Box(_tanks[0].Width * 0.17f, _tanks[0].Height * 0.3f, _tanks[0].Depth * 0.37f);
 
-        var trackShape = new Box(_tanks[0].Width * 0.17f, 0.5f, _tanks[0].Depth * 0.36f);
-        var trackIndex = _simulation.Shapes.Add(trackShape);
+        float trackRadius = _tanks[0].Height * 0.18f;
+        float trackWidth = _tanks[0].Width * 0.17f;
+        var trackWheelShape = new Cylinder(trackRadius, trackWidth);
 
-        using var compoundBuilder = new CompoundBuilder(_bufferPool, _simulation.Shapes, 4000);
-        compoundBuilder.Add(tankBodyShape, new RigidPose(new NumericVector3(0, -_tanks[0].Height * 0.2f, 0)), _tanks[0]._mass);
-        compoundBuilder.Add(tankCenterShape, new RigidPose(new NumericVector3(0, -_tanks[0].Height * 0.1f, 0)), 0f);
-        compoundBuilder.Add(tankUpperShape, new RigidPose(new NumericVector3(0, _tanks[0].Height * 0.04f, -_tanks[0].Depth * 0.033f)), 0f);
+        // 2. Distribuir la masa total del tanque entre sus componentes (ejemplo aproximado por volumen)
+        float totalMass = _tanks[0]._mass;
+        float bodyMass = totalMass * 0.40f;   // 40% al cuerpo
+        float centerMass = totalMass * 0.20f; // 20% al centro
+        float upperMass = totalMass * 0.10f;  // 10% a la torreta/parte superior
+        float trackMass = totalMass * 0.10f;  // 10% a cada oruga principal (x2)
+        float smallTrackMass = totalMass * 0.025f; // 2.5% a cada parte pequeña de oruga (x4)
 
-        /*foreach (TankRaycast raycast in _tanks[0].raycastPointsLeft)
-        {
-            compoundBuilder.Add(tinyBox, new RigidPose(UtilsClass.ToNumericVector(raycast._positionLocal)), 0f);
-        }*/
-        /*
-        compoundBuilder.Add(tinyBox, new RigidPose(new NumericVector3(_tanks[0].Width * 0.46f, -_tanks[0].Height * 0.49f, -_tanks[0].Depth * 0.18f) + UtilsClass.ToNumericVector(_tanks[0].Correction())), 1f);
-        compoundBuilder.Add(tinyBox, new RigidPose(new NumericVector3(_tanks[0].Width * 0.31f, -_tanks[0].Height * 0.49f, -_tanks[0].Depth * 0.18f)), 1f);
-        compoundBuilder.Add(tinyBox, new RigidPose(new NumericVector3(_tanks[0].Width * 0.31f, -_tanks[0].Height * 0.49f, _tanks[0].Depth * 0.18f)), 1f);
-        compoundBuilder.Add(tinyBox, new RigidPose(new NumericVector3(_tanks[0].Width * 0.46f, -_tanks[0].Height * 0.49f, _tanks[0].Depth * 0.18f)), 1f);
+        // 3. Construir el Compound
+        using var compoundBuilder = new CompoundBuilder(_bufferPool, _simulation.Shapes, 10);
 
-        var rotacionFoward = System.Numerics.Quaternion.CreateFromAxisAngle(
-            new NumericVector3(1, 0, 0),
-            -MathHelper.Pi / 9.7f
-        );
+        compoundBuilder.Add(tankBodyShape, new RigidPose(new NumericVector3(0, -_tanks[0].Height * 0.2f, 0)), bodyMass);
+        compoundBuilder.Add(tankCenterShape, new RigidPose(new NumericVector3(0, -_tanks[0].Height * 0.1f, -_tanks[0].Depth * 0.03f)), centerMass);
+        compoundBuilder.Add(tankUpperShape, new RigidPose(new NumericVector3(0, _tanks[0].Height * 0.04f, -_tanks[0].Depth * 0.033f)), upperMass);
 
-        compoundBuilder.Add(tinyBox, new RigidPose(new NumericVector3(_tanks[0].Width * 0.46f, -_tanks[0].Height * 0.47f, _tanks[0].Depth * 0.2f), rotacionFoward), 1f);
-        compoundBuilder.Add(tinyBox, new RigidPose(new NumericVector3(_tanks[0].Width * 0.31f, -_tanks[0].Height * 0.47f, _tanks[0].Depth * 0.2f), rotacionFoward), 1f);
+        // Orugas principales
+        compoundBuilder.Add(trackShape, new RigidPose(new NumericVector3(-_tanks[0].Width * 0.39f, -_tanks[0].Height * 0.33f, 0)), trackMass);
+        compoundBuilder.Add(trackShape, new RigidPose(new NumericVector3(_tanks[0].Width * 0.39f, -_tanks[0].Height * 0.33f, 0)), trackMass);
 
-        compoundBuilder.Add(tinyBox, new RigidPose(new NumericVector3(_tanks[0].Width * 0.46f, -_tanks[0].Height * 0.47f, _tanks[0].Depth * 0.2f) + NumericVector3.Transform(new NumericVector3(0, 0, _tanks[0].Depth * 0.06f), rotacionFoward), rotacionFoward), 1f);
-        compoundBuilder.Add(tinyBox, new RigidPose(new NumericVector3(_tanks[0].Width * 0.31f, -_tanks[0].Height * 0.47f, _tanks[0].Depth * 0.2f) + NumericVector3.Transform(new NumericVector3(0, 0, _tanks[0].Depth * 0.06f), rotacionFoward), rotacionFoward), 1f);
+        var wheelRotation = System.Numerics.Quaternion.CreateFromAxisAngle(new NumericVector3(0, 0, 1), MathHelper.PiOver2);
 
-        var rotacionBack = System.Numerics.Quaternion.CreateFromAxisAngle(
-            new NumericVector3(1, 0, 0),
-            MathHelper.Pi / 13f
-        );
-        compoundBuilder.Add(tinyBox, new RigidPose(new NumericVector3(_tanks[0].Width * 0.46f, -_tanks[0].Height * 0.48f, -_tanks[0].Depth * 0.2f), rotacionBack), 1f);
-        compoundBuilder.Add(tinyBox, new RigidPose(new NumericVector3(_tanks[0].Width * 0.31f, -_tanks[0].Height * 0.48f, -_tanks[0].Depth * 0.2f), rotacionBack), 1f);
+        // Orugas traseras (Ahora son Cilindros redondeados)
+        // Nota: Usamos la MISMA altura Y (-0.33f) que el centro para que encajen a la perfección.
+        compoundBuilder.Add(trackWheelShape, new RigidPose(new NumericVector3(_tanks[0].Width * 0.39f, -_tanks[0].Height * 0.29f, -_tanks[0].Depth * 0.22f), wheelRotation), smallTrackMass);
+        compoundBuilder.Add(trackWheelShape, new RigidPose(new NumericVector3(-_tanks[0].Width * 0.39f, -_tanks[0].Height * 0.29f, -_tanks[0].Depth * 0.22f), wheelRotation), smallTrackMass);
 
-        compoundBuilder.Add(tinyBox, new RigidPose(new NumericVector3(_tanks[0].Width * 0.46f, -_tanks[0].Height * 0.48f, -_tanks[0].Depth * 0.2f) + NumericVector3.Transform(new NumericVector3(0, 0, -_tanks[0].Depth * 0.07f), rotacionBack), rotacionBack), 1f);
-        compoundBuilder.Add(tinyBox, new RigidPose(new NumericVector3(_tanks[0].Width * 0.31f, -_tanks[0].Height * 0.48f, -_tanks[0].Depth * 0.2f) + NumericVector3.Transform(new NumericVector3(0, 0, -_tanks[0].Depth * 0.07f), rotacionBack), rotacionBack), 1f);
-*/
-        /*
-        var leftTrackOffset = new NumericVector3(-_tanks[0].Width * 0.39f, -_tanks[0].Height * 0.5f, -_tanks[0].Depth * 0.0005f);
-        compoundBuilder.Add(trackShape, new RigidPose(leftTrackOffset), 0.1f);
+        // Orugas delanteras (Ahora son Cilindros redondeados)
+        compoundBuilder.Add(trackWheelShape, new RigidPose(new NumericVector3(_tanks[0].Width * 0.39f, -_tanks[0].Height * 0.27f, _tanks[0].Depth * 0.20f), wheelRotation), smallTrackMass);
+        compoundBuilder.Add(trackWheelShape, new RigidPose(new NumericVector3(-_tanks[0].Width * 0.39f, -_tanks[0].Height * 0.27f, _tanks[0].Depth * 0.20f), wheelRotation), smallTrackMass);
 
-        var rightTrackOffset = new NumericVector3(_tanks[0].Width * 0.39f, -_tanks[0].Height * 0.5f, -_tanks[0].Depth * 0.0005f);
-        compoundBuilder.Add(trackShape, new RigidPose(rightTrackOffset), 0.1f);
+        // 4. USAR BUILD DYNAMIC COMPOUND!
+        // Esto calculará la inercia perfecta combinada y te devolverá el nuevo centro de gravedad (centerOfMass)
+        compoundBuilder.BuildDynamicCompound(out var compoundChildren, out var compoundInertia, out var centerOfMass);
 
-        var fowardTrackShape = new Box(_tanks[0].Width * 0.17f, 0.5f, _tanks[0].Depth * 0.09f);
-
-        var leftTrackFowardOffset = new NumericVector3(-_tanks[0].Width * 0.39f, -_tanks[0].Height * 0.45f, _tanks[0].Depth * 0.22f);
-        var leftTrackFowardRotation = System.Numerics.Quaternion.CreateFromAxisAngle(
-            new NumericVector3(1, 0, 0),
-            -MathHelper.Pi / 10f
-        );
-        compoundBuilder.Add(fowardTrackShape, new RigidPose(leftTrackFowardOffset, leftTrackFowardRotation), 0.1f);
-
-        var rightTrackFowardOffset = new NumericVector3(_tanks[0].Width * 0.39f, -_tanks[0].Height * 0.45f, _tanks[0].Depth * 0.22f);
-        var rightTrackFowardRotation = System.Numerics.Quaternion.CreateFromAxisAngle(
-            new NumericVector3(1, 0, 0),
-            -MathHelper.Pi / 10f
-        );
-        compoundBuilder.Add(fowardTrackShape, new RigidPose(rightTrackFowardOffset, rightTrackFowardRotation), 0.1f);
-        */
-        compoundBuilder.BuildKinematicCompound(out var compoundChildren);
         var compoundShape = new Compound(compoundChildren);
         var compoundIndex = _simulation.Shapes.Add(compoundShape);
+
+        // 5. Compensar la posición inicial con el centro de masa calculado
+        var basePosition = new NumericVector3(_tanks[0]._position.X, _tanks[0]._position.Y, _tanks[0]._position.Z);
+        var bodyPose = new RigidPose(basePosition + centerOfMass); // ¡CRUCIAL!
+
+        // 6. Crear el cuerpo dinámico usando la nueva inercia combinada
         var tankBoxHandle = _simulation.Bodies.Add(BodyDescription.CreateDynamic(
-            new NumericVector3(_tanks[0]._position.X, _tanks[0]._position.Y, _tanks[0]._position.Z),
-            tankInertia,
+            bodyPose,
+            compoundInertia, // Pasamos la inercia calculada por el builder, NO la del bodyShape individual
             new CollidableDescription(compoundIndex, 0.1f),
             new BodyActivityDescription(0.01f)
         ));
+
         _tanks[0]._bodyReference = _simulation.Bodies.GetBodyReference(tankBoxHandle);
+        _tanks[0].centerOfMass = centerOfMass;
         var tankCollidableRef = new CollidableReference(CollidableMobility.Dynamic, tankBoxHandle);
         PhysicsToGameObjects.Add(tankCollidableRef, _tanks[0]);
 
@@ -373,8 +350,49 @@ public class TGCGame : Game
         boxIndexBuffer = new IndexBuffer(GraphicsDevice, typeof(short), 24, BufferUsage.WriteOnly);
         boxIndexBuffer.SetData(indices);
 
+        CreateCylinderBuffers();
+
         base.LoadContent();
 
+    }
+    private void CreateCylinderBuffers()
+    {
+        int segments = 16;
+        VertexPositionColor[] vertices = new VertexPositionColor[segments * 2];
+        short[] indices = new short[segments * 6];
+
+        for (int i = 0; i < segments; i++)
+        {
+            float angle = (float)i / segments * MathHelper.TwoPi;
+            float x = (float)Math.Cos(angle) * 0.5f; // Radio de 0.5 (Diámetro de 1)
+            float z = (float)Math.Sin(angle) * 0.5f;
+
+            // Tapa superior (Y = 0.5)
+            vertices[i] = new VertexPositionColor(new Vector3(x, 0.5f, z), Color.LimeGreen);
+            // Tapa inferior (Y = -0.5)
+            vertices[i + segments] = new VertexPositionColor(new Vector3(x, -0.5f, z), Color.LimeGreen);
+
+            // Índices para dibujar las líneas
+            int next = (i + 1) % segments;
+
+            // Líneas del círculo superior
+            indices[i * 6 + 0] = (short)i;
+            indices[i * 6 + 1] = (short)next;
+
+            // Líneas del círculo inferior
+            indices[i * 6 + 2] = (short)(i + segments);
+            indices[i * 6 + 3] = (short)(next + segments);
+
+            // Líneas verticales conectando arriba y abajo
+            indices[i * 6 + 4] = (short)i;
+            indices[i * 6 + 5] = (short)(i + segments);
+        }
+
+        cylinderVertexBuffer = new VertexBuffer(GraphicsDevice, typeof(VertexPositionColor), vertices.Length, BufferUsage.WriteOnly);
+        cylinderVertexBuffer.SetData(vertices);
+
+        cylinderIndexBuffer = new IndexBuffer(GraphicsDevice, typeof(short), indices.Length, BufferUsage.WriteOnly);
+        cylinderIndexBuffer.SetData(indices);
     }
     /// <summary>
     ///     Se llama en cada frame.
@@ -417,46 +435,75 @@ public class TGCGame : Game
     {
 
         TypedIndex shapeIndex = tank._bodyReference.Collidable.Shape;
-
         ref Compound compoundShape = ref _simulation.Shapes.GetShape<Compound>(shapeIndex.Index);
 
         var bepuPose = tank._bodyReference.Pose;
         Vector3 physicsPos = new Vector3(bepuPose.Position.X, bepuPose.Position.Y, bepuPose.Position.Z);
         Quaternion physicsRot = new Quaternion(bepuPose.Orientation.X, bepuPose.Orientation.Y, bepuPose.Orientation.Z, bepuPose.Orientation.W);
 
-
         for (var i = 0; i < compoundShape.Children.Length; i++)
         {
-            ref CompoundChild chassisChild = ref compoundShape.Children[i];
-            ref Box chassisBox = ref _simulation.Shapes.GetShape<Box>(chassisChild.ShapeIndex.Index);
-            float realWidth = chassisBox.HalfWidth * 2f;
-            float realHeight = chassisBox.HalfHeight * 2f;
-            float realDepth = chassisBox.HalfLength * 2f;
-            Vector3 physicsScale = new Vector3(realWidth, realHeight, realDepth);
-            Vector3 realPhysicsPos = physicsPos + Vector3.Transform(chassisChild.LocalPose.Position, physicsRot);
-            Quaternion childPhysicsRotation = chassisChild.LocalPose.Orientation;
+            ref CompoundChild child = ref compoundShape.Children[i];
+
+            Vector3 physicsScale = Vector3.One;
+            bool isBox = false;
+            bool isCylinder = false;
+
+            // 1. Identificar el tipo de forma y calcular su escala
+            if (child.ShapeIndex.Type == Box.Id)
+            {
+                ref Box boxShape = ref _simulation.Shapes.GetShape<Box>(child.ShapeIndex.Index);
+                physicsScale = new Vector3(boxShape.HalfWidth * 2f, boxShape.HalfHeight * 2f, boxShape.HalfLength * 2f);
+                isBox = true;
+            }
+            else if (child.ShapeIndex.Type == Cylinder.Id)
+            {
+                ref Cylinder cylinderShape = ref _simulation.Shapes.GetShape<Cylinder>(child.ShapeIndex.Index);
+                // Bepu genera cilindros alineados al eje Y.
+                // La escala X y Z corresponden al diámetro (Radio * 2), y la Y a la longitud.
+                physicsScale = new Vector3(cylinderShape.Radius * 2f, cylinderShape.Length, cylinderShape.Radius * 2f);
+                isCylinder = true;
+            }
+
+            // 2. Calcular posiciones globales
+            // Asumiendo que tienes una conversión implícita de System.Numerics.Vector3 a Microsoft.Xna.Framework.Vector3
+            Vector3 localPos = new Vector3(child.LocalPose.Position.X, child.LocalPose.Position.Y, child.LocalPose.Position.Z);
+            Quaternion localRot = new Quaternion(child.LocalPose.Orientation.X, child.LocalPose.Orientation.Y, child.LocalPose.Orientation.Z, child.LocalPose.Orientation.W);
+
+            Vector3 realPhysicsPos = physicsPos + Vector3.Transform(localPos, physicsRot);
+
             Matrix debugWorldMatrix = Matrix.CreateScale(physicsScale) *
-                                    Matrix.CreateFromQuaternion(childPhysicsRotation) *
-                                   Matrix.CreateFromQuaternion(physicsRot) *
-                                  Matrix.CreateTranslation(realPhysicsPos);
+                                      Matrix.CreateFromQuaternion(localRot) *
+                                      Matrix.CreateFromQuaternion(physicsRot) *
+                                      Matrix.CreateTranslation(realPhysicsPos);
 
             basicEffect.World = debugWorldMatrix;
             basicEffect.View = _currentCamera.View;
             basicEffect.Projection = _currentCamera.Projection;
 
-            GraphicsDevice.SetVertexBuffer(boxVertexBuffer);
-            GraphicsDevice.Indices = boxIndexBuffer;
-
-            // Aplicamos el efecto de depuración (NO _effect)
-            foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes)
+            // 3. Dibujar la geometría correspondiente
+            if (isBox)
             {
-                pass.Apply();
-                GraphicsDevice.DrawIndexedPrimitives(
-                    primitiveType: PrimitiveType.LineList,
-                    baseVertex: 0,
-                    startIndex: 0,
-                    primitiveCount: 12
-                );
+                GraphicsDevice.SetVertexBuffer(boxVertexBuffer);
+                GraphicsDevice.Indices = boxIndexBuffer;
+
+                foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes)
+                {
+                    pass.Apply();
+                    GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.LineList, 0, 0, 12); // 12 líneas del cubo
+                }
+            }
+            else if (isCylinder)
+            {
+                GraphicsDevice.SetVertexBuffer(cylinderVertexBuffer);
+                GraphicsDevice.Indices = cylinderIndexBuffer;
+
+                foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes)
+                {
+                    pass.Apply();
+                    // Si usas la función de abajo, genera 16 segmentos (16*3 = 48 líneas)
+                    GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.LineList, 0, 0, 48);
+                }
             }
         }
         //bepuPose = tank._bodyReference.Pose;

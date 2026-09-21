@@ -30,7 +30,7 @@ namespace TGC.MonoGame.TP.TankRaycasts
         {
             var position = UtilsClass.ToNumericVector(Vector3.Transform(_positionLocal, tank._world));
             var direction = UtilsClass.ToNumericVector(DirectionGlobal(tank));
-            float maxDistance = tank.Height * 0.03f;
+            float maxDistance = tank.Height * 0.1f;
 
             var hitHandler = new ClosestHitHandler();
 
