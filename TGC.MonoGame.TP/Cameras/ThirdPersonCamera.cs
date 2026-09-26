@@ -85,7 +85,7 @@ namespace TGC.MonoGame.TP.Cameras
 
             Vector3 offsetBase =- modelThatFollows._forward * distanceToModel + Vector3.Up * (distanceToModel * 0.5f);
 
-            Matrix rotation = Matrix.CreateRotationY(((Tank)modelThatFollows).TurretYaw) * Matrix.CreateRotationX(((Tank)modelThatFollows).CannonPitch * -1);
+            Matrix rotation = Matrix.CreateRotationY(((Tank)modelThatFollows).TurretYaw) * Matrix.CreateRotationX(((Tank)modelThatFollows).CannonPitch );
 
             Position = Vector3.Transform(offsetBase, rotation);
 
