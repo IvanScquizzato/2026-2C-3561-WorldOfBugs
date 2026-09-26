@@ -32,8 +32,8 @@ namespace TGC.MonoGame.TP.Tanks
         public float _engineThrust { get; set; } = 7000000f;
 
         private MouseState _previousMouseState;
-        public float TurretYaw = 0f;
-        public float CannonPitch = 0f;
+        public float TurretYaw { get; set; } = 0f;
+        public float CannonPitch { get; set; } = 0f;
         public float _lateralFriction { get; set; } = 15f;
         public Tank(ContentManager Content, String modelPath, Vector3 position, Matrix rotation, Vector3 scale, IModelInSceneRenderer renderer, float mass)
             : base(Content, modelPath, position, rotation, scale, renderer, mass)

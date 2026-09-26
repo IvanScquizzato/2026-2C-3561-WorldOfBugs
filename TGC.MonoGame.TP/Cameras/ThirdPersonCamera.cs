@@ -1,5 +1,5 @@
 using System;
-
+using TGC.MonoGame.TP.Tanks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -28,6 +28,12 @@ namespace TGC.MonoGame.TP.Cameras
         public readonly float distanceToModel;
         private float _turn = -MathHelper.PiOver2;
         private float _pitch = MathHelper.PiOver4;
+        private float _cameraYaw = 0f;
+        private float _cameraPitch = 0f;
+        private float sensibilidadX = 0.0005f;
+        private float sensibilidadY= 0.0005f;
+        private MouseState _previousMouseState;
+
         private readonly GraphicsDevice graphicsDevice;
         /// <summary>
         ///     Camera with simple movement to be able to move in the 3D world, which has the up vector in (0,1,0) and the forward
@@ -75,15 +81,20 @@ namespace TGC.MonoGame.TP.Cameras
 
         /// <inheritdoc />
         public override void Update(GameTime gameTime)
-        {
-            Position =
-        -modelThatFollows._forward * distanceToModel +
-            Vector3.Up * (distanceToModel * 0.5f);
+        {    
+
+            Vector3 offsetBase =- modelThatFollows._forward * distanceToModel + Vector3.Up * (distanceToModel * 0.5f);
+
+            Matrix rotation = Matrix.CreateRotationY(((Tank)modelThatFollows).TurretYaw) * Matrix.CreateRotationX(((Tank)modelThatFollows).CannonPitch * -1);
+
+            Position = Vector3.Transform(offsetBase, rotation);
 
             View = Matrix.CreateLookAt(
             modelThatFollows._position + Position,
             modelThatFollows._position,
             Vector3.Up);
+
+
         }
 
 
