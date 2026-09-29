@@ -35,10 +35,41 @@ namespace TGC.MonoGame.TP.Tanks
         public float TurretYaw { get; set; } = 0f;
         public float CannonPitch { get; set; } = 0f;
         public float _lateralFriction { get; set; } = 15f;
-        public Tank(ContentManager Content, String modelPath, Vector3 position, Matrix rotation, Vector3 scale, IModelInSceneRenderer renderer, float mass)
-            : base(Content, modelPath, position, rotation, scale, renderer, mass)
+        public Tank(
+            ContentManager Content,
+            String modelPath,
+            Vector3 position,
+            Matrix rotation,
+            Vector3 scale,
+            IModelInSceneRenderer renderer,
+            float mass
+        )
+            : base(
+                Content,
+                modelPath,
+                position,
+                rotation,
+                scale,
+                renderer,
+                mass
+            )
         {
+            Vector3 halfSize = new Vector3(
+                _widthLocal * 0.49f,
+                _heightLocal * 0.3f,
+                _depthLocal * 0.3f
+            );
 
+            Vector3 center = new Vector3(
+                _midpoint.X,
+                _midpoint.Y * 0.8f,
+                _midpoint.Z * -0.13f
+            );
+
+            _hitbox = new BoxHitbox(
+                center - halfSize,
+                center + halfSize
+            );
         }
         public void Update(GameTime gameTime)
         {
