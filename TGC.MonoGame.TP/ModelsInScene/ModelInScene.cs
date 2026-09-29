@@ -89,6 +89,10 @@ namespace TGC.MonoGame.TP.ModelsInScene
             get { return Matrix.CreateScale(_scale) * _rotation * Matrix.CreateTranslation(_position); }
         }
         public Collider _collider = null;
+            
+        public Hitbox _hitbox { get; protected set; }
+        
+        
         public ModelInScene(ContentManager Content, String modelPath, Vector3 position, Matrix rotation, Vector3 scale, IModelInSceneRenderer renderer, float mass)
         {
             _content = Content;
@@ -246,6 +250,18 @@ namespace TGC.MonoGame.TP.ModelsInScene
         public virtual Vector3 Correction()
         {
             return Vector3.Zero;
+        }
+        
+        // Para que el objeto pueda ser detectado por un misil
+        public bool ContainsPoint(Vector3 point)
+        {
+            if (_hitbox == null)
+                return false;
+
+            return _hitbox.ContainsPoint(
+                point,
+                _world
+            );
         }
     }
 }

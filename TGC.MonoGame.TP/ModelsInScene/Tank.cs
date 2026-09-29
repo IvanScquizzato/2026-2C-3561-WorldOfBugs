@@ -202,6 +202,48 @@ namespace TGC.MonoGame.TP.Tanks
         {
             _collider = new TankCollider(this, simulation, physicsToGameObjects, bufferPool, effect, graphicsDevice);
         }
+        
+        public Matrix GetCannonRotation()
+        {
+            return
+                Matrix.CreateRotationX(CannonPitch) *
+                Matrix.CreateRotationY(TurretYaw) *
+                _rotation;
+        }
+        
+        public Vector3 GetCannonDirection()
+        {
+            Matrix cannonRotation = GetCannonRotation();
+
+            Vector3 direction = -cannonRotation.Forward;
+
+            direction.Normalize();
+
+            return direction;
+        }
+        
+        public Vector3 GetCannonMuzzlePosition()
+        {
+            Matrix cannonRotation = GetCannonRotation();
+
+            Vector3 direction = -cannonRotation.Forward;
+            Vector3 up = cannonRotation.Up;
+            Vector3 right = -cannonRotation.Right;
+
+            direction.Normalize();
+            up.Normalize();
+            right.Normalize();
+
+            float verticalOffset = Height * 0.774f;
+            float forwardOffset = Depth * 0.64f;
+            float lateralOffset = -5.7f;
+
+            return
+                _position +
+                up * verticalOffset +
+                direction * forwardOffset +
+                right * lateralOffset;
+        }
     }
 
 }

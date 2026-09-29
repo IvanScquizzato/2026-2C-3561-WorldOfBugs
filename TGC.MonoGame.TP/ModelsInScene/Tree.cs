@@ -1,18 +1,50 @@
 using System;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Content;
 using TGC.MonoGame.TP.ModelsInScene;
 using TGC.MonoGame.TP.Renderers;
+
 namespace TGC.MonoGame.TP.Trees
 {
     public class Tree : ModelInScene
     {
-        public Tree(ContentManager Content, String modelPath, Vector3 position, Matrix rotation, Vector3 scale, IModelInSceneRenderer renderer)
-            : base(Content, modelPath, position, rotation, scale, renderer, 1f)
+        public Tree(
+            ContentManager content,
+            string modelPath,
+            Vector3 position,
+            Matrix rotation,
+            Vector3 scale,
+            IModelInSceneRenderer renderer
+        )
+            : base(
+                content,
+                modelPath,
+                position,
+                rotation,
+                scale,
+                renderer,
+                1f
+            )
         {
+            Vector3 start = new Vector3(
+                _midpoint.X,
+                _midpoint.Y - _heightLocal * 0.5f,
+                _midpoint.Z
+            );
+
+            Vector3 end = new Vector3(
+                _midpoint.X,
+                _midpoint.Y + _heightLocal * 0.35f,
+                _midpoint.Z
+            );
+
+            float radius = _widthLocal * 0.08f;
+
+            _hitbox = new CapsuleHitbox(
+                start,
+                end,
+                radius
+            );
         }
     }
 }
