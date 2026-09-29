@@ -66,6 +66,7 @@
         private List<ModelInScene> _decor = new List<ModelInScene>();
         private List<IEnumerable<ModelInScene>> _modelosEnEscenario = new List<IEnumerable<ModelInScene>>();
         private List<BodyHandle> _tanksHandles = new List<BodyHandle>();
+        private Dictionary<Tree, StaticHandle> _treeHandles = new Dictionary<Tree, StaticHandle>();
         
         private List<Missil> _missiles = new List<Missil>();
         private MouseState _previousMouseState;
@@ -155,6 +156,10 @@
             //Cargo tanque
             float altura_tanque = _terrains[0].Height(0, -300) + 30;
             _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(0, altura_tanque + 300, -600), Matrix.Identity, new Vector3(0.5f), _basicRenderer, 11000f));
+            // tanques enemigos, por ahora quietos
+            _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(1500, _terrains[0].Height(1500, -600) + 300, -600), Matrix.Identity, new Vector3(0.5f), _basicRenderer, 11000f));
+            _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(-1500, _terrains[0].Height(-1500, -600) + 300, -600), Matrix.Identity, new Vector3(0.5f), _basicRenderer, 11000f));
+            _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(0, _terrains[0].Height(0, 1000) + 300, 1000), Matrix.Identity, new Vector3(0.5f), _basicRenderer, 11000f));
             _camera2 = new ThirdPersonCamera(_tanks[0], 1000f, 0.005f, GraphicsDevice.Viewport.AspectRatio, 500f, 400f, 1f, 20000f, GraphicsDevice);
             _currentCamera = _camera2;
             Random _rng = new Random();
@@ -248,7 +253,34 @@
             StaticDescription staticDescription = new StaticDescription(NumericVector3.Zero, shapeIndex);
             _simulation.Statics.Add(staticDescription);
 
-            _tanks[0].SetCollider(_simulation, PhysicsToGameObjects, _bufferPool, _effect, GraphicsDevice);
+            // colision de los arboles, una caja estatica por arbol
+            var treeShape = _simulation.Shapes.Add(new Box(20f, _trees[0].Height, 20f));
+            foreach (var tree in _trees)
+            {
+                var center = new NumericVector3(tree._position.X, tree._position.Y + tree.Height / 2f, tree._position.Z);
+                _treeHandles[tree] = _simulation.Statics.Add(new StaticDescription(center, treeShape));
+            }
+
+            // colision del auto abandonado, caja del tamaño del modelo
+            foreach (var auto in _decor.OfType<AbandonedCar>())
+            {
+                var shape = _simulation.Shapes.Add(new Box(auto.Width, auto.Height, auto.Depth));
+                var center = new NumericVector3(auto._position.X, auto._position.Y + auto.Height / 2f, auto._position.Z - 50);
+                _simulation.Statics.Add(new StaticDescription(center, shape));
+            }
+
+            // colision del obelisco, caja del tamaño del modelo
+            foreach (var obelisco in _decor.OfType<Obelisc>())
+            {
+                var shape = _simulation.Shapes.Add(new Box(obelisco.Width - 90f, obelisco.Height, obelisco.Depth - 90f));
+                var center = new NumericVector3(obelisco._position.X, obelisco._position.Y, obelisco._position.Z);
+                _simulation.Statics.Add(new StaticDescription(center, shape));
+            }
+
+            foreach (var tanque in _tanks)
+            {
+                tanque.SetCollider(_simulation, PhysicsToGameObjects, _bufferPool, _effect, GraphicsDevice);
+            }
 
             base.LoadContent();
 
@@ -290,9 +322,31 @@
 
             _tanks[0].Update(gameTime);
 
+            // atropellar arboles, si la trompa del tanque llega a un arbol yendo rapido el arbol desaparece
+            var tank = _tanks[0];
+            if (tank._velocity.Length() > 150f)
+            {
+                var trompa = tank._position + tank._forward * tank.Depth / 2f;
+                foreach (var tree in _trees.ToList())
+                {
+                    if (Vector3.Distance(trompa, tree._position) < 20f)
+                    {
+                        //se elimina el arbol
+                        _simulation.Statics.Remove(_treeHandles[tree]);
+                        _treeHandles.Remove(tree);
+                        _trees.Remove(tree);
+                        // el tanque pierde 100 de velocidad al atropellar
+                        tank._collider._bodyReference.Velocity.Linear -= UtilsClass.ToNumericVector(tank._forward * 100f);
+                    }
+                }
+            }
+
             _simulation.Timestep(1 / 60f);
 
-            _tanks[0].updateBodyPosition();
+            foreach (var tanque in _tanks)
+            {
+                tanque.updateBodyPosition();
+            }
             
 
             if (
