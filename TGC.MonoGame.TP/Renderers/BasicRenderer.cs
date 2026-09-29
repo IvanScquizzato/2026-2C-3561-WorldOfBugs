@@ -57,6 +57,12 @@ namespace TGC.MonoGame.TP.Renderers
                             modelInScene._world;
                     }
                 }
+                else
+                {
+                    world =
+                        relativeTransform *
+                        modelInScene._world;
+                }
 
                 _effect.Parameters["World"].SetValue(world);
                 foreach (var meshPart in mesh.MeshParts)
