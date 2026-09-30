@@ -277,6 +277,30 @@
                 _simulation.Statics.Add(new StaticDescription(center, shape));
             }
 
+            // colision de las casas abandonadas, caja del tamaño del modelo
+            foreach (var casa in _decor.OfType<RuinHouse1>())
+            {
+             var shape = _simulation.Shapes.Add(new Box(casa.Width -1000, casa.Height, casa.Depth -1200));
+             var center = new NumericVector3(casa._position.X, casa._position.Y + casa.Height / 2f, casa._position.Z +100 /*ancho*/);
+             _simulation.Statics.Add(new StaticDescription(center, shape));
+            }
+
+            // colision de las cercas de piedra, caja del tamaño del modelo
+            foreach (var cerca in _decor.OfType<Fence>())
+            {
+              var shape = _simulation.Shapes.Add(new Box(cerca.Width, cerca.Height, cerca.Depth -100));
+              var center = new NumericVector3(cerca._position.X, cerca._position.Y + cerca.Height / 2f, cerca._position.Z);
+             _simulation.Statics.Add(new StaticDescription(center, shape));
+            }
+            //colision de las rocas medianas, media esfera
+            var rocaShape = _simulation.Shapes.Add(new Sphere(350f));
+            foreach (var roca in _decor.OfType<Debris>())
+            {
+                var center = new NumericVector3(roca._position.X, roca._position.Y - 165f, roca._position.Z);
+                _simulation.Statics.Add(new StaticDescription(center, rocaShape));
+            }
+
+
             foreach (var tanque in _tanks)
             {
                 tanque.SetCollider(_simulation, PhysicsToGameObjects, _bufferPool, _effect, GraphicsDevice);
