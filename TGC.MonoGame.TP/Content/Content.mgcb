@@ -19,6 +19,12 @@
 /processorParam:DebugMode=Auto
 /build:Effects/BasicShader.fx
 
+#begin Effects/DebugShader.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Effects/DebugShader.fx
+
 #begin Effects/Terrain.fx
 /importer:EffectImporter
 /processor:EffectProcessor
