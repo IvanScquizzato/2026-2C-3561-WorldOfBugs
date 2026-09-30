@@ -13,6 +13,22 @@ namespace TGC.MonoGame.TP.RuinHouse
         public RuinHouse1(ContentManager Content, String modelPath, Vector3 position, Matrix rotation, Vector3 scale, IModelInSceneRenderer renderer)
             : base(Content, modelPath, position, rotation, scale, renderer, 1f)
         {
+            Vector3 halfSize = new Vector3(
+                _widthLocal * 0.18f,
+                _heightLocal * 0.3f,
+                _depthLocal * 0.19f
+            );
+
+            Vector3 center = new Vector3(
+                _midpoint.X,
+                _midpoint.Y * 0.8f,
+                _midpoint.Z * 0.37f
+            );
+
+            _hitbox = new BoxHitbox(
+                center - halfSize,
+                center + halfSize
+            );
         }
     }
 }
