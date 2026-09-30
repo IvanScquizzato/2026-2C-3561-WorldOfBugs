@@ -57,6 +57,7 @@
         private TerrainRenderer _terrainRenderer;
         private KeyboardState _previousKeyboardState;
         private SpriteBatch _spriteBatch;
+        private Effect _debugEffect;
 
         private List<SimpleTerrain> _terrains = new List<SimpleTerrain>();
 
@@ -305,6 +306,11 @@
             {
                 tanque.SetCollider(_simulation, PhysicsToGameObjects, _bufferPool, _effect, GraphicsDevice);
             }
+            
+            // hitbox debug
+            _debugEffect = Content.Load<Effect>(
+                ContentFolderEffects + "DebugShader"
+            );
 
             base.LoadContent();
 
@@ -446,6 +452,14 @@
                 }
             }
 
+            foreach (Tank tank in _tanks)
+            {
+                if (tank.ContainsPoint(missile._position))
+                {
+                    return true;
+                }
+            }
+
             return false;
         }
         
@@ -467,6 +481,81 @@
                 {
                     _missiles.RemoveAt(i);
                 }
+            }
+        }
+        
+        private void DrawBoxHitbox(
+            ModelInScene model,
+            BoxHitbox hitbox
+        )
+        {
+            Vector3[] corners =
+                hitbox.GetWorldCorners(model._world);
+
+            VertexPosition[] vertices =
+            {
+                new VertexPosition(corners[0]),
+                new VertexPosition(corners[1]),
+
+                new VertexPosition(corners[1]),
+                new VertexPosition(corners[2]),
+
+                new VertexPosition(corners[2]),
+                new VertexPosition(corners[3]),
+
+                new VertexPosition(corners[3]),
+                new VertexPosition(corners[0]),
+
+                new VertexPosition(corners[4]),
+                new VertexPosition(corners[5]),
+
+                new VertexPosition(corners[5]),
+                new VertexPosition(corners[6]),
+
+                new VertexPosition(corners[6]),
+                new VertexPosition(corners[7]),
+
+                new VertexPosition(corners[7]),
+                new VertexPosition(corners[4]),
+
+                new VertexPosition(corners[0]),
+                new VertexPosition(corners[4]),
+
+                new VertexPosition(corners[1]),
+                new VertexPosition(corners[5]),
+
+                new VertexPosition(corners[2]),
+                new VertexPosition(corners[6]),
+
+                new VertexPosition(corners[3]),
+                new VertexPosition(corners[7])
+            };
+
+            _debugEffect.Parameters["World"]
+                .SetValue(Matrix.Identity);
+
+            _debugEffect.Parameters["View"]
+                .SetValue(_currentCamera.View);
+
+            _debugEffect.Parameters["Projection"]
+                .SetValue(_currentCamera.Projection);
+
+            _debugEffect.Parameters["DebugColor"]
+                .SetValue(Color.Red.ToVector4());
+
+            foreach (
+                EffectPass pass
+                in _debugEffect.CurrentTechnique.Passes
+            )
+            {
+                pass.Apply();
+
+                GraphicsDevice.DrawUserPrimitives(
+                    PrimitiveType.LineList,
+                    vertices,
+                    0,
+                    vertices.Length / 2
+                );
             }
         }
         
@@ -524,6 +613,16 @@
                     modelo.Draw(_currentCamera.View, _currentCamera.Projection);
                 }
             }
+            
+            // Dibujar hitbox del tanque
+            if (_tanks[0]._hitbox is BoxHitbox boxHitbox)
+            {
+                DrawBoxHitbox(
+                    _tanks[0],
+                    boxHitbox
+                );
+            }
+
             //RenderTank(_tanks[0]);
         }
 
