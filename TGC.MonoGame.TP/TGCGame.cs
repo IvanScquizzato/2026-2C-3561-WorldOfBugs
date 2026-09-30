@@ -432,6 +432,10 @@
         
         private bool MissileCollided(Missil missile)
         {
+            // -----------------------------
+            // Colisión contra terreno
+            // -----------------------------
+
             float terrainHeight = _terrains[0].Height(
                 missile._position.X,
                 missile._position.Z
@@ -444,21 +448,27 @@
                 return true;
             }
 
-            foreach (Tree tree in _trees)
+
+            // -----------------------------
+            // Colisión contra hitboxes
+            // -----------------------------
+
+            foreach (var lista in _modelosEnEscenario)
             {
-                if (tree.ContainsPoint(missile._position))
+                foreach (var modelo in lista)
                 {
-                    return true;
+                    if (modelo == missile)
+                    {
+                        continue;
+                    }
+                    
+                    if (modelo.ContainsPoint(missile._position))
+                    {
+                        return true;
+                    }
                 }
             }
 
-            foreach (Tank tank in _tanks)
-            {
-                if (tank.ContainsPoint(missile._position))
-                {
-                    return true;
-                }
-            }
 
             return false;
         }
@@ -615,12 +625,19 @@
             }
             
             // Dibujar hitbox del tanque
-            if (_tanks[0]._hitbox is BoxHitbox boxHitbox)
+            // Dibujar todas las BoxHitbox del escenario
+            foreach (var lista in _modelosEnEscenario)
             {
-                DrawBoxHitbox(
-                    _tanks[0],
-                    boxHitbox
-                );
+                foreach (var modelo in lista)
+                {
+                    if (modelo._hitbox is BoxHitbox boxHitbox)
+                    {
+                        DrawBoxHitbox(
+                            modelo,
+                            boxHitbox
+                        );
+                    }
+                }
             }
 
             //RenderTank(_tanks[0]);
