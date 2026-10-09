@@ -162,6 +162,7 @@ public struct ClosestHitHandler : IRayHitHandler
         // Bepu dejará de buscar objetos que estén más lejos que este nuevo maximumT.
         if (t < maximumT)
             maximumT = t;
+        T = t;
     }
 }
 public struct NarrowPhaseCallbacks : INarrowPhaseCallbacks

@@ -31,7 +31,7 @@ namespace TGC.MonoGame.TP.Cameras
         private float _cameraYaw = 0f;
         private float _cameraPitch = 0f;
         private float sensibilidadX = 0.0005f;
-        private float sensibilidadY= 0.0005f;
+        private float sensibilidadY = 0.0005f;
         private MouseState _previousMouseState;
 
         private readonly GraphicsDevice graphicsDevice;
@@ -81,11 +81,11 @@ namespace TGC.MonoGame.TP.Cameras
 
         /// <inheritdoc />
         public override void Update(GameTime gameTime)
-        {    
+        {
 
-            Vector3 offsetBase =- modelThatFollows._forward * distanceToModel + Vector3.Up * (distanceToModel * 0.5f);
+            Vector3 offsetBase = -modelThatFollows._forward * distanceToModel + Vector3.Up * (distanceToModel * 0.5f);
 
-            Matrix rotation = Matrix.CreateRotationY(((Tank)modelThatFollows).TurretYaw) * Matrix.CreateRotationX(((Tank)modelThatFollows).CannonPitch );
+            Matrix rotation = Matrix.CreateRotationY(((Tank)modelThatFollows).TurretYaw) * Matrix.CreateRotationX(((Tank)modelThatFollows).CannonPitch);
 
             Position = Vector3.Transform(offsetBase, rotation);
 
@@ -93,8 +93,6 @@ namespace TGC.MonoGame.TP.Cameras
             modelThatFollows._position + Position,
             modelThatFollows._position,
             Vector3.Up);
-
-
         }
 
 

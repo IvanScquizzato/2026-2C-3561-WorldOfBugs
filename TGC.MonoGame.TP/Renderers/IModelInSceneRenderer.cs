@@ -8,6 +8,7 @@ namespace TGC.MonoGame.TP.Renderers
 {
     public interface IModelInSceneRenderer
     {
+        public GraphicsDevice _graphicsDevice { get; set; }
         public Effect _effect { get; set; }
         void Draw(ModelInScene modelInScene, Matrix view, Matrix projection);
     }

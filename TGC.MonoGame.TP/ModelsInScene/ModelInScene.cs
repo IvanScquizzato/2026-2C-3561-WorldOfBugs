@@ -13,7 +13,6 @@ using BepuPhysics;
 using TGC.MonoGame.Utils;
 using NumericVector3 = System.Numerics.Vector3;
 using TGC.MonoGame.TP.Colliders;
-
 namespace TGC.MonoGame.TP.ModelsInScene
 {
     /// <summary>
@@ -35,7 +34,13 @@ namespace TGC.MonoGame.TP.ModelsInScene
                 return _collider._bodyReference.Velocity.Linear;
             }
         }
-        public Vector3 _angularVelocity { get; set; } = Vector3.Zero;
+        public Vector3 _angularVelocity
+        {
+            get
+            {
+                return _collider._bodyReference.Velocity.Angular;
+            }
+        }
         public Vector3 _scale { get; set; }
         public Matrix _rotation { get; set; }
         public float _angularDrag { get; set; }
@@ -92,6 +97,16 @@ namespace TGC.MonoGame.TP.ModelsInScene
 
         public Hitbox _hitbox { get; protected set; }
 
+        // Estructura para guardar nuestra flecha
+        public struct DebugArrow
+        {
+            public Vector3 Start;
+            public Vector3 End;
+            public Color Color;
+        }
+
+        // Lista que limpiaremos y llenaremos en cada frame
+        public List<DebugArrow> DebugForces = new List<DebugArrow>();
 
         public ModelInScene(ContentManager Content, String modelPath, Vector3 position, Matrix rotation, Vector3 scale, IModelInSceneRenderer renderer, float mass)
         {
@@ -231,6 +246,12 @@ namespace TGC.MonoGame.TP.ModelsInScene
 
             _position = position + Correction();
         }
+        public void agregarFuerzaAngularAAplicar(Vector3 angularImpulse, float seconds)
+        {
+            var bodyReference = _collider._bodyReference;
+            bodyReference.Awake = true;
+            bodyReference.ApplyAngularImpulse(UtilsClass.ToNumericVector(angularImpulse * seconds));
+        }
         public void agregarFuerzaAAplicar(Force force, float seconds)
         {
             NumericVector3 numericForceVector = UtilsClass.ToNumericVector(force._vector);
@@ -238,6 +259,41 @@ namespace TGC.MonoGame.TP.ModelsInScene
             var bodyReference = _collider._bodyReference;
             bodyReference.Awake = true;
             bodyReference.ApplyImpulse(numericForceVector * seconds, numericApplicationVector);
+
+            // --- LÓGICA DE VISUALIZACIÓN ---
+            float magnitude = force._vector.Length();
+
+            if (magnitude > 0.01f) // Ignoramos fuerzas microscópicas
+            {
+                // 1. Escalar magnitud a un tamaño visual. 
+                // El 0.002f es un factor mágico que ajusta tu fuerza a las proporciones visuales.
+                // Mínimo 2 unidades de largo (para que siempre se vea), máximo 30.
+                float visualScale = MathHelper.Clamp(magnitude * 0.002f, 2f, 30f);
+
+                Vector3 direction = Vector3.Normalize(force._vector);
+
+                // 2. Calcular los puntos en el mundo.
+                // Bepu asume que el ApplicationVector es un offset desde el centro de masa.
+                Vector3 worldStartPoint = _position + force._applicationPoint;
+                Vector3 worldEndPoint = worldStartPoint + (direction * visualScale);
+
+                // 3. Guardar la línea principal de la fuerza (en verde para las suspensiones)
+                DebugForces.Add(new DebugArrow
+                {
+                    Start = worldStartPoint,
+                    End = worldEndPoint,
+                    Color = Color.LimeGreen
+                });
+
+                // 4. (Opcional) Dibujar una pequeña cruz en la punta para simular la flecha
+                Vector3 up = Vector3.Up;
+                if (Math.Abs(Vector3.Dot(direction, up)) > 0.9f) up = Vector3.Right;
+                Vector3 right = Vector3.Cross(direction, up);
+
+                float headSize = visualScale * 0.1f; // La punta es el 10% de la línea
+                DebugForces.Add(new DebugArrow { Start = worldEndPoint, End = worldEndPoint - direction * headSize + right * headSize, Color = Color.Red });
+                DebugForces.Add(new DebugArrow { Start = worldEndPoint, End = worldEndPoint - direction * headSize - right * headSize, Color = Color.Red });
+            }
         }
         public virtual void Draw(Matrix view, Matrix projection)
         {
@@ -245,6 +301,37 @@ namespace TGC.MonoGame.TP.ModelsInScene
             if (_collider != null)
             {
                 _collider.Draw(view, projection);
+            }
+
+            DrawLines(DebugForces, view, projection, _renderer._effect, _renderer._graphicsDevice);
+            DebugForces.Clear();
+        }
+        public static void DrawLines(List<DebugArrow> arrows, Matrix view, Matrix projection, Effect effect, GraphicsDevice graphicsDevice)
+        {
+            if (arrows == null || arrows.Count == 0) return;
+
+            // Configuramos las matrices de la cámara
+            if (effect.Parameters["World"] != null)
+            {
+                effect.Parameters["World"].SetValue(Matrix.Identity);
+            }
+            effect.Parameters["View"].SetValue(view);
+            effect.Parameters["Projection"].SetValue(projection);
+            // Creamos los vértices para las líneas
+            var vertices = new VertexPositionColor[arrows.Count * 2];
+            int index = 0;
+
+            foreach (var arrow in arrows)
+            {
+                vertices[index++] = new VertexPositionColor(arrow.Start, arrow.Color);
+                vertices[index++] = new VertexPositionColor(arrow.End, arrow.Color);
+            }
+
+            // Renderizamos
+            foreach (var pass in effect.CurrentTechnique.Passes)
+            {
+                pass.Apply();
+                graphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, vertices, 0, arrows.Count);
             }
         }
         public virtual Vector3 Correction()
