@@ -263,21 +263,16 @@ namespace TGC.MonoGame.TP.ModelsInScene
             // --- LÓGICA DE VISUALIZACIÓN ---
             float magnitude = force._vector.Length();
 
-            if (magnitude > 0.01f) // Ignoramos fuerzas microscópicas
+            if (magnitude > 0.01f)
             {
-                // 1. Escalar magnitud a un tamaño visual. 
-                // El 0.002f es un factor mágico que ajusta tu fuerza a las proporciones visuales.
-                // Mínimo 2 unidades de largo (para que siempre se vea), máximo 30.
+
                 float visualScale = MathHelper.Clamp(magnitude * 0.002f, 2f, 30f);
 
                 Vector3 direction = Vector3.Normalize(force._vector);
 
-                // 2. Calcular los puntos en el mundo.
-                // Bepu asume que el ApplicationVector es un offset desde el centro de masa.
                 Vector3 worldStartPoint = _position + force._applicationPoint;
                 Vector3 worldEndPoint = worldStartPoint + (direction * visualScale);
 
-                // 3. Guardar la línea principal de la fuerza (en verde para las suspensiones)
                 DebugForces.Add(new DebugArrow
                 {
                     Start = worldStartPoint,
@@ -285,12 +280,11 @@ namespace TGC.MonoGame.TP.ModelsInScene
                     Color = Color.LimeGreen
                 });
 
-                // 4. (Opcional) Dibujar una pequeña cruz en la punta para simular la flecha
                 Vector3 up = Vector3.Up;
                 if (Math.Abs(Vector3.Dot(direction, up)) > 0.9f) up = Vector3.Right;
                 Vector3 right = Vector3.Cross(direction, up);
 
-                float headSize = visualScale * 0.1f; // La punta es el 10% de la línea
+                float headSize = visualScale * 0.1f;
                 DebugForces.Add(new DebugArrow { Start = worldEndPoint, End = worldEndPoint - direction * headSize + right * headSize, Color = Color.Red });
                 DebugForces.Add(new DebugArrow { Start = worldEndPoint, End = worldEndPoint - direction * headSize - right * headSize, Color = Color.Red });
             }
