@@ -40,6 +40,9 @@ namespace TGC.MonoGame.TP.Tanks
         public float desiredHeight { get; set; }
         public float suspension { get; set; }
         public float cushioning { get; set; }
+        private float cushioningDamping = 0.8f;
+        private float quantityOfHorizontalRaycasts = 8f;
+        private float quantityOfVerticalRaycasts = 18f;
         public Tank(
             ContentManager Content,
             String modelPath,
@@ -92,11 +95,7 @@ namespace TGC.MonoGame.TP.Tanks
             bool estaAcelerando = false;
             KeyboardState keyboardState = Keyboard.GetState();
 
-            if (keyboardState.IsKeyDown(Keys.W))
-            {
-                forwardInput += 1;
-                estaAcelerando = true;
-            }
+            if (keyboardState.IsKeyDown(Keys.W)) { forwardInput += 1; estaAcelerando = true; }
             if (keyboardState.IsKeyDown(Keys.S)) { forwardInput -= 1; estaAcelerando = true; }
 
             if (keyboardState.IsKeyDown(Keys.D)) { turnInput += 1; estaDoblando = true; }
@@ -152,86 +151,88 @@ namespace TGC.MonoGame.TP.Tanks
             if (totalRaycastInContact > 0)
             {
                 Vector3 globalGravity = new Vector3(0, -1000f, 0);
-                Console.WriteLine($"Velocidad tanque {_velocity.Length()}");
-                float gravitySidewaysForce = Vector3.Dot(globalGravity, _right) * _mass;
-                float sidewaysSpeed = Vector3.Dot(_velocity, _right);
-                float exactForceToStop = (_mass * sidewaysSpeed) / elapsedSeconds + gravitySidewaysForce;
-                float appliedFrictionMag;
-
-                // HACK DE FRICCIÓN ESTÁTICA LATERAL
-                // Si apenas se mueve de costado (ej: resbalando en pendiente), lo clavamos.
-                if (MathF.Abs(sidewaysSpeed) < 40f)
-                {
-                    appliedFrictionMag = MathF.Abs(exactForceToStop * 1.5f);
-                }
-                else
-                {
-                    // Si va rápido de costado (derrapando), aplicamos la fricción suave limitada
-                    float frictionMagnitude = sidewaysSpeed * _mass * _lateralFriction;
-                    appliedFrictionMag = MathF.Min(MathF.Abs(frictionMagnitude), MathF.Abs(exactForceToStop));
-                }
-
-                // IMPORTANTE: Asegurate de usar el signo de sidewaysSpeed, no de frictionMagnitude.
-                // Si la magnitud es 0, MathF.Sign devuelve 0 y anularía toda la fuerza.
-                appliedFrictionMag *= MathF.Sign(sidewaysSpeed);
-
-                Vector3 lateralForce = -_right * appliedFrictionMag;
-                this.agregarFuerzaAAplicar(new Force(lateralForce, Vector3.Zero), elapsedSeconds);
-
-                float angularDragFactor = 10.0f;
-                var localInertia = _collider._bodyReference.LocalInertia.InverseInertiaTensor;
-                float yawInertia = 1.0f / localInertia.YY;
-                float worldYawSpeed = Vector3.Dot(_angularVelocity, _up);
-                Vector3 angularFrictionImpulse = Vector3.Zero;
-                if (estaDoblando)
-                {
-                    angularFrictionImpulse = -_up * worldYawSpeed * yawInertia * angularDragFactor;
-                }
-                else
-                {
-                    float angularBrakeFactor = angularDragFactor * 10f;
-                    if (MathF.Abs(worldYawSpeed) < 0.5f)
-                    {
-                        angularFrictionImpulse = -_up * (worldYawSpeed * yawInertia) / elapsedSeconds;
-                    }
-                    else
-                    {
-                        angularFrictionImpulse = -_up * worldYawSpeed * yawInertia * angularBrakeFactor;
-                    }
-                }
-
-                this.agregarFuerzaAngularAAplicar(angularFrictionImpulse, elapsedSeconds);
-
-                float forwardSpeed = Vector3.Dot(_velocity, this._forward); // Fricción suave hacia adelante
-                Vector3 forwardFrictionImpulse = Vector3.Zero;
-                if (estaAcelerando)
-                {
-                    // Si el jugador está acelerando, apenas hay resistencia para no pelear contra el motor
-                    float rollingResistance = 0.1f;
-                    forwardFrictionImpulse = -this._forward * forwardSpeed * _mass * rollingResistance;
-                }
-                else
-                {
-                    // EL FRENO DE MANO: Si no acelera, aplicamos una resistencia brutal
-                    float brakeFactor = 30.0f;
-                    float gravityForwardForce = Vector3.Dot(globalGravity, this._forward) * _mass;
-                    // HACK DE FRICCIÓN ESTÁTICA: 
-                    // Si la velocidad de deslizamiento es diminuta (ej: menos de 0.5 m/s), 
-                    // calculamos el impulso exacto necesario para clavar la velocidad a CERO en este frame.
-                    if (MathF.Abs(forwardSpeed) < 40f)
-                    {
-                        // Masa * Velocidad / Tiempo = Fuerza exacta para frenar a 0
-                        float exactForwardForce = ((forwardSpeed * _mass) / elapsedSeconds) + gravityForwardForce;
-                        forwardFrictionImpulse = -this._forward * exactForwardForce * 1.5f;
-                    }
-                    else
-                    {
-                        // Si viene rápido y suelta el acelerador, frena progresivamente fuerte
-                        forwardFrictionImpulse = -this._forward * forwardSpeed * _mass * brakeFactor;
-                    }
-                }
-                this.agregarFuerzaAAplicar(new Force(forwardFrictionImpulse, Vector3.Zero), elapsedSeconds);
+                aplicarFriccionLateral(elapsedSeconds, globalGravity);
+                aplicarFriccionAngular(elapsedSeconds, estaDoblando);
+                aplicarFriccionFrontal(elapsedSeconds, globalGravity, estaAcelerando);
             }
+        }
+        private void aplicarFriccionLateral(float elapsedSeconds, Vector3 globalGravity)
+        {
+
+            float gravitySidewaysForce = Vector3.Dot(globalGravity, _right) * _mass;
+            float sidewaysSpeed = Vector3.Dot(_velocity, _right);
+            float exactLateralForceToStop = (_mass * sidewaysSpeed) / elapsedSeconds + gravitySidewaysForce;
+            Vector3 lateralForce = Vector3.Zero;
+
+
+            if (MathF.Abs(sidewaysSpeed) < 10f)
+            {
+                lateralForce = -_right * exactLateralForceToStop;
+            }
+            else
+            {
+                float dynamicFriction = sidewaysSpeed * _mass * _lateralFriction;
+
+                float maxFrictionAllowed = (_mass * MathF.Abs(sidewaysSpeed)) / elapsedSeconds;
+                float appliedMag = MathF.Min(MathF.Abs(dynamicFriction), maxFrictionAllowed) * MathF.Sign(sidewaysSpeed);
+
+                lateralForce = -_right * appliedMag;
+            }
+
+            this.agregarFuerzaAAplicar(new Force(lateralForce, Vector3.Zero), elapsedSeconds);
+
+        }
+        private void aplicarFriccionAngular(float elapsedSeconds, bool estaDoblando)
+        {
+            float angularDragFactor = 10.0f;
+            var localInertia = _collider._bodyReference.LocalInertia.InverseInertiaTensor;
+            float yawInertia = 1.0f / localInertia.YY;
+            float worldYawSpeed = Vector3.Dot(_angularVelocity, _up);
+            Vector3 angularFrictionImpulse = Vector3.Zero;
+            if (estaDoblando)
+            {
+                angularFrictionImpulse = -_up * worldYawSpeed * yawInertia * angularDragFactor;
+            }
+            else
+            {
+                float angularBrakeFactor = angularDragFactor * 10f;
+                if (MathF.Abs(worldYawSpeed) < 0.05f)
+                {
+                    angularFrictionImpulse = -_up * (worldYawSpeed * yawInertia) / elapsedSeconds;
+                }
+                else
+                {
+                    angularFrictionImpulse = -_up * worldYawSpeed * yawInertia * angularBrakeFactor;
+                }
+            }
+
+            this.agregarFuerzaAngularAAplicar(angularFrictionImpulse, elapsedSeconds);
+        }
+        private void aplicarFriccionFrontal(float elapsedSeconds, Vector3 globalGravity, bool estaAcelerando)
+        {
+            float forwardSpeed = Vector3.Dot(_velocity, this._forward); // Fricción suave hacia adelante
+            Vector3 forwardFrictionImpulse = Vector3.Zero;
+            if (estaAcelerando)
+            {
+                float rollingResistance = 0.1f;
+                forwardFrictionImpulse = -this._forward * forwardSpeed * _mass * rollingResistance;
+            }
+            else
+            {
+                float brakeFactor = 30.0f;
+                float gravityForwardForce = Vector3.Dot(globalGravity, this._forward) * _mass;
+
+                if (MathF.Abs(forwardSpeed) < 10f)
+                {
+                    float exactForwardForce = ((forwardSpeed * _mass) / elapsedSeconds) + gravityForwardForce;
+                    forwardFrictionImpulse = -this._forward * exactForwardForce;
+                }
+                else
+                {
+                    forwardFrictionImpulse = -this._forward * forwardSpeed * _mass * brakeFactor;
+                }
+            }
+            this.agregarFuerzaAAplicar(new Force(forwardFrictionImpulse, Vector3.Zero), elapsedSeconds);
         }
         private List<(List<TankRaycast>, float)> GetBothRaycastLists(float leftThrust, float rightThrust)
         {
@@ -250,7 +251,7 @@ namespace TGC.MonoGame.TP.Tanks
             float massPerWheel = _mass / raycastCount;
 
             suspension = massPerWheel * gravityMagnitude / (0.1f * desiredHeight);
-            cushioning = 1f * 2f * MathF.Sqrt(suspension * massPerWheel);
+            cushioning = cushioningDamping * 2f * MathF.Sqrt(suspension * massPerWheel);
         }
         private void LoadRaycastPoints(Simulation simulation)
         {
@@ -311,8 +312,8 @@ namespace TGC.MonoGame.TP.Tanks
             List<Vector3> points = new List<Vector3> { point1, point2, point3, point4 };
 
             points = points.OrderBy(p => (p - point1).Length()).ToList();
-            var dx = (points[1] - points[0]).Length() / 8f;
-            var dy = (points[2] - points[0]).Length() / 16f;
+            var dx = (points[1] - points[0]).Length() / quantityOfHorizontalRaycasts;
+            var dy = (points[2] - points[0]).Length() / quantityOfVerticalRaycasts;
             var unitX = Vector3.Normalize(points[1] - points[0]) * dx;
             var unitY = Vector3.Normalize(points[2] - points[0]) * dy;
             var result = new List<Vector3>();
