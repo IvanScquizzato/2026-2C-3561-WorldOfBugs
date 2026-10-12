@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using TGC.MonoGame.TP.ModelsInScene;
 using TGC.MonoGame.TP.Tanks;
+using System.Diagnostics;
 namespace TGC.MonoGame.TP.Renderers
 {
     public class BasicRenderer : IModelInSceneRenderer
@@ -37,6 +38,7 @@ namespace TGC.MonoGame.TP.Renderers
                 {
                     if (mesh.Name == "Turret")
                     {
+                        Debug.WriteLine("turret = " + tank.TurretYaw);
                         world =
                             relativeTransform *
                             Matrix.CreateRotationY(tank.TurretYaw) *
@@ -44,11 +46,13 @@ namespace TGC.MonoGame.TP.Renderers
                     }
                     else if (mesh.Name == "Cannon")
                     {
+                       
                         world =
                             relativeTransform *
+                            Matrix.CreateRotationY(tank.TurretYaw)*
                             Matrix.CreateRotationX(tank.CannonPitch) *
-                            Matrix.CreateRotationY(tank.TurretYaw) *
                             modelInScene._world;
+                        
                     }
                     else
                     {

@@ -7,6 +7,7 @@ using TGC.MonoGame.TP.ModelsInScene;
 using TGC.MonoGame.TP.Renderers;
 using TGC.MonoGame.TP.Forces;
 using TGC.MonoGame.TP.Contact;
+using TGC.MonoGame.TP.Cameras;
 using System.Collections.Generic;
 using System.Linq;
 using NumericVector = System.Numerics.Vector3;
@@ -19,6 +20,7 @@ using BepuPhysics.Collidables;
 using BepuUtilities.Memory;
 using Microsoft.Xna.Framework.Graphics;
 using TGC.MonoGame.TP.Physics.Bepu;
+using System.Diagnostics;
 
 namespace TGC.MonoGame.TP.Tanks
 {
@@ -80,12 +82,18 @@ namespace TGC.MonoGame.TP.Tanks
             );
             desiredHeight = Height * 0.35f;
         }
+
+        public void SetTurretRotation(float yaw,float pitch)
+        {
+            TurretYaw = yaw;
+            CannonPitch = pitch;
+            Debug.WriteLine(TurretYaw);
+            Debug.WriteLine("yaw = " + yaw);
+        }
         public void Update(GameTime gameTime)
         {
-            MouseState mouse = Mouse.GetState();
-            float deltaX = mouse.X - _previousMouseState.X;
-            float deltaY = mouse.Y - _previousMouseState.Y;
-            _previousMouseState = mouse;
+
+
             float elapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (elapsedSeconds <= 0.0001f)
                 return;
@@ -103,10 +111,8 @@ namespace TGC.MonoGame.TP.Tanks
 
             //logica canon y torreta siguiendo el mouse
 
-            TurretYaw -= deltaX * 0.1f * elapsedSeconds;
-            CannonPitch += deltaY * 0.1f * elapsedSeconds;
+         
 
-            CannonPitch = MathHelper.Clamp(CannonPitch, -0.5f, 0f);
 
             Vector3 leftTrackGlobalPos = Vector3.Transform(new Vector3(_widthLocal * 0.385f, 0, 0), Matrix.CreateScale(_scale) * _rotation); ;
             Vector3 rightTrackGlobalPos = Vector3.Transform(new Vector3(-_widthLocal * 0.385f, 0, 0), Matrix.CreateScale(_scale) * _rotation);
@@ -339,8 +345,8 @@ namespace TGC.MonoGame.TP.Tanks
         public Matrix GetCannonRotation()
         {
             return
-                Matrix.CreateRotationX(CannonPitch) *
                 Matrix.CreateRotationY(TurretYaw) *
+                Matrix.CreateRotationX(CannonPitch) *
                 _rotation;
         }
 
