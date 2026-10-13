@@ -6,6 +6,11 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
 using TGC.MonoGame.TP.ModelsInScene;
 using TGC.MonoGame.TP.Renderers;
+using BepuPhysics;
+using BepuUtilities.Memory;
+using TGC.MonoGame.TP.Colliders;
+using NumericVector = System.Numerics.Vector3;
+
 namespace TGC.MonoGame.TP.Fences
 {
     public class Fence : ModelInScene
@@ -29,6 +34,11 @@ namespace TGC.MonoGame.TP.Fences
                 center - halfSize,
                 center + halfSize
             );
+        }
+        public override void CreateCollider(Simulation simulation, BufferPool bufferPool, Effect effect, GraphicsDevice graphicsDevice)
+        {
+            var center = new NumericVector(_position.X, _position.Y + Height / 2f, _position.Z);
+            this._collider = new StaticBoxCollider(Width, Height, Depth - 100f, center, simulation, bufferPool, effect, graphicsDevice);
         }
     }
 }

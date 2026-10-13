@@ -29,6 +29,7 @@ using System.Linq;
 using TGC.MonoGame.TP.TankRaycasts;
 using TGC.MonoGame.TP.Missile;
 using TGC.MonoGame.TP.ShapeRenderers;
+using TGC.MonoGame.TP.Colliders;
 namespace TGC.MonoGame.TP;
 
 /// <summary>
@@ -52,7 +53,7 @@ public class TGCGame : Game
     private Camera _camera;
     private Camera _camera2;
     public Camera _currentCamera;
-
+    public ModelInScene[] bodyHandleToModel = new ModelInScene[8192];
     private Effect _effect;
     private BasicRenderer _basicRenderer;
     private TerrainRenderer _terrainRenderer;
@@ -256,58 +257,16 @@ public class TGCGame : Game
         StaticDescription staticDescription = new StaticDescription(NumericVector3.Zero, shapeIndex);
         _simulation.Statics.Add(staticDescription);
 
-        // colision de los arboles, una caja estatica por arbol
-        var treeShape = _simulation.Shapes.Add(new Box(20f, _trees[0].Height, 20f));
-        foreach (var tree in _trees)
-        {
-            var center = new NumericVector3(tree._position.X, tree._position.Y + tree.Height / 2f, tree._position.Z);
-            _treeHandles[tree] = _simulation.Statics.Add(new StaticDescription(center, treeShape));
-        }
-
-        // colision del auto abandonado, caja del tamaño del modelo
-        foreach (var auto in _decor.OfType<AbandonedCar>())
-        {
-            var shape = _simulation.Shapes.Add(new Box(auto.Width, auto.Height, auto.Depth));
-            var center = new NumericVector3(auto._position.X, auto._position.Y + auto.Height / 2f, auto._position.Z - 50);
-            _simulation.Statics.Add(new StaticDescription(center, shape));
-        }
-
-        // colision del obelisco, caja del tamaño del modelo
-        foreach (var obelisco in _decor.OfType<Obelisc>())
-        {
-            var shape = _simulation.Shapes.Add(new Box(obelisco.Width - 90f, obelisco.Height, obelisco.Depth - 90f));
-            var center = new NumericVector3(obelisco._position.X, obelisco._position.Y, obelisco._position.Z);
-            _simulation.Statics.Add(new StaticDescription(center, shape));
-        }
-
-        // colision de las casas abandonadas, caja del tamaño del modelo
-        foreach (var casa in _decor.OfType<RuinHouse1>())
-        {
-            var shape = _simulation.Shapes.Add(new Box(casa.Width - 1000, casa.Height, casa.Depth - 1200));
-            var center = new NumericVector3(casa._position.X, casa._position.Y + casa.Height / 2f, casa._position.Z + 100 /*ancho*/);
-            _simulation.Statics.Add(new StaticDescription(center, shape));
-        }
-
-        // colision de las cercas de piedra, caja del tamaño del modelo
-        foreach (var cerca in _decor.OfType<Fence>())
-        {
-            var shape = _simulation.Shapes.Add(new Box(cerca.Width, cerca.Height, cerca.Depth - 100));
-            var center = new NumericVector3(cerca._position.X, cerca._position.Y + cerca.Height / 2f, cerca._position.Z);
-            _simulation.Statics.Add(new StaticDescription(center, shape));
-        }
-        //colision de las rocas medianas, media esfera
-        var rocaShape = _simulation.Shapes.Add(new Sphere(350f));
-        foreach (var roca in _decor.OfType<Debris>())
-        {
-            var center = new NumericVector3(roca._position.X, roca._position.Y - 165f, roca._position.Z);
-            _simulation.Statics.Add(new StaticDescription(center, rocaShape));
-        }
 
 
-        foreach (var tanque in _tanks)
+        foreach (var lista in _modelosEnEscenario)
         {
-            tanque.SetCollider(_simulation, PhysicsToGameObjects, _bufferPool, _effect, GraphicsDevice);
+            foreach (var modelo in lista)
+            {
+                modelo.CreateCollider(_simulation, _bufferPool, _effect, GraphicsDevice);
+            }
         }
+
 
         // hitbox debug
         _debugEffect = Content.Load<Effect>(
@@ -355,7 +314,7 @@ public class TGCGame : Game
         _tanks[0].Update(gameTime);
 
         // atropellar arboles, si la trompa del tanque llega a un arbol yendo rapido el arbol desaparece
-        var tank = _tanks[0];
+        /* var tank = _tanks[0];
         if (tank._velocity.Length() > 150f)
         {
             var trompa = tank._position + tank._forward * tank.Depth / 2f;
@@ -371,7 +330,7 @@ public class TGCGame : Game
                     tank._collider._bodyReference.Velocity.Linear -= UtilsClass.ToNumericVector(tank._forward * 100f);
                 }
             }
-        }
+        }*/
 
         _simulation.Timestep(1 / 60f);
 

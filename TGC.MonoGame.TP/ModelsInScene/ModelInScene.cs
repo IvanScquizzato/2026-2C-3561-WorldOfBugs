@@ -13,6 +13,8 @@ using BepuPhysics;
 using TGC.MonoGame.Utils;
 using NumericVector3 = System.Numerics.Vector3;
 using TGC.MonoGame.TP.Colliders;
+using System.Reflection.Metadata.Ecma335;
+using BepuUtilities.Memory;
 namespace TGC.MonoGame.TP.ModelsInScene
 {
     /// <summary>
@@ -31,14 +33,14 @@ namespace TGC.MonoGame.TP.ModelsInScene
         {
             get
             {
-                return _collider._bodyReference.Velocity.Linear;
+                return _collider.GetLinearVelocity();
             }
         }
         public Vector3 _angularVelocity
         {
             get
             {
-                return _collider._bodyReference.Velocity.Angular;
+                return _collider.GetAngularVelocity();
             }
         }
         public Vector3 _scale { get; set; }
@@ -240,25 +242,23 @@ namespace TGC.MonoGame.TP.ModelsInScene
 
         public void updateBodyPosition()
         {
-            var position = _collider._bodyReference.Pose.Position;
-            var quaternion = _collider._bodyReference.Pose.Orientation;
-            _rotation = Matrix.CreateFromQuaternion(quaternion);
+            Matrix world = _collider.GetWorldMatrixNotScaled();
+            world.Decompose(out Vector3 scale, out Quaternion rotation, out Vector3 translation);
 
-            _position = position + Correction();
+            _rotation = Matrix.CreateFromQuaternion(rotation);
+
+            _position = translation + Correction();
         }
         public void agregarFuerzaAngularAAplicar(Vector3 angularImpulse, float seconds)
         {
-            var bodyReference = _collider._bodyReference;
-            bodyReference.Awake = true;
-            bodyReference.ApplyAngularImpulse(UtilsClass.ToNumericVector(angularImpulse * seconds));
+            _collider.ApplyAngularImpulse(UtilsClass.ToNumericVector(angularImpulse * seconds));
         }
         public void agregarFuerzaAAplicar(Force force, float seconds)
         {
             NumericVector3 numericForceVector = UtilsClass.ToNumericVector(force._vector);
             NumericVector3 numericApplicationVector = UtilsClass.ToNumericVector(force._applicationPoint);
-            var bodyReference = _collider._bodyReference;
-            bodyReference.Awake = true;
-            bodyReference.ApplyImpulse(numericForceVector * seconds, numericApplicationVector);
+
+            _collider.ApplyImpulse(numericForceVector * seconds, numericApplicationVector);
 
             // --- LÓGICA DE VISUALIZACIÓN ---
             float magnitude = force._vector.Length();
@@ -344,5 +344,7 @@ namespace TGC.MonoGame.TP.ModelsInScene
                 _world
             );
         }
+        public virtual void CreateCollider(Simulation simulation, BufferPool bufferPool, Effect effect, GraphicsDevice graphicsDevice) { }
     }
+
 }

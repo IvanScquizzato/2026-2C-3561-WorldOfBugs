@@ -1,8 +1,14 @@
 ﻿using System;
+using BepuPhysics;
+using BepuUtilities.Memory;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
+using TGC.MonoGame.TP.ColliderRenderers;
+using TGC.MonoGame.TP.Colliders;
 using TGC.MonoGame.TP.ModelsInScene;
 using TGC.MonoGame.TP.Renderers;
+using NumericVector = System.Numerics.Vector3;
 
 namespace TGC.MonoGame.TP.Monument
 {
@@ -46,6 +52,11 @@ namespace TGC.MonoGame.TP.Monument
                 end,
                 radius
             );
+        }
+        public override void CreateCollider(Simulation simulation, BufferPool bufferPool, Effect effect, GraphicsDevice graphicsDevice)
+        {
+            var center = new NumericVector(this._position.X, this._position.Y + this.Height / 2f, this._position.Z);
+            this._collider = new StaticBoxCollider(Width - 90f, Height, Depth - 90f, center, simulation, bufferPool, effect, graphicsDevice);
         }
     }
 }

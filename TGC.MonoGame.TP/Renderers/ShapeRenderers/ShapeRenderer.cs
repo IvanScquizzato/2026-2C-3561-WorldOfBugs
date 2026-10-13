@@ -14,33 +14,27 @@ using TGC.MonoGame.Utils;
 using System.Diagnostics;
 using BepuPhysics.Collidables;
 using BepuUtilities.Memory;
+using TGC.MonoGame.TP.Colliders;
+using TGC.MonoGame.TP.ShapeRenderers;
 namespace TGC.MonoGame.TP.ShapeRenderers
 {
     public abstract class ShapeRenderer
     {
         protected VertexBuffer vertexBuffer;
         protected IndexBuffer indexBuffer;
-        protected int _type;
+
         protected GraphicsDevice _graphicsDevice;
         protected Effect _effect;
-        public ShapeRenderer(GraphicsDevice graphicsDevice, Effect effect, int type)
+
+        public ShapeRenderer(GraphicsDevice graphicsDevice, Effect effect)
         {
             _graphicsDevice = graphicsDevice;
             _effect = effect;
-            _type = type;
             Load();
         }
-        public void Draw(Matrix worldNotScaled, Matrix view, Matrix projection, CompoundChild child, Simulation simulation)
-        {
-            if (_type == child.ShapeIndex.Type)
-            {
-                Matrix world = GetWorldOfShape(worldNotScaled, child.ShapeIndex, simulation);
-                DrawWithWorld(world, view, projection);
-            }
-        }
-        protected abstract Matrix GetWorldOfShape(Matrix worldNotScaled, TypedIndex shapeIndex, Simulation simulation);
-        protected abstract void DrawWithWorld(Matrix world, Matrix view, Matrix projection);
-        protected virtual void DrawWithWorldAndLines(Matrix world, Matrix view, Matrix projection, int lines)
+        protected abstract void Load();
+        public abstract void Draw(Matrix world, Matrix view, Matrix projection);
+        protected void DrawWithLines(Matrix world, Matrix view, Matrix projection, int lines)
         {
             _effect.Parameters["World"].SetValue(world);
             _effect.Parameters["View"].SetValue(view);
@@ -58,6 +52,5 @@ namespace TGC.MonoGame.TP.ShapeRenderers
                 _graphicsDevice.DrawIndexedPrimitives(PrimitiveType.LineList, 0, 0, lines);
             }
         }
-        protected abstract void Load();
     }
 }

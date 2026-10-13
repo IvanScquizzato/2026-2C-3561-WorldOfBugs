@@ -6,6 +6,10 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
 using TGC.MonoGame.TP.ModelsInScene;
 using TGC.MonoGame.TP.Renderers;
+using BepuPhysics;
+using BepuUtilities.Memory;
+using NumericVector3 = System.Numerics.Vector3;
+using TGC.MonoGame.TP.Colliders;
 namespace TGC.MonoGame.TP.RuinHouse
 {
     public class RuinHouse1 : ModelInScene
@@ -29,6 +33,11 @@ namespace TGC.MonoGame.TP.RuinHouse
                 center - halfSize,
                 center + halfSize
             );
+        }
+        public override void CreateCollider(Simulation simulation, BufferPool bufferPool, Effect effect, GraphicsDevice graphicsDevice)
+        {
+            var center = new NumericVector3(_position.X, _position.Y + Height / 2f, _position.Z + 100f);
+            this._collider = new StaticBoxCollider(Width - 1000, Height, Depth - 1200, center, simulation, bufferPool, effect, graphicsDevice);
         }
     }
 }

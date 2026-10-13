@@ -156,10 +156,7 @@ public struct ClosestHitHandler : IRayHitHandler
         T = t;
         Normal = normal;
         Collidable = collidable;
-        //Debug.WriteLine("chocp");
-        // Clave para obtener el impacto más cercano:
-        // Reducimos maximumT a la distancia de este impacto. 
-        // Bepu dejará de buscar objetos que estén más lejos que este nuevo maximumT.
+
         if (t < maximumT)
             maximumT = t;
         T = t;
@@ -233,80 +230,7 @@ public struct NarrowPhaseCallbacks : INarrowPhaseCallbacks
     public bool ConfigureContactManifold(int workerIndex, CollidablePair pair, int childIndexA, int childIndexB,
         ref ConvexContactManifold manifold)
     {
-        /*
-        bool foundA = TGCGame.PhysicsToGameObjects.TryGetValue(pair.A, out object objectA);
-        bool foundB = TGCGame.PhysicsToGameObjects.TryGetValue(pair.B, out object objectB);
 
-        Tank tanqueInvolucrado = null;
-        int indiceHijoDelTanque = -1;
-        CollidableReference otroObjetoRef = new CollidableReference();
-
-        // 2. Determinar si A es el tanque
-        if (foundA && objectA is Tank tankA)
-        {
-            tanqueInvolucrado = tankA;
-            indiceHijoDelTanque = childIndexA;
-            otroObjetoRef = pair.B; // El otro objeto es B
-        }
-        // Determinar si B es el tanque
-        else if (foundB && objectB is Tank tankB)
-        {
-            tanqueInvolucrado = tankB;
-            indiceHijoDelTanque = childIndexB;
-            otroObjetoRef = pair.A; // El otro objeto es A
-        }
-
-        // 3. Si un tanque está participando en esta colisión...
-        if (tanqueInvolucrado != null)
-        {
-            // 4. Verificamos si la parte que chocó fue una oruga (hijos 1 o 2)
-            if (indiceHijoDelTanque > 0)
-            {
-                object objetoChocado = null;
-                if (TGCGame.PhysicsToGameObjects.TryGetValue(otroObjetoRef, out object otro))
-                {
-                    objetoChocado = otro;
-                }
-
-                bool esIzquierda = (indiceHijoDelTanque == 1 || indiceHijoDelTanque == 3);
-
-                // Iterar sobre todos los puntos de contacto en el manifold
-                for (int i = 0; i < manifold.Count; i++)
-                {
-                    // Extraer la normal para este punto
-                    System.Numerics.Vector3 normalNumerics = manifold.GetNormal(ref manifold, i);
-
-                    // Extraer el offset (posición del contacto)
-                    System.Numerics.Vector3 offsetNumerics = manifold.GetOffset(ref manifold, i);
-
-                    // Extraer la profundidad de penetración (opcional, útil para lógicas de daño o físicas custom)
-                    //float depth = manifold.GetDepth(ref manifold, i);
-
-                    Vector3 normalContacto;
-                    if (tanqueInvolucrado == objectB)
-                        normalContacto = new Vector3(-normalNumerics.X, -normalNumerics.Y, -normalNumerics.Z);
-                    else
-                        normalContacto = new Vector3(normalNumerics.X, normalNumerics.Y, normalNumerics.Z);
-
-                    Vector3 offsetContacto = new Vector3(offsetNumerics.X, offsetNumerics.Y, offsetNumerics.Z);
-
-                    if (esIzquierda)
-                    {
-                        tanqueInvolucrado.AddLeftContact(new ContactPoint(offsetContacto, normalContacto));
-                    }
-                    else
-                    {
-                        tanqueInvolucrado.AddRightContact(new ContactPoint(offsetContacto, normalContacto));
-                    }
-
-
-                }
-                // 5. ¡Cancelamos la resolución física para que la oruga no empuje el tanque!
-                return false;
-            }
-
-        }
-        */
         return true;
     }
 

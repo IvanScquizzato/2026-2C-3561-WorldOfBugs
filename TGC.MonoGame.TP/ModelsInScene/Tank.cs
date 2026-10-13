@@ -185,7 +185,7 @@ namespace TGC.MonoGame.TP.Tanks
         private void aplicarFriccionAngular(float elapsedSeconds, bool estaDoblando)
         {
             float angularDragFactor = 10.0f;
-            var localInertia = _collider._bodyReference.LocalInertia.InverseInertiaTensor;
+            var localInertia = _collider.GetInverseInertiaTensor();
             float yawInertia = 1.0f / localInertia.YY;
             float worldYawSpeed = Vector3.Dot(_angularVelocity, _up);
             Vector3 angularFrictionImpulse = Vector3.Zero;
@@ -331,9 +331,9 @@ namespace TGC.MonoGame.TP.Tanks
         {
             return Vector3.Transform(_collider._centerOfMass * 0.1f, Matrix.CreateScale(_scale) * _rotation);
         }
-        public void SetCollider(Simulation simulation, Dictionary<CollidableReference, object> physicsToGameObjects, BufferPool bufferPool, Effect effect, GraphicsDevice graphicsDevice)
+        public override void CreateCollider(Simulation simulation, BufferPool bufferPool, Effect effect, GraphicsDevice graphicsDevice)
         {
-            _collider = new TankCollider(this, simulation, physicsToGameObjects, bufferPool, effect, graphicsDevice);
+            _collider = new TankCollider(this, simulation, bufferPool, effect, graphicsDevice);
         }
 
         public Matrix GetCannonRotation()
