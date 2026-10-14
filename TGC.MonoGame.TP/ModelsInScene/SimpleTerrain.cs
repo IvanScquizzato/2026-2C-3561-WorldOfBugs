@@ -12,6 +12,7 @@ using BepuPhysics;
 using BepuUtilities.Memory;
 using TGC.MonoGame.TP.Colliders;
 using NumericVector3 = System.Numerics.Vector3;
+using TGC.MonoGame.TP.Missile;
 
 namespace TGC.MonoGame.TP.Terrain
 {
@@ -191,5 +192,21 @@ namespace TGC.MonoGame.TP.Terrain
         {
             _collider = new TerrainCollider(triangles, NumericVector3.Zero, simulation, bufferPool, effect, graphicsDevice);
         }
+        public override bool ShouldCollideWithMissile(Missil missil)
+        {
+            float terrainHeight = Height(
+            missil._position.X,
+            missil._position.Z
+            );
+
+            const float groundTolerance = 30f;
+
+            if (missil._position.Y <= terrainHeight + groundTolerance)
+            {
+                return true;
+            }
+            return false;
+        }
     }
+
 }

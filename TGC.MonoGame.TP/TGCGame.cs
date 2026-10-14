@@ -147,13 +147,17 @@ public class TGCGame : Game
     /// </summary>
     protected override void LoadContent()
     {
+        // hitbox debug
+        _debugEffect = Content.Load<Effect>(
+            ContentFolderEffects + "DebugShader"
+        );
         // Aca es donde deberiamos cargar todos los contenido necesarios antes de iniciar el juego.
         _spriteBatch = new SpriteBatch(GraphicsDevice);
 
         // Cargo un efecto basico propio declarado en el Content pipeline.
         // En el juego no pueden usar BasicEffect de MG, deben usar siempre efectos propios.
         _effect = Content.Load<Effect>(ContentFolderEffects + "BasicShader");
-        _basicRenderer = new BasicRenderer(GraphicsDevice, _effect);
+        _basicRenderer = new BasicRenderer(GraphicsDevice, _effect, _debugEffect);
 
         //Cargo terreno
         var terrainEffect = Content.Load<Effect>(ContentFolderEffects + "Terrain");
@@ -269,13 +273,11 @@ public class TGCGame : Game
                 {
                     PhysicsToGameObjects[modelo._collider.GetCollidableReference()] = modelo;
                 }
+                modelo.CreateHitbox(_debugEffect, GraphicsDevice);
             }
         }
 
-        // hitbox debug
-        _debugEffect = Content.Load<Effect>(
-            ContentFolderEffects + "DebugShader"
-        );
+
 
         base.LoadContent();
 
@@ -341,19 +343,46 @@ public class TGCGame : Game
         foreach (var tanque in _tanks)
         {
             tanque.updateBodyPosition();
+
         }
-
-
-        if (
-            currentKeyboardState.IsKeyDown(Keys.X) &&
-            _previousKeyboardState.IsKeyUp(Keys.X)
-        )
+        if (_tanks[0].ShouldFireMissile(gameTime, out Vector3 direction, out Vector3 position, out Matrix rotation))
         {
-            FireMissile();
+            Missil missile = new Missil(
+                Content,
+                ContentFolder3D + "missile/source/rocket2",
+                position,
+                rotation,
+                new Vector3(4.2f),
+                _basicRenderer,
+                direction
+            );
+
+            _missiles.Add(missile);
         }
+        for (int i = _missiles.Count - 1; i >= 0; i--)
+        {
+            Missil missil = _missiles[i];
 
+            if (missil._isDisabled)
+            {
+                _missiles.RemoveAt(i);
+                continue;
+            }
 
-        UpdateMissiles(gameTime);
+            missil.Update(gameTime);
+
+            foreach (var lista in _modelosEnEscenario)
+            {
+                foreach (ModelInScene model in lista)
+                {
+                    if (model.ShouldCollideWithMissile(missil))
+                    {
+                        model.CollidedWithMissil(missil);
+                        missil.CollidedWithObject(model);
+                    }
+                }
+            }
+        }
 
 
         _camera.Update(gameTime);
@@ -369,188 +398,6 @@ public class TGCGame : Game
         base.Update(gameTime);
     }
 
-    private void FireMissile()
-    {
-        Tank tank = _tanks[0];
-
-        Vector3 direction =
-            tank.GetCannonDirection();
-
-        Vector3 missilePosition =
-            tank.GetCannonMuzzlePosition();
-
-        Matrix missileRotation =
-            tank.GetCannonRotation();
-
-        Missil missile = new Missil(
-            Content,
-            ContentFolder3D + "missile/source/rocket2",
-            missilePosition,
-            missileRotation,
-            new Vector3(4.2f),
-            _basicRenderer,
-            direction
-        );
-
-        _missiles.Add(missile);
-    }
-
-    private bool MissileCollided(Missil missile)
-    {
-        // -----------------------------
-        // Colisión contra terreno
-        // -----------------------------
-
-        float terrainHeight = _terrains[0].Height(
-            missile._position.X,
-            missile._position.Z
-        );
-
-        const float groundTolerance = 30f;
-
-        if (missile._position.Y <= terrainHeight + groundTolerance)
-        {
-            return true;
-        }
-
-
-        // -----------------------------
-        // Colisión contra hitboxes
-        // -----------------------------
-
-        foreach (var lista in _modelosEnEscenario)
-        {
-            foreach (var modelo in lista)
-            {
-                if (modelo == missile)
-                {
-                    continue;
-                }
-
-                if (modelo.ContainsPoint(missile._position))
-                {
-                    return true;
-                }
-            }
-        }
-
-
-        return false;
-    }
-
-    private void UpdateMissiles(GameTime gameTime)
-    {
-        float deltaTime =
-            (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-        for (int i = _missiles.Count - 1; i >= 0; i--)
-        {
-            Missil missile = _missiles[i];
-
-            missile._position +=
-                missile.Direction *
-                MissileSpeed *
-                deltaTime;
-
-            if (MissileCollided(missile))
-            {
-                _missiles.RemoveAt(i);
-            }
-        }
-    }
-
-    private void DrawBoxHitbox(
-        ModelInScene model,
-        BoxHitbox hitbox
-    )
-    {
-        Vector3[] corners =
-            hitbox.GetWorldCorners(model._world);
-
-        VertexPosition[] vertices =
-        {
-                new VertexPosition(corners[0]),
-                new VertexPosition(corners[1]),
-
-                new VertexPosition(corners[1]),
-                new VertexPosition(corners[2]),
-
-                new VertexPosition(corners[2]),
-                new VertexPosition(corners[3]),
-
-                new VertexPosition(corners[3]),
-                new VertexPosition(corners[0]),
-
-                new VertexPosition(corners[4]),
-                new VertexPosition(corners[5]),
-
-                new VertexPosition(corners[5]),
-                new VertexPosition(corners[6]),
-
-                new VertexPosition(corners[6]),
-                new VertexPosition(corners[7]),
-
-                new VertexPosition(corners[7]),
-                new VertexPosition(corners[4]),
-
-                new VertexPosition(corners[0]),
-                new VertexPosition(corners[4]),
-
-                new VertexPosition(corners[1]),
-                new VertexPosition(corners[5]),
-
-                new VertexPosition(corners[2]),
-                new VertexPosition(corners[6]),
-
-                new VertexPosition(corners[3]),
-                new VertexPosition(corners[7])
-            };
-
-        _debugEffect.Parameters["World"]
-            .SetValue(Matrix.Identity);
-
-        _debugEffect.Parameters["View"]
-            .SetValue(_currentCamera.View);
-
-        _debugEffect.Parameters["Projection"]
-            .SetValue(_currentCamera.Projection);
-
-        _debugEffect.Parameters["DebugColor"]
-            .SetValue(Color.Red.ToVector4());
-
-        foreach (
-            EffectPass pass
-            in _debugEffect.CurrentTechnique.Passes
-        )
-        {
-            pass.Apply();
-
-            GraphicsDevice.DrawUserPrimitives(
-                PrimitiveType.LineList,
-                vertices,
-                0,
-                vertices.Length / 2
-            );
-        }
-    }
-    /*
-        private void RenderTank(Tank tank)
-        {
-
-            // 2. Crear la matriz base del tanque
-            Matrix tankWorldMatrix = _tanks[0]._world;
-
-            // 3. Juntar ambas listas (asumo que tenés raycastPointsRight también)
-            var allRaycasts = tank.raycastPointsLeft.Concat(tank.raycastPointsRight);
-
-            BoxRenderer boxRenderer = new BoxRenderer(GraphicsDevice, _effect);
-            foreach (TankRaycast raycast in allRaycasts)
-            {
-                boxRenderer.DrawWithWorld(raycast.DirectionGlobal(_tanks[0])* raycast._positionLocal * tankWorldMatrix, _currentCamera.View, _currentCamera.Projection,)
-            }  
-
-        }
-        */
     /// <summary>
     ///     Se llama cada vez que hay que refrescar la pantalla.
     ///     Escribir aqui el codigo referido al renderizado.
@@ -568,21 +415,7 @@ public class TGCGame : Game
             }
         }
 
-        // Dibujar hitbox del tanque
-        // Dibujar todas las BoxHitbox del escenario
-        foreach (var lista in _modelosEnEscenario)
-        {
-            foreach (var modelo in lista)
-            {
-                if (modelo._hitbox is BoxHitbox boxHitbox)
-                {
-                    DrawBoxHitbox(
-                        modelo,
-                        boxHitbox
-                    );
-                }
-            }
-        }
+
 
         //RenderTank(_tanks[0]);
     }

@@ -10,11 +10,13 @@ using BepuPhysics;
 using NumericVector3 = System.Numerics.Vector3;
 using Microsoft.Xna.Framework.Graphics;
 using System.Diagnostics;
+using TGC.MonoGame.TP.Missile;
 
 namespace TGC.MonoGame.TP.Trees
 {
     public class Tree : ModelInScene
     {
+        private float _health = 300f;
         public Tree(
             ContentManager content,
             string modelPath,
@@ -33,6 +35,11 @@ namespace TGC.MonoGame.TP.Trees
                 1f
             )
         {
+
+            strength = 6000000f;
+        }
+        public override void CreateHitbox(Effect effect, GraphicsDevice graphicsDevice)
+        {
             Vector3 start = new Vector3(
                 _midpoint.X,
                 _midpoint.Y - _heightLocal * 0.5f,
@@ -50,9 +57,10 @@ namespace TGC.MonoGame.TP.Trees
             _hitbox = new CapsuleHitbox(
                 start,
                 end,
-                radius
+                radius,
+                effect,
+                graphicsDevice
             );
-            strength = 6000000f;
         }
         public override void CreateCollider(Simulation simulation, BufferPool _bufferPool, Effect effect, GraphicsDevice graphicsDevice)
         {
@@ -64,10 +72,19 @@ namespace TGC.MonoGame.TP.Trees
             Debug.Write("Choque con impulso " + destructiveImpactImpulse);
             if (destructiveImpactImpulse > strength)
             {
-                _collider.Remove();
-                _isDisabled = true;
+                Destroy();
             }
         }
+        public override void CollidedWithMissil(Missil missil)
+        {
+            _health -= 50f;
+            if (_health <= 0f)
+            {
+                Destroy();
+            }
+        }
+
+
 
     }
 }

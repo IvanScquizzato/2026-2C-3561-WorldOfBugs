@@ -1,26 +1,30 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace TGC.MonoGame.TP.ModelsInScene;
 
 public class CapsuleHitbox : Hitbox
 {
-    private Vector3 _start;
-    private Vector3 _end;
-    private float _radius;
+    public Vector3 _start;
+    public Vector3 _end;
+    public float _radius;
+    public CapsuleHitboxRenderer capsuleHitboxRenderer { get; set; }
 
     public CapsuleHitbox(
         Vector3 start,
         Vector3 end,
-        
-        float radius
+        float radius,
+        Effect hitboxEffect,
+        GraphicsDevice graphicsDevice
     )
     {
         _start = start;
         _end = end;
         _radius = radius;
+        capsuleHitboxRenderer = new CapsuleHitboxRenderer(hitboxEffect, graphicsDevice);
     }
 
-    public override bool ContainsPoint(
+    public override bool CheckContainsPoint(
         Vector3 worldPoint,
         Matrix world
     )
@@ -50,5 +54,9 @@ public class CapsuleHitbox : Hitbox
 
         return Vector3.DistanceSquared(point, closest)
                <= _radius * _radius;
+    }
+    public override void Draw(ModelInScene model, Matrix world, Matrix view, Matrix projection)
+    {
+        capsuleHitboxRenderer.Draw(this, world, view, projection);
     }
 }

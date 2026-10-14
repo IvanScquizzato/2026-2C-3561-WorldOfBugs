@@ -32,6 +32,10 @@ namespace TGC.MonoGame.TP.Monument
                 1f
             )
         {
+
+        }
+        public override void CreateHitbox(Effect effect, GraphicsDevice graphicsDevice)
+        {
             Vector3 start = new Vector3(
                 _midpoint.X,
                 _midpoint.Y - _heightLocal * 0.5f,
@@ -50,9 +54,12 @@ namespace TGC.MonoGame.TP.Monument
             _hitbox = new CapsuleHitbox(
                 start,
                 end,
-                radius
+                radius,
+                effect,
+                graphicsDevice
             );
         }
+
         public override void CreateCollider(Simulation simulation, BufferPool bufferPool, Effect effect, GraphicsDevice graphicsDevice)
         {
             var center = new NumericVector(this._position.X, this._position.Y + this.Height / 2f, this._position.Z);

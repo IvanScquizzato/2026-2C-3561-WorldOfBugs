@@ -19,7 +19,8 @@ using BepuPhysics.Collidables;
 using BepuUtilities.Memory;
 using Microsoft.Xna.Framework.Graphics;
 using TGC.MonoGame.TP.Physics.Bepu;
-
+using TGC.MonoGame.TP.Missile;
+using System.Security.Cryptography.X509Certificates;
 namespace TGC.MonoGame.TP.Tanks
 {
     public class Tank : ModelInScene
@@ -43,6 +44,8 @@ namespace TGC.MonoGame.TP.Tanks
         private float cushioningDamping = 0.8f;
         private float quantityOfHorizontalRaycasts = 8f;
         private float quantityOfVerticalRaycasts = 18f;
+        private float coolDownSecs = 0.5f;
+        private float currentCoolDownSecs = 0f;
         public Tank(
             ContentManager Content,
             String modelPath,
@@ -62,6 +65,10 @@ namespace TGC.MonoGame.TP.Tanks
                 mass
             )
         {
+            desiredHeight = Height * 0.35f;
+        }
+        public override void CreateHitbox(Effect effect, GraphicsDevice graphicsDevice)
+        {
             Vector3 halfSize = new Vector3(
                 _widthLocal * 0.49f,
                 _heightLocal * 0.3f,
@@ -76,17 +83,19 @@ namespace TGC.MonoGame.TP.Tanks
 
             _hitbox = new BoxHitbox(
                 center - halfSize,
-                center + halfSize
+                center + halfSize,
+                effect, graphicsDevice
             );
-            desiredHeight = Height * 0.35f;
         }
         public void Update(GameTime gameTime)
         {
             MouseState mouse = Mouse.GetState();
+
             float deltaX = mouse.X - _previousMouseState.X;
             float deltaY = mouse.Y - _previousMouseState.Y;
             _previousMouseState = mouse;
             float elapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            currentCoolDownSecs -= currentCoolDownSecs <= 0 ? 0 : elapsedSeconds;
             if (elapsedSeconds <= 0.0001f)
                 return;
             float forwardInput = 0f;
@@ -395,6 +404,28 @@ namespace TGC.MonoGame.TP.Tanks
                 return false;
             }
             return true;
+        }
+        public bool ShouldFireMissile(GameTime gameTime, out Vector3 direction, out Vector3 position, out Matrix rotation)
+        {
+            KeyboardState keyboardState = Keyboard.GetState();
+
+            if (keyboardState.IsKeyDown(Keys.X) && currentCoolDownSecs <= 0)
+            {
+                direction =
+                GetCannonDirection();
+
+                position =
+                GetCannonMuzzlePosition();
+
+                rotation =
+                GetCannonRotation();
+                currentCoolDownSecs = coolDownSecs;
+                return true;
+            }
+            direction = Vector3.Zero;
+            position = Vector3.Zero;
+            rotation = Matrix.Identity;
+            return false;
         }
     }
 

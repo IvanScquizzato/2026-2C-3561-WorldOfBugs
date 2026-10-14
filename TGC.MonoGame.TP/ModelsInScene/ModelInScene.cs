@@ -15,6 +15,7 @@ using NumericVector3 = System.Numerics.Vector3;
 using TGC.MonoGame.TP.Colliders;
 using System.Reflection.Metadata.Ecma335;
 using BepuUtilities.Memory;
+using TGC.MonoGame.TP.Missile;
 namespace TGC.MonoGame.TP.ModelsInScene
 {
     /// <summary>
@@ -24,6 +25,9 @@ namespace TGC.MonoGame.TP.ModelsInScene
     {
         public Model _model { get; set; }
         public string _modelPath { get; private set; }
+        public bool renderColliders { get; set; } = true;
+        public bool renderHitboxes { get; set; } = true;
+        public bool renderForces { get; set; } = true;
         public Vector3 _position
         {
             get;
@@ -99,7 +103,7 @@ namespace TGC.MonoGame.TP.ModelsInScene
         }
         public Collider _collider = null;
 
-        public Hitbox _hitbox { get; protected set; }
+        public Hitbox _hitbox { get; protected set; } = null;
 
         // Estructura para guardar nuestra flecha
         public struct DebugArrow
@@ -296,11 +300,18 @@ namespace TGC.MonoGame.TP.ModelsInScene
             if (!_isDisabled)
             {
                 _renderer.Draw(this, view, projection);
-                if (_collider != null)
+                if (_collider != null && renderColliders)
                 {
                     _collider.Draw(view, projection);
                 }
-                DrawLines(DebugForces, view, projection, _renderer._effect, _renderer._graphicsDevice);
+                if (_hitbox != null && renderHitboxes)
+                {
+                    _hitbox.Draw(this, _world, view, projection);
+                }
+                if (renderForces)
+                {
+                    DrawLines(DebugForces, view, projection, _renderer._effect, _renderer._graphicsDevice);
+                }
             }
             DebugForces.Clear();
         }
@@ -348,6 +359,7 @@ namespace TGC.MonoGame.TP.ModelsInScene
                 _world
             );
         }
+        public virtual void CreateHitbox(Effect effect, GraphicsDevice graphicsDevice) { }
         public virtual void CreateCollider(Simulation simulation, BufferPool bufferPool, Effect effect, GraphicsDevice graphicsDevice) { }
 
         public virtual void CollidedWith(ModelInScene model, Vector3 contactPointOffset, Vector3 thisPos, float impactImpulse, float destructiveImpactImpulse, Vector3 normal) { }
@@ -364,6 +376,31 @@ namespace TGC.MonoGame.TP.ModelsInScene
         public bool IsDestroyedWith(float destructiveImpactImpulse)
         {
             return destructiveImpactImpulse > strength;
+        }
+        public virtual bool ShouldCollideWithMissile(Missil missil)
+        {
+            if (_hitbox != null)
+            {
+                if (ContainsPoint(missil._position))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        public virtual void CollidedWithMissil(Missil missil) { }
+
+        public virtual void Destroy()
+        {
+            _isDisabled = true;
+            if (_collider != null)
+            {
+                _collider.Remove();
+            }
+            if (_hitbox != null)
+            {
+                _hitbox.Remove();
+            }
         }
     }
 
