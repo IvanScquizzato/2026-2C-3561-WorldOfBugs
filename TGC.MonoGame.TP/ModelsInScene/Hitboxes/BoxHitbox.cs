@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Runtime.InteropServices.Marshalling;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace TGC.MonoGame.TP.ModelsInScene
 {
@@ -6,14 +8,15 @@ namespace TGC.MonoGame.TP.ModelsInScene
     {
         public Vector3 Min { get; private set; }
         public Vector3 Max { get; private set; }
-
-        public BoxHitbox(Vector3 min, Vector3 max)
+        public BoxHitboxRenderer boxHitboxRenderer { get; set; }
+        public BoxHitbox(Vector3 min, Vector3 max, Effect hitboxEffect, GraphicsDevice graphicsDevice)
         {
             Min = min;
             Max = max;
+            boxHitboxRenderer = new BoxHitboxRenderer(hitboxEffect, graphicsDevice);
         }
 
-        public override bool ContainsPoint(
+        public override bool CheckContainsPoint(
             Vector3 worldPoint,
             Matrix world
         )
@@ -54,6 +57,10 @@ namespace TGC.MonoGame.TP.ModelsInScene
             }
 
             return corners;
+        }
+        public override void Draw(ModelInScene model, Matrix world, Matrix view, Matrix projection)
+        {
+            boxHitboxRenderer.Draw(this, world, view, projection);
         }
     }
 }

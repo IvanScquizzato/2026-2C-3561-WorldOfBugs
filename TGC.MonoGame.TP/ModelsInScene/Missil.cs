@@ -34,7 +34,7 @@ namespace TGC.MonoGame.TP.Missile
             )
         {
             Direction = Vector3.Normalize(direction);
-            
+
             Matrix modelCorrection =
                 Matrix.CreateRotationX(-MathHelper.PiOver2);
 
@@ -52,6 +52,11 @@ namespace TGC.MonoGame.TP.Missile
                 Direction *
                 Speed *
                 deltaTime;
+
+        }
+        public void CollidedWithObject(ModelInScene model)
+        {
+            _isDisabled = true;
         }
     }
 }

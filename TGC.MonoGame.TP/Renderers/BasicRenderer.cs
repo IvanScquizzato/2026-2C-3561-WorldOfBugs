@@ -11,11 +11,13 @@ namespace TGC.MonoGame.TP.Renderers
     {
         public GraphicsDevice _graphicsDevice { get; set; }
         public Effect _effect { get; set; }
+        public Effect _hitBoxEffect { get; set; }
 
-        public BasicRenderer(GraphicsDevice graphicsDevice, Effect effect)
+        public BasicRenderer(GraphicsDevice graphicsDevice, Effect effect, Effect hitboxEffect)
         {
             _graphicsDevice = graphicsDevice;
             _effect = effect;
+            _hitBoxEffect = hitboxEffect;
         }
 
         public void Draw(ModelInScene modelInScene, Matrix view, Matrix projection)

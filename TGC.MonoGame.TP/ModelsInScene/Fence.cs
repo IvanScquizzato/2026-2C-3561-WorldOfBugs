@@ -6,12 +6,21 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
 using TGC.MonoGame.TP.ModelsInScene;
 using TGC.MonoGame.TP.Renderers;
+using BepuPhysics;
+using BepuUtilities.Memory;
+using TGC.MonoGame.TP.Colliders;
+using NumericVector = System.Numerics.Vector3;
+
 namespace TGC.MonoGame.TP.Fences
 {
     public class Fence : ModelInScene
     {
         public Fence(ContentManager Content, String modelPath, Vector3 position, Matrix rotation, Vector3 scale, IModelInSceneRenderer renderer)
             : base(Content, modelPath, position, rotation, scale, renderer, 1f)
+        {
+
+        }
+        public override void CreateHitbox(Effect effect, GraphicsDevice graphicsDevice)
         {
             Vector3 halfSize = new Vector3(
                 _widthLocal * 0.49f,
@@ -27,8 +36,15 @@ namespace TGC.MonoGame.TP.Fences
 
             _hitbox = new BoxHitbox(
                 center - halfSize,
-                center + halfSize
+                center + halfSize,
+                effect,
+                graphicsDevice
             );
+        }
+        public override void CreateCollider(Simulation simulation, BufferPool bufferPool, Effect effect, GraphicsDevice graphicsDevice)
+        {
+            var center = new NumericVector(_position.X, _position.Y + Height / 2f, _position.Z);
+            this._collider = new StaticBoxCollider(Width, Height, Depth - 100f, center, simulation, bufferPool, effect, graphicsDevice);
         }
     }
 }
