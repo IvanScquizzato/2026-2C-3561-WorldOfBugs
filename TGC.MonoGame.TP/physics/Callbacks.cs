@@ -238,7 +238,7 @@ public struct NarrowPhaseCallbacks : INarrowPhaseCallbacks
 
         return ProcessCollisionLogic(
             pair,
-            new Vector3(normal.X, normal.Y, normal.Z),
+            -new Vector3(normal.X, normal.Y, normal.Z),
             new Vector3(offset.X, offset.Y, offset.Z)
         );
     }
