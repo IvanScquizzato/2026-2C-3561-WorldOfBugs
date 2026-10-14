@@ -334,6 +334,7 @@ namespace TGC.MonoGame.TP.Tanks
         public override void CreateCollider(Simulation simulation, BufferPool bufferPool, Effect effect, GraphicsDevice graphicsDevice)
         {
             _collider = new TankCollider(this, simulation, bufferPool, effect, graphicsDevice);
+            LoadPhysics(simulation, TGCGame.gravity);
         }
 
         public Matrix GetCannonRotation()
@@ -376,6 +377,24 @@ namespace TGC.MonoGame.TP.Tanks
                 up * verticalOffset +
                 direction * forwardOffset +
                 right * lateralOffset;
+        }
+        public override void CollidedWith(ModelInScene model, Vector3 contactPointOffset, Vector3 thisPos, float impactImpulse, float destructiveImpactImpulse, Vector3 normal)
+        {
+            if (model.IsDestroyedWith(destructiveImpactImpulse))
+            {
+                float breakImpulse = Math.Min(impactImpulse, model.strength);
+
+                Vector3 cambioDeVelocidad = -normal * breakImpulse * this.InverseMass();
+                _collider.ApplyImpulse(UtilsClass.ToNumericVector(cambioDeVelocidad), UtilsClass.ToNumericVector(contactPointOffset));
+            }
+        }
+        public override bool ShouldCollideWith(ModelInScene model, Vector3 contactPointOffset, Vector3 thisPos, float impactImpulse, float destructiveImpactImpulse, Vector3 normal)
+        {
+            if (model.IsDestroyedWith(destructiveImpactImpulse))
+            {
+                return false;
+            }
+            return true;
         }
     }
 

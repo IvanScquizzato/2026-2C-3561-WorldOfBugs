@@ -24,10 +24,9 @@ namespace TGC.MonoGame.TP.Colliders
         public StaticSphereCollider(float radius, NumericVector3 position, Simulation simulation, BufferPool bufferPool, Effect effect, GraphicsDevice graphicsDevice) :
         base(simulation, bufferPool, effect, graphicsDevice)
         {
-            this._isStatic = true;
-            LoadBoxCollider(radius, position);
+            LoadSphereCollider(radius, position);
         }
-        private void LoadBoxCollider(float radius, NumericVector3 position)
+        private void LoadSphereCollider(float radius, NumericVector3 position)
         {
             var shape = _simulation.Shapes.Add(new Sphere(radius));
             StaticHandle staticHandle = _simulation.Statics.Add(new StaticDescription(position, shape));

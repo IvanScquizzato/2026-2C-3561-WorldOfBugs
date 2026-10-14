@@ -10,6 +10,12 @@ using TGC.MonoGame.TP.Tanks;
 using BepuUtilities;
 using TGC.MonoGame.TP.Contact;
 using System.Diagnostics;
+using TGC.MonoGame.TP.ModelsInScene;
+using NumericVector3 = System.Numerics.Vector3;
+using Microsoft.Xna.Framework.Graphics;
+using TGC.MonoGame.Utils;
+using BepuPhysics.CollisionDetection.SweepTasks;
+using System.Linq;
 namespace TGC.MonoGame.TP.Physics.Bepu;
 
 public struct PoseIntegratorCallbacks : IPoseIntegratorCallbacks
@@ -222,7 +228,19 @@ public struct NarrowPhaseCallbacks : INarrowPhaseCallbacks
         pairMaterial.FrictionCoefficient = FrictionCoefficient;
         pairMaterial.MaximumRecoveryVelocity = MaximumRecoveryVelocity;
         pairMaterial.SpringSettings = ContactSpringiness;
-        return true;
+
+        if (manifold.Count == 0) return true;
+
+
+        manifold.GetContact(0, out var offset, out var normal, out var depth, out var featureId);
+
+        if (depth < 0f) return true;
+
+        return ProcessCollisionLogic(
+            pair,
+            new Vector3(normal.X, normal.Y, normal.Z),
+            new Vector3(offset.X, offset.Y, offset.Z)
+        );
     }
 
     /// <inheritdoc/>
@@ -230,8 +248,72 @@ public struct NarrowPhaseCallbacks : INarrowPhaseCallbacks
     public bool ConfigureContactManifold(int workerIndex, CollidablePair pair, int childIndexA, int childIndexB,
         ref ConvexContactManifold manifold)
     {
+        if (manifold.Count == 0) return true;
+        if (manifold.Contact0.Depth < 0f) return true;
 
-        return true;
+        return ProcessCollisionLogic(
+            pair,
+            -new Vector3(manifold.Normal.X, manifold.Normal.Y, manifold.Normal.Z),
+            new Vector3(manifold.Contact0.Offset.X, manifold.Contact0.Offset.Y, manifold.Contact0.Offset.Z)
+        );
+    }
+    private bool ProcessCollisionLogic(CollidablePair pair, Vector3 normalFromAToB, Vector3 relativeOffsetA)
+    {
+        ModelInScene modelA = TGCGame.PhysicsToGameObjects[pair.A];
+        ModelInScene modelB = TGCGame.PhysicsToGameObjects[pair.B];
+
+        GetPositionAndVelocity(pair.A, out Vector3 posA, out Vector3 linearVelocityA, out Vector3 angularVelocityA);
+        GetPositionAndVelocity(pair.B, out Vector3 posB, out Vector3 linearVelocityB, out Vector3 angularVelocityB);
+
+        Vector3 relativeOffsetB = posA + relativeOffsetA - posB;
+
+        Vector3 velPointA = linearVelocityA + Vector3.Cross(angularVelocityA, relativeOffsetA);
+        Vector3 velPointB = linearVelocityB + Vector3.Cross(angularVelocityB, relativeOffsetB);
+        Vector3 relativeVelocityPoint = velPointA - velPointB;
+
+        Vector3 relativeVelocityLinear = linearVelocityA - linearVelocityB;
+
+        float masaEfectiva = 1f / (modelA.InverseMass() + modelB.InverseMass());
+
+        float impactVelocity = Math.Abs(Vector3.Dot(relativeVelocityPoint, normalFromAToB));
+        float impactImpulse = impactVelocity * masaEfectiva;
+
+        float destructiveImpactImpulse = relativeVelocityLinear.Length() * masaEfectiva;
+
+        TGCGame.PendingImpacts.Enqueue(new ImpactData
+        {
+            modelA = modelA,
+            modelB = modelB,
+            positionA = UtilsClass.ToVector3(posA),
+            positionB = UtilsClass.ToVector3(posB),
+            collisionOffsetA = UtilsClass.ToVector3(relativeOffsetA),
+            collisionOffsetB = UtilsClass.ToVector3(relativeOffsetB),
+            impactImpulse = impactImpulse,
+            destructiveImpactImpulse = destructiveImpactImpulse,
+            normalFromAToB = UtilsClass.ToVector3(normalFromAToB)
+        });
+
+        bool collideA = modelA.ShouldCollideWith(modelB, relativeOffsetA, posA, impactImpulse, destructiveImpactImpulse, normalFromAToB);
+        bool collideB = modelB.ShouldCollideWith(modelA, relativeOffsetB, posB, impactImpulse, destructiveImpactImpulse, -normalFromAToB);
+
+        return collideA && collideB;
+    }
+    private void GetPositionAndVelocity(CollidableReference collidable, out Vector3 position, out Vector3 linearVelocity, out Vector3 angularVelocity)
+    {
+        if (collidable.Mobility == CollidableMobility.Static)
+        {
+            StaticReference staticReferenceA = TGCGame._simulation.Statics.GetStaticReference(collidable.StaticHandle);
+            position = staticReferenceA.Pose.Position;
+            linearVelocity = Vector3.Zero;
+            angularVelocity = Vector3.Zero;
+        }
+        else
+        {
+            BodyReference bodyReferenceA = TGCGame._simulation.Bodies.GetBodyReference(collidable.BodyHandle);
+            position = bodyReferenceA.Pose.Position;
+            linearVelocity = bodyReferenceA.Velocity.Linear;
+            angularVelocity = bodyReferenceA.Velocity.Angular;
+        }
     }
 
     /// <inheritdoc/>

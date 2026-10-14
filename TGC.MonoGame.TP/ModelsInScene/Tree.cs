@@ -9,6 +9,7 @@ using BepuUtilities.Memory;
 using BepuPhysics;
 using NumericVector3 = System.Numerics.Vector3;
 using Microsoft.Xna.Framework.Graphics;
+using System.Diagnostics;
 
 namespace TGC.MonoGame.TP.Trees
 {
@@ -51,11 +52,22 @@ namespace TGC.MonoGame.TP.Trees
                 end,
                 radius
             );
+            strength = 6000000f;
         }
         public override void CreateCollider(Simulation simulation, BufferPool _bufferPool, Effect effect, GraphicsDevice graphicsDevice)
         {
             var center = new NumericVector3(this._position.X, this._position.Y + this.Height / 2f, this._position.Z);
             this._collider = new StaticBoxCollider(20f, Height, 20f, center, simulation, _bufferPool, effect, graphicsDevice);
         }
+        public override void CollidedWith(ModelInScene model, Vector3 contactPointOffset, Vector3 thisPos, float impactImpulse, float destructiveImpactImpulse, Vector3 normal)
+        {
+            Debug.Write("Choque con impulso " + destructiveImpactImpulse);
+            if (destructiveImpactImpulse > strength)
+            {
+                _collider.Remove();
+                _isDisabled = true;
+            }
+        }
+
     }
 }

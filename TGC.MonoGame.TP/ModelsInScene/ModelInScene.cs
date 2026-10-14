@@ -29,6 +29,8 @@ namespace TGC.MonoGame.TP.ModelsInScene
             get;
             set;
         }
+        public float strength = float.MaxValue;
+        public bool _isDisabled = false;
         public Vector3 _velocity
         {
             get
@@ -291,13 +293,15 @@ namespace TGC.MonoGame.TP.ModelsInScene
         }
         public virtual void Draw(Matrix view, Matrix projection)
         {
-            _renderer.Draw(this, view, projection);
-            if (_collider != null)
+            if (!_isDisabled)
             {
-                _collider.Draw(view, projection);
+                _renderer.Draw(this, view, projection);
+                if (_collider != null)
+                {
+                    _collider.Draw(view, projection);
+                }
+                DrawLines(DebugForces, view, projection, _renderer._effect, _renderer._graphicsDevice);
             }
-
-            DrawLines(DebugForces, view, projection, _renderer._effect, _renderer._graphicsDevice);
             DebugForces.Clear();
         }
         public static void DrawLines(List<DebugArrow> arrows, Matrix view, Matrix projection, Effect effect, GraphicsDevice graphicsDevice)
@@ -345,6 +349,23 @@ namespace TGC.MonoGame.TP.ModelsInScene
             );
         }
         public virtual void CreateCollider(Simulation simulation, BufferPool bufferPool, Effect effect, GraphicsDevice graphicsDevice) { }
+
+        public virtual void CollidedWith(ModelInScene model, Vector3 contactPointOffset, Vector3 thisPos, float impactImpulse, float destructiveImpactImpulse, Vector3 normal) { }
+
+        public float InverseMass()
+        {
+            return _collider.InverseMass();
+        }
+
+        public virtual bool ShouldCollideWith(ModelInScene model, Vector3 contactPointOffset, Vector3 thisPos, float impactImpulse, float destructiveImpactImpulse, Vector3 normal)
+        {
+            return true;
+        }
+        public bool IsDestroyedWith(float destructiveImpactImpulse)
+        {
+            return destructiveImpactImpulse > strength;
+        }
     }
+
 
 }

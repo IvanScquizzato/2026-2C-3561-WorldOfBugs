@@ -30,8 +30,23 @@ using TGC.MonoGame.TP.TankRaycasts;
 using TGC.MonoGame.TP.Missile;
 using TGC.MonoGame.TP.ShapeRenderers;
 using TGC.MonoGame.TP.Colliders;
+using System.Security.Cryptography.X509Certificates;
+using System.Collections.Concurrent;
+using System.Diagnostics;
 namespace TGC.MonoGame.TP;
 
+public struct ImpactData
+{
+    public ModelInScene modelA;
+    public ModelInScene modelB;
+    public Vector3 positionA;
+    public Vector3 positionB;
+    public Vector3 collisionOffsetA;
+    public Vector3 collisionOffsetB;
+    public float impactImpulse;
+    public float destructiveImpactImpulse;
+    public Vector3 normalFromAToB;
+}
 /// <summary>
 ///     Esta es la clase principal del juego.
 ///     Inicialmente puede ser renombrado o copiado para hacer mas ejemplos chicos, en el caso de copiar para que se
@@ -46,14 +61,13 @@ public class TGCGame : Game
     public const string ContentFolderSpriteFonts = "SpriteFonts/";
     public const string ContentFolderTextures = "Textures/";
 
-    private Simulation _simulation;
+    public static Simulation _simulation;
     private BufferPool _bufferPool;
 
     private readonly GraphicsDeviceManager _graphics;
     private Camera _camera;
     private Camera _camera2;
     public Camera _currentCamera;
-    public ModelInScene[] bodyHandleToModel = new ModelInScene[8192];
     private Effect _effect;
     private BasicRenderer _basicRenderer;
     private TerrainRenderer _terrainRenderer;
@@ -74,9 +88,10 @@ public class TGCGame : Game
     private List<Missil> _missiles = new List<Missil>();
     private MouseState _previousMouseState;
     private const float MissileSpeed = 1500f;
+    public static Vector3 gravity = new Vector3(0, -1000f, 0);
+    public static Dictionary<CollidableReference, ModelInScene> PhysicsToGameObjects = new Dictionary<CollidableReference, ModelInScene>();
 
-
-    public static Dictionary<CollidableReference, object> PhysicsToGameObjects = new Dictionary<CollidableReference, object>();
+    public static ConcurrentQueue<ImpactData> PendingImpacts { get; } = new();
     /// <summary>
     ///     Constructor del juego.
     /// </summary>
@@ -228,7 +243,6 @@ public class TGCGame : Game
             _decor.Add(new Grass(Content, ContentFolder3D + "Grass/source/grassExampleScene", new Vector3(x, y, z), Matrix.Identity, new Vector3(.5f), _basicRenderer));
         }
 
-        base.LoadContent();
 
         //cargo planta
         /*
@@ -241,22 +255,9 @@ public class TGCGame : Game
             _plants.Add(new Plant(Content, ContentFolder3D + "Plant/source/plant1_afsTREE_xlod00", new Vector3(x, y, z), Matrix.Identity, new Vector3(0.5f), _basicRenderer));
         }
         */
-        Vector3 gravity = new Vector3(0, -1000, 0);
+
         _simulation = Simulation.Create(_bufferPool, new NarrowPhaseCallbacks(new SpringSettings(30, 1), 1.5f, 0.5f),
         new PoseIntegratorCallbacks(UtilsClass.ToNumericVector(gravity)), new SolveDescription(8, 1));
-        _tanks[0].LoadPhysics(_simulation, gravity);
-
-        //Añado terreno
-        _bufferPool.Take(_terrains[0].triangles.Count, out Buffer<Triangle> triangles);
-        for (int i = 0; i < _terrains[0].triangles.Count; i++)
-        {
-            triangles[i] = _terrains[0].triangles[i];
-        }
-        Mesh terrainMesh = new Mesh(triangles, NumericVector3.One, _bufferPool);
-        TypedIndex shapeIndex = _simulation.Shapes.Add(terrainMesh);
-        StaticDescription staticDescription = new StaticDescription(NumericVector3.Zero, shapeIndex);
-        _simulation.Statics.Add(staticDescription);
-
 
 
         foreach (var lista in _modelosEnEscenario)
@@ -264,9 +265,12 @@ public class TGCGame : Game
             foreach (var modelo in lista)
             {
                 modelo.CreateCollider(_simulation, _bufferPool, _effect, GraphicsDevice);
+                if (modelo._collider != null)
+                {
+                    PhysicsToGameObjects[modelo._collider.GetCollidableReference()] = modelo;
+                }
             }
         }
-
 
         // hitbox debug
         _debugEffect = Content.Load<Effect>(
@@ -313,26 +317,26 @@ public class TGCGame : Game
 
         _tanks[0].Update(gameTime);
 
-        // atropellar arboles, si la trompa del tanque llega a un arbol yendo rapido el arbol desaparece
-        /* var tank = _tanks[0];
-        if (tank._velocity.Length() > 150f)
-        {
-            var trompa = tank._position + tank._forward * tank.Depth / 2f;
-            foreach (var tree in _trees.ToList())
-            {
-                if (Vector3.Distance(trompa, tree._position) < 20f)
-                {
-                    //se elimina el arbol
-                    _simulation.Statics.Remove(_treeHandles[tree]);
-                    _treeHandles.Remove(tree);
-                    _trees.Remove(tree);
-                    // el tanque pierde 100 de velocidad al atropellar
-                    tank._collider._bodyReference.Velocity.Linear -= UtilsClass.ToNumericVector(tank._forward * 100f);
-                }
-            }
-        }*/
-
         _simulation.Timestep(1 / 60f);
+
+        HashSet<(ModelInScene, ModelInScene)> parejasProcesadas = new HashSet<(ModelInScene, ModelInScene)>();
+
+        while (TGCGame.PendingImpacts.TryDequeue(out ImpactData impact))
+        {
+            ModelInScene modelA = impact.modelA;
+            ModelInScene modelB = impact.modelB;
+            var parejaId = modelA.GetHashCode() < modelB.GetHashCode()
+                ? (modelA, modelB)
+                : (modelB, modelA);
+
+            if (parejasProcesadas.Contains(parejaId))
+            {
+                continue;
+            }
+            parejasProcesadas.Add(parejaId);
+            modelA.CollidedWith(modelB, impact.collisionOffsetA, impact.positionA, impact.impactImpulse, impact.destructiveImpactImpulse, impact.normalFromAToB);
+            modelB.CollidedWith(modelA, impact.collisionOffsetB, impact.positionB, impact.impactImpulse, impact.destructiveImpactImpulse, -impact.normalFromAToB);
+        }
 
         foreach (var tanque in _tanks)
         {

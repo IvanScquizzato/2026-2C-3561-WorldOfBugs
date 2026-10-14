@@ -42,6 +42,7 @@ namespace TGC.MonoGame.TP.Colliders
             set
             {
                 _internalStaticRef = value;
+                _isStatic = true;
                 createChildColliders();
             }
             get
@@ -71,7 +72,10 @@ namespace TGC.MonoGame.TP.Colliders
         }
         public void Draw(Matrix view, Matrix projection)
         {
-            _colliderRenderer.Draw(this, view, projection);
+            if (Exists())
+            {
+                _colliderRenderer.Draw(this, view, projection);
+            }
         }
         private void createChildColliders()
         {
@@ -179,10 +183,18 @@ namespace TGC.MonoGame.TP.Colliders
         }
         public Vector3 GetLinearVelocity()
         {
+            if (_isStatic)
+            {
+                return Vector3.Zero;
+            }
             return this._bodyReference.Velocity.Linear;
         }
         public Vector3 GetAngularVelocity()
         {
+            if (_isStatic)
+            {
+                return Vector3.Zero;
+            }
             return this._bodyReference.Velocity.Angular;
         }
         public BepuUtilities.Symmetric3x3 GetInverseInertiaTensor()
@@ -192,6 +204,44 @@ namespace TGC.MonoGame.TP.Colliders
         public BodyHandle GetBodyHandle()
         {
             return _bodyReference.Handle;
+        }
+        public CollidableReference GetCollidableReference()
+        {
+            if (_isStatic)
+            {
+                return new CollidableReference(_staticReference.Handle);
+            }
+            return new CollidableReference(CollidableMobility.Dynamic, _bodyReference.Handle);
+        }
+        public float InverseMass()
+        {
+            if (_isStatic)
+            {
+                return 0f;
+            }
+            return _bodyReference.LocalInertia.InverseMass;
+        }
+        public void Remove()
+        {
+            if (Exists())
+            {
+                if (_isStatic)
+                {
+                    _simulation.Statics.Remove(_staticReference.Handle);
+                }
+                else
+                {
+                    _simulation.Bodies.Remove(_bodyReference.Handle);
+                }
+            }
+        }
+        public bool Exists()
+        {
+            if (_isStatic)
+            {
+                return _staticReference.Exists;
+            }
+            return _bodyReference.Exists;
         }
     }
 }

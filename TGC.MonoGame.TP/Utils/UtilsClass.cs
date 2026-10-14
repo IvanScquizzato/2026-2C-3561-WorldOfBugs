@@ -19,5 +19,9 @@ namespace TGC.MonoGame.Utils
         {
             return new NumericVector3(vector3.X, vector3.Y, vector3.Z);
         }
+        public static Vector3 ToVector3(NumericVector3 numericVector3)
+        {
+            return new Vector3(numericVector3.X, numericVector3.Y, numericVector3.Z);
+        }
     }
 }

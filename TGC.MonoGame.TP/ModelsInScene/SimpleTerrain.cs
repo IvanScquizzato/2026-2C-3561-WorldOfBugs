@@ -8,6 +8,11 @@ using BepuPhysics.Collidables;
 using System.Runtime.CompilerServices;
 using XnaVector3 = Microsoft.Xna.Framework.Vector3;
 using BepuVector3 = System.Numerics.Vector3;
+using BepuPhysics;
+using BepuUtilities.Memory;
+using TGC.MonoGame.TP.Colliders;
+using NumericVector3 = System.Numerics.Vector3;
+
 namespace TGC.MonoGame.TP.Terrain
 {
     public class SimpleTerrain : ModelInScene
@@ -15,6 +20,7 @@ namespace TGC.MonoGame.TP.Terrain
         public readonly Texture2D colorMapTexture;
         public readonly Texture2D terrainTexture;
         public readonly Texture2D terrainTexture2;
+
         public VertexBuffer vbTerrain;
         public List<Triangle> triangles { get; set; } = new List<Triangle>();
         public TerrainRenderer _terrainRenderer { get; set; }
@@ -180,6 +186,10 @@ namespace TGC.MonoGame.TP.Terrain
         public override void Draw(Matrix view, Matrix projection)
         {
             _terrainRenderer.Draw(this, view, projection);
+        }
+        public override void CreateCollider(Simulation simulation, BufferPool bufferPool, Effect effect, GraphicsDevice graphicsDevice)
+        {
+            _collider = new TerrainCollider(triangles, NumericVector3.Zero, simulation, bufferPool, effect, graphicsDevice);
         }
     }
 }

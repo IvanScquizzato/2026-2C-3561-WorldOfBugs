@@ -24,8 +24,6 @@ namespace TGC.MonoGame.TP.Colliders
         public StaticBoxCollider(float width, float height, float depth, NumericVector3 position, Simulation simulation, BufferPool bufferPool, Effect effect, GraphicsDevice graphicsDevice) :
         base(simulation, bufferPool, effect, graphicsDevice)
         {
-            this._isStatic = true;
-
             LoadBoxCollider(width, height, depth, position);
         }
         private void LoadBoxCollider(float width, float height, float depth, NumericVector3 position)
