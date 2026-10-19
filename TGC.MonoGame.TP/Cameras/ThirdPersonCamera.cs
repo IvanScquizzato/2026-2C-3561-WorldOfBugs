@@ -30,8 +30,8 @@ namespace TGC.MonoGame.TP.Cameras
         private float _pitch = MathHelper.PiOver4;
         public float _cameraYaw = 0f;
         public float _cameraPitch = 0f;
-        private float sensibilidadX = 0.01f;
-        private float sensibilidadY = 0.0005f;
+        private float sensibilidadX = 0.005f;
+        private float sensibilidadY = 0.005f;
         private MouseState _previousMouseState;
         
 

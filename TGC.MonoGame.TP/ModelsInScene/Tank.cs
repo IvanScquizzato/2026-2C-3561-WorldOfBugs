@@ -18,7 +18,6 @@ using TGC.MonoGame.Utils;
 using TGC.MonoGame.TP.Colliders;
 using BepuPhysics.Collidables;
 using BepuUtilities.Memory;
-using Microsoft.Xna.Framework.Graphics;
 using TGC.MonoGame.TP.Physics.Bepu;
 using System.Diagnostics;
 

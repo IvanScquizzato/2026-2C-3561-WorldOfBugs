@@ -74,6 +74,9 @@ public class TGCGame : Game
     private MouseState _previousMouseState;
     private const float MissileSpeed = 1500f;
 
+    private Texture2D _pixel;
+
+
 
     public static Dictionary<CollidableReference, object> PhysicsToGameObjects = new Dictionary<CollidableReference, object>();
     /// <summary>
@@ -227,7 +230,7 @@ public class TGCGame : Game
             _decor.Add(new Grass(Content, ContentFolder3D + "Grass/source/grassExampleScene", new Vector3(x, y, z), Matrix.Identity, new Vector3(.5f), _basicRenderer));
         }
 
-        base.LoadContent();
+      
 
         //cargo planta
         /*
@@ -313,6 +316,14 @@ public class TGCGame : Game
         _debugEffect = Content.Load<Effect>(
             ContentFolderEffects + "DebugShader"
         );
+
+
+        //creo la mira
+        //_spriteBatch = new SpriteBatch(GraphicsDevice);
+
+        _pixel = new Texture2D(GraphicsDevice, 1, 1);
+        _pixel.SetData(new[] { Color.White });
+
 
         base.LoadContent();
 
@@ -597,6 +608,10 @@ public class TGCGame : Game
 
         // Aca deberiamos poner toda la logia de renderizado del juego.
         GraphicsDevice.Clear(Color.Black);
+
+        GraphicsDevice.BlendState = BlendState.Opaque;
+        GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+        GraphicsDevice.RasterizerState = RasterizerState.CullNone;
         foreach (var lista in _modelosEnEscenario)
         {
             foreach (var modelo in lista)
@@ -604,6 +619,10 @@ public class TGCGame : Game
                 modelo.Draw(_currentCamera.View, _currentCamera.Projection);
             }
         }
+
+        
+
+   
 
         // Dibujar hitbox del tanque
         // Dibujar todas las BoxHitbox del escenario
@@ -621,6 +640,36 @@ public class TGCGame : Game
             }
         }
 
+        _spriteBatch.Begin();
+        
+        int centerX = GraphicsDevice.Viewport.Width / 2;
+        int centerY = GraphicsDevice.Viewport.Height / 2;
+
+        _spriteBatch.Draw(
+            _pixel,
+            new Rectangle(centerX - 15, centerY, 10, 2),
+            Color.White);
+
+        _spriteBatch.Draw(
+            _pixel,
+            new Rectangle(centerX + 5, centerY, 10, 2),
+            Color.White);
+
+        _spriteBatch.Draw(
+            _pixel,
+            new Rectangle(centerX, centerY - 15, 2, 10),
+            Color.White);
+
+        _spriteBatch.Draw(
+            _pixel,
+            new Rectangle(centerX, centerY + 5, 2, 10),
+            Color.White);
+        
+        _spriteBatch.End();
+
+        GraphicsDevice.BlendState = BlendState.Opaque;
+        GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+        GraphicsDevice.RasterizerState = RasterizerState.CullNone;
         //RenderTank(_tanks[0]);
     }
 
