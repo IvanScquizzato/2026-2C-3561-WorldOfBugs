@@ -31,6 +31,7 @@ using TGC.MonoGame.TP.Missile;
 using TGC.MonoGame.TP.ShapeRenderers;
 namespace TGC.MonoGame.TP;
 
+
 /// <summary>
 ///     Esta es la clase principal del juego.
 ///     Inicialmente puede ser renombrado o copiado para hacer mas ejemplos chicos, en el caso de copiar para que se
@@ -75,8 +76,13 @@ public class TGCGame : Game
     private const float MissileSpeed = 1500f;
 
     private Texture2D _pixel;
+    private HUD.HUD _hud;
 
+    private GameState _gameState = GameState.MainMenu;
+    private HUD.MainMenu _mainMenu;
 
+    //fuente de texto
+    private SpriteFont _menuFont;
 
     public static Dictionary<CollidableReference, object> PhysicsToGameObjects = new Dictionary<CollidableReference, object>();
     /// <summary>
@@ -95,6 +101,13 @@ public class TGCGame : Game
         Content.RootDirectory = "Content";
         // Hace que el mouse sea visible.
         IsMouseVisible = true;
+    }
+
+    public enum GameState
+    {
+        MainMenu,
+        Playing,
+        Paused
     }
 
     /// <summary>
@@ -318,12 +331,17 @@ public class TGCGame : Game
         );
 
 
-        //creo la mira
-        //_spriteBatch = new SpriteBatch(GraphicsDevice);
-
+        //creo un pixel para dibujar el hud
         _pixel = new Texture2D(GraphicsDevice, 1, 1);
         _pixel.SetData(new[] { Color.White });
+        
+        _hud = new HUD.HUD(_pixel);
 
+        //creo una variable para controlar el menu
+        _menuFont = Content.Load<SpriteFont>("MenuFont");
+        Console.WriteLine(_menuFont == null);
+        _mainMenu = new HUD.MainMenu(_pixel,_menuFont);
+        
 
         base.LoadContent();
 
@@ -337,83 +355,101 @@ public class TGCGame : Game
 
     protected override void Update(GameTime gameTime)
     {
-        KeyboardState currentKeyboardState =
-            Keyboard.GetState();
-
-        MouseState currentMouseState =
-            Mouse.GetState();
-
-        if (
-            currentKeyboardState.IsKeyDown(Keys.C) &&
-            _previousKeyboardState.IsKeyUp(Keys.C)
-        )
+        //logica del menu
+        switch (_gameState)
         {
-            if (_currentCamera == _camera2)
-            {
-                _currentCamera = _camera;
-            }
-            else
-            {
-                _currentCamera = _camera2;
-            }
-        }
+            case GameState.MainMenu:
+                _mainMenu.Update();
 
-        if (currentKeyboardState.IsKeyDown(Keys.Escape))
-        {
-            Exit();
-        }
-
-        _tanks[0].Update(gameTime);
-
-        // atropellar arboles, si la trompa del tanque llega a un arbol yendo rapido el arbol desaparece
-        var tank = _tanks[0];
-        if (tank._velocity.Length() > 150f)
-        {
-            var trompa = tank._position + tank._forward * tank.Depth / 2f;
-            foreach (var tree in _trees.ToList())
-            {
-                if (Vector3.Distance(trompa, tree._position) < 20f)
+                if (_mainMenu.StartGame)
                 {
-                    //se elimina el arbol
-                    _simulation.Statics.Remove(_treeHandles[tree]);
-                    _treeHandles.Remove(tree);
-                    _trees.Remove(tree);
-                    // el tanque pierde 100 de velocidad al atropellar
-                    tank._collider._bodyReference.Velocity.Linear -= UtilsClass.ToNumericVector(tank._forward * 100f);
+                    _gameState = GameState.Playing;
                 }
-            }
+                if (_mainMenu.LeaveGame)
+                {
+                    Exit();
+
+                }
+                break;
+
+            case GameState.Playing:
+                KeyboardState currentKeyboardState =
+           Keyboard.GetState();
+
+                MouseState currentMouseState =
+                    Mouse.GetState();
+
+                if (
+                    currentKeyboardState.IsKeyDown(Keys.C) &&
+                    _previousKeyboardState.IsKeyUp(Keys.C)
+                )
+                {
+                    if (_currentCamera == _camera2)
+                    {
+                        _currentCamera = _camera;
+                    }
+                    else
+                    {
+                        _currentCamera = _camera2;
+                    }
+                }
+
+                if (currentKeyboardState.IsKeyDown(Keys.Escape))
+                {
+                    Exit();
+                }
+
+                _tanks[0].Update(gameTime);
+
+                // atropellar arboles, si la trompa del tanque llega a un arbol yendo rapido el arbol desaparece
+                var tank = _tanks[0];
+                if (tank._velocity.Length() > 150f)
+                {
+                    var trompa = tank._position + tank._forward * tank.Depth / 2f;
+                    foreach (var tree in _trees.ToList())
+                    {
+                        if (Vector3.Distance(trompa, tree._position) < 20f)
+                        {
+                            //se elimina el arbol
+                            _simulation.Statics.Remove(_treeHandles[tree]);
+                            _treeHandles.Remove(tree);
+                            _trees.Remove(tree);
+                            // el tanque pierde 100 de velocidad al atropellar
+                            tank._collider._bodyReference.Velocity.Linear -= UtilsClass.ToNumericVector(tank._forward * 100f);
+                        }
+                    }
+                }
+
+                _simulation.Timestep(1 / 60f);
+
+                foreach (var tanque in _tanks)
+                {
+                    tanque.updateBodyPosition();
+                }
+
+
+                if (
+                    currentKeyboardState.IsKeyDown(Keys.X) &&
+                    _previousKeyboardState.IsKeyUp(Keys.X)
+                )
+                {
+                    FireMissile();
+                }
+
+
+                UpdateMissiles(gameTime);
+
+
+                _camera.Update(gameTime);
+                _camera2.Update(gameTime);
+
+                _previousKeyboardState =
+                    currentKeyboardState;
+
+                _previousMouseState =
+                    currentMouseState;
+                break;
         }
-
-        _simulation.Timestep(1 / 60f);
-
-        foreach (var tanque in _tanks)
-        {
-            tanque.updateBodyPosition();
-        }
-
-
-        if (
-            currentKeyboardState.IsKeyDown(Keys.X) &&
-            _previousKeyboardState.IsKeyUp(Keys.X)
-        )
-        {
-            FireMissile();
-        }
-
-
-        UpdateMissiles(gameTime);
-
-
-        _camera.Update(gameTime);
-        _camera2.Update(gameTime);
-
-        _previousKeyboardState =
-            currentKeyboardState;
-
-        _previousMouseState =
-            currentMouseState;
-
-
         base.Update(gameTime);
     }
 
@@ -605,74 +641,60 @@ public class TGCGame : Game
     /// </summary>
     protected override void Draw(GameTime gameTime)
     {
-
         // Aca deberiamos poner toda la logia de renderizado del juego.
-        GraphicsDevice.Clear(Color.Black);
+        GraphicsDevice.Clear(Color.LightBlue);
 
-        GraphicsDevice.BlendState = BlendState.Opaque;
-        GraphicsDevice.DepthStencilState = DepthStencilState.Default;
-        GraphicsDevice.RasterizerState = RasterizerState.CullNone;
-        foreach (var lista in _modelosEnEscenario)
+
+        //aca ordenamos dibujar el escenario correspondiente
+        switch (_gameState)
         {
-            foreach (var modelo in lista)
-            {
-                modelo.Draw(_currentCamera.View, _currentCamera.Projection);
-            }
-        }
+            case GameState.MainMenu:
+                _mainMenu.Draw(_spriteBatch);
+                break;
 
-        
-
-   
-
-        // Dibujar hitbox del tanque
-        // Dibujar todas las BoxHitbox del escenario
-        foreach (var lista in _modelosEnEscenario)
-        {
-            foreach (var modelo in lista)
-            {
-                if (modelo._hitbox is BoxHitbox boxHitbox)
+            case GameState.Playing:
+                GraphicsDevice.BlendState = BlendState.Opaque;
+                GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+                GraphicsDevice.RasterizerState = RasterizerState.CullNone;
+                foreach (var lista in _modelosEnEscenario)
                 {
-                    DrawBoxHitbox(
-                        modelo,
-                        boxHitbox
-                    );
+                    foreach (var modelo in lista)
+                    {
+                        modelo.Draw(_currentCamera.View, _currentCamera.Projection);
+                    }
                 }
-            }
+
+
+
+
+
+                // Dibujar hitbox del tanque
+                // Dibujar todas las BoxHitbox del escenario
+                foreach (var lista in _modelosEnEscenario)
+                {
+                    foreach (var modelo in lista)
+                    {
+                        if (modelo._hitbox is BoxHitbox boxHitbox)
+                        {
+                            DrawBoxHitbox(
+                                modelo,
+                                boxHitbox
+                            );
+                        }
+                    }
+                }
+
+
+                _hud.Draw(_spriteBatch);
+                break;
         }
 
-        _spriteBatch.Begin();
-        
-        int centerX = GraphicsDevice.Viewport.Width / 2;
-        int centerY = GraphicsDevice.Viewport.Height / 2;
-
-        _spriteBatch.Draw(
-            _pixel,
-            new Rectangle(centerX - 15, centerY, 10, 2),
-            Color.White);
-
-        _spriteBatch.Draw(
-            _pixel,
-            new Rectangle(centerX + 5, centerY, 10, 2),
-            Color.White);
-
-        _spriteBatch.Draw(
-            _pixel,
-            new Rectangle(centerX, centerY - 15, 2, 10),
-            Color.White);
-
-        _spriteBatch.Draw(
-            _pixel,
-            new Rectangle(centerX, centerY + 5, 2, 10),
-            Color.White);
-        
-        _spriteBatch.End();
-
-        GraphicsDevice.BlendState = BlendState.Opaque;
-        GraphicsDevice.DepthStencilState = DepthStencilState.Default;
-        GraphicsDevice.RasterizerState = RasterizerState.CullNone;
         //RenderTank(_tanks[0]);
     }
+    public void HUD()
+    {
 
+    }
     /// <summary>
     ///     Libero los recursos que se cargaron en el juego.
     /// </summary>
