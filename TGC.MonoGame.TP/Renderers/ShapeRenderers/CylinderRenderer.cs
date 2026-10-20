@@ -15,17 +15,14 @@ using System.Diagnostics;
 using BepuPhysics.Collidables;
 using BepuUtilities.Memory;
 using TGC.MonoGame.TP.Colliders;
+using TGC.MonoGame.TP.ShapeRenderers;
 namespace TGC.MonoGame.TP.ShapeRenderers
 {
-
     public class CylinderRenderer : ShapeRenderer
     {
+        public CylinderRenderer(GraphicsDevice graphicsDevice, Effect effect) : base(graphicsDevice, effect)
+        { }
 
-
-        public CylinderRenderer(GraphicsDevice graphicsDevice, Effect effect) : base(graphicsDevice, effect, Cylinder.Id)
-        {
-
-        }
         protected override void Load()
         {
             int segments = 16;
@@ -65,15 +62,10 @@ namespace TGC.MonoGame.TP.ShapeRenderers
             indexBuffer = new IndexBuffer(_graphicsDevice, typeof(short), indices.Length, BufferUsage.WriteOnly);
             indexBuffer.SetData(indices);
         }
-        protected override void DrawWithWorld(Matrix world, Matrix view, Matrix projection)
+        public override void Draw(Matrix world, Matrix view, Matrix projection)
         {
-            base.DrawWithWorldAndLines(world, view, projection, 48);
+            DrawWithLines(world, view, projection, 48);
         }
-        protected override Matrix GetWorldOfShape(Matrix worldNotScaled, TypedIndex shapeIndex, Simulation simulation)
-        {
-            ref Cylinder cylinderShape = ref simulation.Shapes.GetShape<Cylinder>(shapeIndex.Index);
-            var physicsScale = new Vector3(cylinderShape.Radius * 2f, cylinderShape.Length, cylinderShape.Radius * 2f);
-            return Matrix.CreateScale(physicsScale) * worldNotScaled;
-        }
+
     }
 }

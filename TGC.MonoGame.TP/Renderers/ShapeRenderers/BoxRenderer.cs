@@ -15,15 +15,14 @@ using System.Diagnostics;
 using BepuPhysics.Collidables;
 using BepuUtilities.Memory;
 using TGC.MonoGame.TP.Colliders;
+using TGC.MonoGame.TP.ShapeRenderers;
 namespace TGC.MonoGame.TP.ShapeRenderers
 {
-
     public class BoxRenderer : ShapeRenderer
     {
+        public BoxRenderer(GraphicsDevice graphicsDevice, Effect effect) : base(graphicsDevice, effect)
+        { }
 
-        public BoxRenderer(GraphicsDevice graphicsDevice, Effect effect) : base(graphicsDevice, effect, Box.Id)
-        {
-        }
         protected override void Load()
         {
             // 2. Definir los 8 vértices del cubo
@@ -60,15 +59,10 @@ namespace TGC.MonoGame.TP.ShapeRenderers
             indexBuffer = new IndexBuffer(_graphicsDevice, typeof(short), 24, BufferUsage.WriteOnly);
             indexBuffer.SetData(indices);
         }
-        protected override void DrawWithWorld(Matrix world, Matrix view, Matrix projection)
+        public override void Draw(Matrix world, Matrix view, Matrix projection)
         {
-            base.DrawWithWorldAndLines(world, view, projection, 12);
+            DrawWithLines(world, view, projection, 12);
         }
-        protected override Matrix GetWorldOfShape(Matrix worldNotScaled, TypedIndex shapeIndex, Simulation simulation)
-        {
-            ref Box boxShape = ref simulation.Shapes.GetShape<Box>(shapeIndex.Index);
-            var physicsScale = new Vector3(boxShape.HalfWidth * 2f, boxShape.HalfHeight * 2f, boxShape.HalfLength * 2f);
-            return Matrix.CreateScale(physicsScale) * worldNotScaled;
-        }
+
     }
 }

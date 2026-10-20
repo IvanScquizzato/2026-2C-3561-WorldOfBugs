@@ -21,6 +21,8 @@ using BepuUtilities.Memory;
 using TGC.MonoGame.TP.Physics.Bepu;
 using System.Diagnostics;
 
+using TGC.MonoGame.TP.Missile;
+using System.Security.Cryptography.X509Certificates;
 namespace TGC.MonoGame.TP.Tanks
 {
     public class Tank : ModelInScene
@@ -46,6 +48,8 @@ namespace TGC.MonoGame.TP.Tanks
         private float quantityOfVerticalRaycasts = 18f;
         private float alturaMinTorreta = -0.4f;
         private float alturaMaxTorreta = 0.5f;
+        private float coolDownSecs = 0.5f;
+        private float currentCoolDownSecs = 0f;
         public Tank(
             ContentManager Content,
             String modelPath,
@@ -65,6 +69,10 @@ namespace TGC.MonoGame.TP.Tanks
                 mass
             )
         {
+            desiredHeight = Height * 0.35f;
+        }
+        public override void CreateHitbox(Effect effect, GraphicsDevice graphicsDevice)
+        {
             Vector3 halfSize = new Vector3(
                 _widthLocal * 0.49f,
                 _heightLocal * 0.3f,
@@ -79,9 +87,9 @@ namespace TGC.MonoGame.TP.Tanks
 
             _hitbox = new BoxHitbox(
                 center - halfSize,
-                center + halfSize
+                center + halfSize,
+                effect, graphicsDevice
             );
-            desiredHeight = Height * 0.35f;
         }
 
         public void SetTurretRotation(float yaw,float pitch)
@@ -97,9 +105,13 @@ namespace TGC.MonoGame.TP.Tanks
         }
         public void Update(GameTime gameTime)
         {
+            MouseState mouse = Mouse.GetState();
 
-
+            float deltaX = mouse.X - _previousMouseState.X;
+            float deltaY = mouse.Y - _previousMouseState.Y;
+            _previousMouseState = mouse;
             float elapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            currentCoolDownSecs -= currentCoolDownSecs <= 0 ? 0 : elapsedSeconds;
             if (elapsedSeconds <= 0.0001f)
                 return;
             float forwardInput = 0f;
@@ -196,7 +208,7 @@ namespace TGC.MonoGame.TP.Tanks
         private void aplicarFriccionAngular(float elapsedSeconds, bool estaDoblando)
         {
             float angularDragFactor = 10.0f;
-            var localInertia = _collider._bodyReference.LocalInertia.InverseInertiaTensor;
+            var localInertia = _collider.GetInverseInertiaTensor();
             float yawInertia = 1.0f / localInertia.YY;
             float worldYawSpeed = Vector3.Dot(_angularVelocity, _up);
             Vector3 angularFrictionImpulse = Vector3.Zero;
@@ -342,9 +354,10 @@ namespace TGC.MonoGame.TP.Tanks
         {
             return Vector3.Transform(_collider._centerOfMass * 0.1f, Matrix.CreateScale(_scale) * _rotation);
         }
-        public void SetCollider(Simulation simulation, Dictionary<CollidableReference, object> physicsToGameObjects, BufferPool bufferPool, Effect effect, GraphicsDevice graphicsDevice)
+        public override void CreateCollider(Simulation simulation, BufferPool bufferPool, Effect effect, GraphicsDevice graphicsDevice)
         {
-            _collider = new TankCollider(this, simulation, physicsToGameObjects, bufferPool, effect, graphicsDevice);
+            _collider = new TankCollider(this, simulation, bufferPool, effect, graphicsDevice);
+            LoadPhysics(simulation, TGCGame.gravity);
         }
 
         public Matrix GetCannonRotation()
@@ -387,6 +400,46 @@ namespace TGC.MonoGame.TP.Tanks
                 up * verticalOffset +
                 direction * forwardOffset +
                 right * lateralOffset;
+        }
+        public override void CollidedWith(ModelInScene model, Vector3 contactPointOffset, Vector3 thisPos, float impactImpulse, float destructiveImpactImpulse, Vector3 normal)
+        {
+            if (model.IsDestroyedWith(destructiveImpactImpulse))
+            {
+                float breakImpulse = Math.Min(impactImpulse, model.strength);
+
+                Vector3 cambioDeVelocidad = -normal * breakImpulse * this.InverseMass();
+                _collider.ApplyImpulse(UtilsClass.ToNumericVector(cambioDeVelocidad), UtilsClass.ToNumericVector(contactPointOffset));
+            }
+        }
+        public override bool ShouldCollideWith(ModelInScene model, Vector3 contactPointOffset, Vector3 thisPos, float impactImpulse, float destructiveImpactImpulse, Vector3 normal)
+        {
+            if (model.IsDestroyedWith(destructiveImpactImpulse))
+            {
+                return false;
+            }
+            return true;
+        }
+        public bool ShouldFireMissile(GameTime gameTime, out Vector3 direction, out Vector3 position, out Matrix rotation)
+        {
+            KeyboardState keyboardState = Keyboard.GetState();
+
+            if (keyboardState.IsKeyDown(Keys.X) && currentCoolDownSecs <= 0)
+            {
+                direction =
+                GetCannonDirection();
+
+                position =
+                GetCannonMuzzlePosition();
+
+                rotation =
+                GetCannonRotation();
+                currentCoolDownSecs = coolDownSecs;
+                return true;
+            }
+            direction = Vector3.Zero;
+            position = Vector3.Zero;
+            rotation = Matrix.Identity;
+            return false;
         }
     }
 

@@ -10,6 +10,12 @@ using TGC.MonoGame.TP.Tanks;
 using BepuUtilities;
 using TGC.MonoGame.TP.Contact;
 using System.Diagnostics;
+using TGC.MonoGame.TP.ModelsInScene;
+using NumericVector3 = System.Numerics.Vector3;
+using Microsoft.Xna.Framework.Graphics;
+using TGC.MonoGame.Utils;
+using BepuPhysics.CollisionDetection.SweepTasks;
+using System.Linq;
 namespace TGC.MonoGame.TP.Physics.Bepu;
 
 public struct PoseIntegratorCallbacks : IPoseIntegratorCallbacks
@@ -156,10 +162,7 @@ public struct ClosestHitHandler : IRayHitHandler
         T = t;
         Normal = normal;
         Collidable = collidable;
-        //Debug.WriteLine("chocp");
-        // Clave para obtener el impacto más cercano:
-        // Reducimos maximumT a la distancia de este impacto. 
-        // Bepu dejará de buscar objetos que estén más lejos que este nuevo maximumT.
+
         if (t < maximumT)
             maximumT = t;
         T = t;
@@ -225,7 +228,19 @@ public struct NarrowPhaseCallbacks : INarrowPhaseCallbacks
         pairMaterial.FrictionCoefficient = FrictionCoefficient;
         pairMaterial.MaximumRecoveryVelocity = MaximumRecoveryVelocity;
         pairMaterial.SpringSettings = ContactSpringiness;
-        return true;
+
+        if (manifold.Count == 0) return true;
+
+
+        manifold.GetContact(0, out var offset, out var normal, out var depth, out var featureId);
+
+        if (depth < 0f) return true;
+
+        return ProcessCollisionLogic(
+            pair,
+            -new Vector3(normal.X, normal.Y, normal.Z),
+            new Vector3(offset.X, offset.Y, offset.Z)
+        );
     }
 
     /// <inheritdoc/>
@@ -233,81 +248,72 @@ public struct NarrowPhaseCallbacks : INarrowPhaseCallbacks
     public bool ConfigureContactManifold(int workerIndex, CollidablePair pair, int childIndexA, int childIndexB,
         ref ConvexContactManifold manifold)
     {
-        /*
-        bool foundA = TGCGame.PhysicsToGameObjects.TryGetValue(pair.A, out object objectA);
-        bool foundB = TGCGame.PhysicsToGameObjects.TryGetValue(pair.B, out object objectB);
+        if (manifold.Count == 0) return true;
+        if (manifold.Contact0.Depth < 0f) return true;
 
-        Tank tanqueInvolucrado = null;
-        int indiceHijoDelTanque = -1;
-        CollidableReference otroObjetoRef = new CollidableReference();
+        return ProcessCollisionLogic(
+            pair,
+            -new Vector3(manifold.Normal.X, manifold.Normal.Y, manifold.Normal.Z),
+            new Vector3(manifold.Contact0.Offset.X, manifold.Contact0.Offset.Y, manifold.Contact0.Offset.Z)
+        );
+    }
+    private bool ProcessCollisionLogic(CollidablePair pair, Vector3 normalFromAToB, Vector3 relativeOffsetA)
+    {
+        ModelInScene modelA = TGCGame.PhysicsToGameObjects[pair.A];
+        ModelInScene modelB = TGCGame.PhysicsToGameObjects[pair.B];
 
-        // 2. Determinar si A es el tanque
-        if (foundA && objectA is Tank tankA)
+        GetPositionAndVelocity(pair.A, out Vector3 posA, out Vector3 linearVelocityA, out Vector3 angularVelocityA);
+        GetPositionAndVelocity(pair.B, out Vector3 posB, out Vector3 linearVelocityB, out Vector3 angularVelocityB);
+
+        Vector3 relativeOffsetB = posA + relativeOffsetA - posB;
+
+        Vector3 velPointA = linearVelocityA + Vector3.Cross(angularVelocityA, relativeOffsetA);
+        Vector3 velPointB = linearVelocityB + Vector3.Cross(angularVelocityB, relativeOffsetB);
+        Vector3 relativeVelocityPoint = velPointA - velPointB;
+
+        Vector3 relativeVelocityLinear = linearVelocityA - linearVelocityB;
+
+        float masaEfectiva = 1f / (modelA.InverseMass() + modelB.InverseMass());
+
+        float impactVelocity = Math.Abs(Vector3.Dot(relativeVelocityPoint, normalFromAToB));
+        float impactImpulse = impactVelocity * masaEfectiva;
+
+        float destructiveImpactImpulse = relativeVelocityLinear.Length() * masaEfectiva;
+
+        TGCGame.PendingImpacts.Enqueue(new ImpactData
         {
-            tanqueInvolucrado = tankA;
-            indiceHijoDelTanque = childIndexA;
-            otroObjetoRef = pair.B; // El otro objeto es B
-        }
-        // Determinar si B es el tanque
-        else if (foundB && objectB is Tank tankB)
+            modelA = modelA,
+            modelB = modelB,
+            positionA = UtilsClass.ToVector3(posA),
+            positionB = UtilsClass.ToVector3(posB),
+            collisionOffsetA = UtilsClass.ToVector3(relativeOffsetA),
+            collisionOffsetB = UtilsClass.ToVector3(relativeOffsetB),
+            impactImpulse = impactImpulse,
+            destructiveImpactImpulse = destructiveImpactImpulse,
+            normalFromAToB = UtilsClass.ToVector3(normalFromAToB)
+        });
+
+        bool collideA = modelA.ShouldCollideWith(modelB, relativeOffsetA, posA, impactImpulse, destructiveImpactImpulse, normalFromAToB);
+        bool collideB = modelB.ShouldCollideWith(modelA, relativeOffsetB, posB, impactImpulse, destructiveImpactImpulse, -normalFromAToB);
+
+        return collideA && collideB;
+    }
+    private void GetPositionAndVelocity(CollidableReference collidable, out Vector3 position, out Vector3 linearVelocity, out Vector3 angularVelocity)
+    {
+        if (collidable.Mobility == CollidableMobility.Static)
         {
-            tanqueInvolucrado = tankB;
-            indiceHijoDelTanque = childIndexB;
-            otroObjetoRef = pair.A; // El otro objeto es A
+            StaticReference staticReferenceA = TGCGame._simulation.Statics.GetStaticReference(collidable.StaticHandle);
+            position = staticReferenceA.Pose.Position;
+            linearVelocity = Vector3.Zero;
+            angularVelocity = Vector3.Zero;
         }
-
-        // 3. Si un tanque está participando en esta colisión...
-        if (tanqueInvolucrado != null)
+        else
         {
-            // 4. Verificamos si la parte que chocó fue una oruga (hijos 1 o 2)
-            if (indiceHijoDelTanque > 0)
-            {
-                object objetoChocado = null;
-                if (TGCGame.PhysicsToGameObjects.TryGetValue(otroObjetoRef, out object otro))
-                {
-                    objetoChocado = otro;
-                }
-
-                bool esIzquierda = (indiceHijoDelTanque == 1 || indiceHijoDelTanque == 3);
-
-                // Iterar sobre todos los puntos de contacto en el manifold
-                for (int i = 0; i < manifold.Count; i++)
-                {
-                    // Extraer la normal para este punto
-                    System.Numerics.Vector3 normalNumerics = manifold.GetNormal(ref manifold, i);
-
-                    // Extraer el offset (posición del contacto)
-                    System.Numerics.Vector3 offsetNumerics = manifold.GetOffset(ref manifold, i);
-
-                    // Extraer la profundidad de penetración (opcional, útil para lógicas de daño o físicas custom)
-                    //float depth = manifold.GetDepth(ref manifold, i);
-
-                    Vector3 normalContacto;
-                    if (tanqueInvolucrado == objectB)
-                        normalContacto = new Vector3(-normalNumerics.X, -normalNumerics.Y, -normalNumerics.Z);
-                    else
-                        normalContacto = new Vector3(normalNumerics.X, normalNumerics.Y, normalNumerics.Z);
-
-                    Vector3 offsetContacto = new Vector3(offsetNumerics.X, offsetNumerics.Y, offsetNumerics.Z);
-
-                    if (esIzquierda)
-                    {
-                        tanqueInvolucrado.AddLeftContact(new ContactPoint(offsetContacto, normalContacto));
-                    }
-                    else
-                    {
-                        tanqueInvolucrado.AddRightContact(new ContactPoint(offsetContacto, normalContacto));
-                    }
-
-
-                }
-                // 5. ¡Cancelamos la resolución física para que la oruga no empuje el tanque!
-                return false;
-            }
-
+            BodyReference bodyReferenceA = TGCGame._simulation.Bodies.GetBodyReference(collidable.BodyHandle);
+            position = bodyReferenceA.Pose.Position;
+            linearVelocity = bodyReferenceA.Velocity.Linear;
+            angularVelocity = bodyReferenceA.Velocity.Angular;
         }
-        */
-        return true;
     }
 
     /// <inheritdoc/>

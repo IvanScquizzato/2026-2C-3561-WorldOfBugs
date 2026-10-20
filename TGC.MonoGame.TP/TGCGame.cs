@@ -29,9 +29,24 @@ using System.Linq;
 using TGC.MonoGame.TP.TankRaycasts;
 using TGC.MonoGame.TP.Missile;
 using TGC.MonoGame.TP.ShapeRenderers;
+using TGC.MonoGame.TP.Colliders;
+using System.Security.Cryptography.X509Certificates;
+using System.Collections.Concurrent;
+using System.Diagnostics;
 namespace TGC.MonoGame.TP;
 
-
+public struct ImpactData
+{
+    public ModelInScene modelA;
+    public ModelInScene modelB;
+    public Vector3 positionA;
+    public Vector3 positionB;
+    public Vector3 collisionOffsetA;
+    public Vector3 collisionOffsetB;
+    public float impactImpulse;
+    public float destructiveImpactImpulse;
+    public Vector3 normalFromAToB;
+}
 /// <summary>
 ///     Esta es la clase principal del juego.
 ///     Inicialmente puede ser renombrado o copiado para hacer mas ejemplos chicos, en el caso de copiar para que se
@@ -46,14 +61,13 @@ public class TGCGame : Game
     public const string ContentFolderSpriteFonts = "SpriteFonts/";
     public const string ContentFolderTextures = "Textures/";
 
-    private Simulation _simulation;
+    public static Simulation _simulation;
     private BufferPool _bufferPool;
 
     private readonly GraphicsDeviceManager _graphics;
     private Camera _camera;
     private Camera _camera2;
     public Camera _currentCamera;
-
     private Effect _effect;
     private BasicRenderer _basicRenderer;
     private TerrainRenderer _terrainRenderer;
@@ -74,6 +88,8 @@ public class TGCGame : Game
     private List<Missil> _missiles = new List<Missil>();
     private MouseState _previousMouseState;
     private const float MissileSpeed = 1500f;
+    public static Vector3 gravity = new Vector3(0, -1000f, 0);
+    public static Dictionary<CollidableReference, ModelInScene> PhysicsToGameObjects = new Dictionary<CollidableReference, ModelInScene>();
 
     private Texture2D _pixel;
     private HUD.HUD _hud;
@@ -87,6 +103,7 @@ public class TGCGame : Game
     private SpriteFont _menuFont;
 
     public static Dictionary<CollidableReference, object> PhysicsToGameObjects = new Dictionary<CollidableReference, object>();
+    public static ConcurrentQueue<ImpactData> PendingImpacts { get; } = new();
     /// <summary>
     ///     Constructor del juego.
     /// </summary>
@@ -149,13 +166,17 @@ public class TGCGame : Game
     /// </summary>
     protected override void LoadContent()
     {
+        // hitbox debug
+        _debugEffect = Content.Load<Effect>(
+            ContentFolderEffects + "DebugShader"
+        );
         // Aca es donde deberiamos cargar todos los contenido necesarios antes de iniciar el juego.
         _spriteBatch = new SpriteBatch(GraphicsDevice);
 
         // Cargo un efecto basico propio declarado en el Content pipeline.
         // En el juego no pueden usar BasicEffect de MG, deben usar siempre efectos propios.
         _effect = Content.Load<Effect>(ContentFolderEffects + "BasicShader");
-        _basicRenderer = new BasicRenderer(GraphicsDevice, _effect);
+        _basicRenderer = new BasicRenderer(GraphicsDevice, _effect, _debugEffect);
 
         //Cargo terreno
         var terrainEffect = Content.Load<Effect>(ContentFolderEffects + "Terrain");
@@ -258,79 +279,25 @@ public class TGCGame : Game
             _plants.Add(new Plant(Content, ContentFolder3D + "Plant/source/plant1_afsTREE_xlod00", new Vector3(x, y, z), Matrix.Identity, new Vector3(0.5f), _basicRenderer));
         }
         */
-        Vector3 gravity = new Vector3(0, -1000, 0);
+
         _simulation = Simulation.Create(_bufferPool, new NarrowPhaseCallbacks(new SpringSettings(30, 1), 1.5f, 0.5f),
         new PoseIntegratorCallbacks(UtilsClass.ToNumericVector(gravity)), new SolveDescription(8, 1));
-        _tanks[0].LoadPhysics(_simulation, gravity);
 
-        //Añado terreno
-        _bufferPool.Take(_terrains[0].triangles.Count, out Buffer<Triangle> triangles);
-        for (int i = 0; i < _terrains[0].triangles.Count; i++)
-        {
-            triangles[i] = _terrains[0].triangles[i];
-        }
-        Mesh terrainMesh = new Mesh(triangles, NumericVector3.One, _bufferPool);
-        TypedIndex shapeIndex = _simulation.Shapes.Add(terrainMesh);
-        StaticDescription staticDescription = new StaticDescription(NumericVector3.Zero, shapeIndex);
-        _simulation.Statics.Add(staticDescription);
 
-        // colision de los arboles, una caja estatica por arbol
-        var treeShape = _simulation.Shapes.Add(new Box(20f, _trees[0].Height, 20f));
-        foreach (var tree in _trees)
+        foreach (var lista in _modelosEnEscenario)
         {
-            var center = new NumericVector3(tree._position.X, tree._position.Y + tree.Height / 2f, tree._position.Z);
-            _treeHandles[tree] = _simulation.Statics.Add(new StaticDescription(center, treeShape));
-        }
-
-        // colision del auto abandonado, caja del tamaño del modelo
-        foreach (var auto in _decor.OfType<AbandonedCar>())
-        {
-            var shape = _simulation.Shapes.Add(new Box(auto.Width, auto.Height, auto.Depth));
-            var center = new NumericVector3(auto._position.X, auto._position.Y + auto.Height / 2f, auto._position.Z - 50);
-            _simulation.Statics.Add(new StaticDescription(center, shape));
-        }
-
-        // colision del obelisco, caja del tamaño del modelo
-        foreach (var obelisco in _decor.OfType<Obelisc>())
-        {
-            var shape = _simulation.Shapes.Add(new Box(obelisco.Width - 90f, obelisco.Height, obelisco.Depth - 90f));
-            var center = new NumericVector3(obelisco._position.X, obelisco._position.Y, obelisco._position.Z);
-            _simulation.Statics.Add(new StaticDescription(center, shape));
-        }
-
-        // colision de las casas abandonadas, caja del tamaño del modelo
-        foreach (var casa in _decor.OfType<RuinHouse1>())
-        {
-            var shape = _simulation.Shapes.Add(new Box(casa.Width - 1000, casa.Height, casa.Depth - 1200));
-            var center = new NumericVector3(casa._position.X, casa._position.Y + casa.Height / 2f, casa._position.Z + 100 /*ancho*/);
-            _simulation.Statics.Add(new StaticDescription(center, shape));
-        }
-
-        // colision de las cercas de piedra, caja del tamaño del modelo
-        foreach (var cerca in _decor.OfType<Fence>())
-        {
-            var shape = _simulation.Shapes.Add(new Box(cerca.Width, cerca.Height, cerca.Depth - 100));
-            var center = new NumericVector3(cerca._position.X, cerca._position.Y + cerca.Height / 2f, cerca._position.Z);
-            _simulation.Statics.Add(new StaticDescription(center, shape));
-        }
-        //colision de las rocas medianas, media esfera
-        var rocaShape = _simulation.Shapes.Add(new Sphere(350f));
-        foreach (var roca in _decor.OfType<Debris>())
-        {
-            var center = new NumericVector3(roca._position.X, roca._position.Y - 165f, roca._position.Z);
-            _simulation.Statics.Add(new StaticDescription(center, rocaShape));
+            foreach (var modelo in lista)
+            {
+                modelo.CreateCollider(_simulation, _bufferPool, _effect, GraphicsDevice);
+                if (modelo._collider != null)
+                {
+                    PhysicsToGameObjects[modelo._collider.GetCollidableReference()] = modelo;
+                }
+                modelo.CreateHitbox(_debugEffect, GraphicsDevice);
+            }
         }
 
 
-        foreach (var tanque in _tanks)
-        {
-            tanque.SetCollider(_simulation, PhysicsToGameObjects, _bufferPool, _effect, GraphicsDevice);
-        }
-
-        // hitbox debug
-        _debugEffect = Content.Load<Effect>(
-            ContentFolderEffects + "DebugShader"
-        );
 
 
         //creo un pixel para dibujar el hud
@@ -392,265 +359,95 @@ public class TGCGame : Game
                         _currentCamera = _camera2;
                     }
                 }
+                break;
+           }
 
-                if (currentKeyboardState.IsKeyDown(Keys.Escape) && _previousKeyboardState.IsKeyUp(Keys.Escape))
-                {
+        if (currentKeyboardState.IsKeyDown(Keys.Escape) && _previousKeyboardState.IsKeyUp(Keys.Escape))
+              {
                     _pauseMenu.StartMenu = false;
                     _pauseMenu.ResumeGame = false;
                     _gameState = GameState.Paused;
-                }
+              }
+              
+        _simulation.Timestep(1 / 60f);
 
-                _tanks[0].Update(gameTime);
+        HashSet<(ModelInScene, ModelInScene)> parejasProcesadas = new HashSet<(ModelInScene, ModelInScene)>();
 
-                // atropellar arboles, si la trompa del tanque llega a un arbol yendo rapido el arbol desaparece
-                var tank = _tanks[0];
-                if (tank._velocity.Length() > 150f)
+        while (TGCGame.PendingImpacts.TryDequeue(out ImpactData impact))
+        {
+            ModelInScene modelA = impact.modelA;
+            ModelInScene modelB = impact.modelB;
+            var parejaId = modelA.GetHashCode() < modelB.GetHashCode()
+                ? (modelA, modelB)
+                : (modelB, modelA);
+
+            if (parejasProcesadas.Contains(parejaId))
+            {
+                continue;
+            }
+            parejasProcesadas.Add(parejaId);
+            modelA.CollidedWith(modelB, impact.collisionOffsetA, impact.positionA, impact.impactImpulse, impact.destructiveImpactImpulse, impact.normalFromAToB);
+            modelB.CollidedWith(modelA, impact.collisionOffsetB, impact.positionB, impact.impactImpulse, impact.destructiveImpactImpulse, -impact.normalFromAToB);
+        }
+
+        foreach (var tanque in _tanks)
+        {
+            tanque.updateBodyPosition();
+
+        }
+        if (_tanks[0].ShouldFireMissile(gameTime, out Vector3 direction, out Vector3 position, out Matrix rotation))
+        {
+            Missil missile = new Missil(
+                Content,
+                ContentFolder3D + "missile/source/rocket2",
+                position,
+                rotation,
+                new Vector3(4.2f),
+                _basicRenderer,
+                direction
+            );
+
+            _missiles.Add(missile);
+        }
+        for (int i = _missiles.Count - 1; i >= 0; i--)
+        {
+            Missil missil = _missiles[i];
+
+            if (missil._isDisabled)
+            {
+                _missiles.RemoveAt(i);
+                continue;
+            }
+
+            missil.Update(gameTime);
+
+            foreach (var lista in _modelosEnEscenario)
+            {
+                foreach (ModelInScene model in lista)
                 {
-                    var trompa = tank._position + tank._forward * tank.Depth / 2f;
-                    foreach (var tree in _trees.ToList())
+                    if (model.ShouldCollideWithMissile(missil))
                     {
-                        if (Vector3.Distance(trompa, tree._position) < 20f)
-                        {
-                            //se elimina el arbol
-                            _simulation.Statics.Remove(_treeHandles[tree]);
-                            _treeHandles.Remove(tree);
-                            _trees.Remove(tree);
-                            // el tanque pierde 100 de velocidad al atropellar
-                            tank._collider._bodyReference.Velocity.Linear -= UtilsClass.ToNumericVector(tank._forward * 100f);
-                        }
+                        model.CollidedWithMissil(missil);
+                        missil.CollidedWithObject(model);
                     }
                 }
-
-                _simulation.Timestep(1 / 60f);
-
-                foreach (var tanque in _tanks)
-                {
-                    tanque.updateBodyPosition();
-                }
-
-
-                if (
-                    currentKeyboardState.IsKeyDown(Keys.X) &&
-                    _previousKeyboardState.IsKeyUp(Keys.X)
-                )
-                {
-                    FireMissile();
-                }
-
-
-                UpdateMissiles(gameTime);
-
-
-                _camera.Update(gameTime);
-                _camera2.Update(gameTime);
-
-                _previousKeyboardState =
-                    currentKeyboardState;
-
-                _previousMouseState =
-                    currentMouseState;
-                break;
-            case GameState.Paused:
-                _pauseMenu.Update();
-
-                if (_pauseMenu.ResumeGame)
-                {
-                    
-                    _gameState = GameState.Playing;
-                }
-                if (_pauseMenu.StartMenu)
-                {
-                    _mainMenu.StartGame = false;
-                    _gameState = GameState.MainMenu;
-
-                }
-                break;
+            }
         }
+
+
+        _camera.Update(gameTime);
+        _camera2.Update(gameTime);
+
+        _previousKeyboardState =
+            currentKeyboardState;
+
+        _previousMouseState =
+            currentMouseState;
+
+
         base.Update(gameTime);
     }
 
-    private void FireMissile()
-    {
-        Tank tank = _tanks[0];
-
-        Vector3 direction =
-            tank.GetCannonDirection();
-
-        Vector3 missilePosition =
-            tank.GetCannonMuzzlePosition();
-
-        Matrix missileRotation =
-            tank.GetCannonRotation();
-
-        Missil missile = new Missil(
-            Content,
-            ContentFolder3D + "missile/source/rocket2",
-            missilePosition,
-            missileRotation,
-            new Vector3(4.2f),
-            _basicRenderer,
-            direction
-        );
-
-        _missiles.Add(missile);
-    }
-
-    private bool MissileCollided(Missil missile)
-    {
-        // -----------------------------
-        // Colisión contra terreno
-        // -----------------------------
-
-        float terrainHeight = _terrains[0].Height(
-            missile._position.X,
-            missile._position.Z
-        );
-
-        const float groundTolerance = 30f;
-
-        if (missile._position.Y <= terrainHeight + groundTolerance)
-        {
-            return true;
-        }
-
-
-        // -----------------------------
-        // Colisión contra hitboxes
-        // -----------------------------
-
-        foreach (var lista in _modelosEnEscenario)
-        {
-            foreach (var modelo in lista)
-            {
-                if (modelo == missile)
-                {
-                    continue;
-                }
-
-                if (modelo.ContainsPoint(missile._position))
-                {
-                    return true;
-                }
-            }
-        }
-
-
-        return false;
-    }
-
-    private void UpdateMissiles(GameTime gameTime)
-    {
-        float deltaTime =
-            (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-        for (int i = _missiles.Count - 1; i >= 0; i--)
-        {
-            Missil missile = _missiles[i];
-
-            missile._position +=
-                missile.Direction *
-                MissileSpeed *
-                deltaTime;
-
-            if (MissileCollided(missile))
-            {
-                _missiles.RemoveAt(i);
-            }
-        }
-    }
-
-    private void DrawBoxHitbox(
-        ModelInScene model,
-        BoxHitbox hitbox
-    )
-    {
-        Vector3[] corners =
-            hitbox.GetWorldCorners(model._world);
-
-        VertexPosition[] vertices =
-        {
-                new VertexPosition(corners[0]),
-                new VertexPosition(corners[1]),
-
-                new VertexPosition(corners[1]),
-                new VertexPosition(corners[2]),
-
-                new VertexPosition(corners[2]),
-                new VertexPosition(corners[3]),
-
-                new VertexPosition(corners[3]),
-                new VertexPosition(corners[0]),
-
-                new VertexPosition(corners[4]),
-                new VertexPosition(corners[5]),
-
-                new VertexPosition(corners[5]),
-                new VertexPosition(corners[6]),
-
-                new VertexPosition(corners[6]),
-                new VertexPosition(corners[7]),
-
-                new VertexPosition(corners[7]),
-                new VertexPosition(corners[4]),
-
-                new VertexPosition(corners[0]),
-                new VertexPosition(corners[4]),
-
-                new VertexPosition(corners[1]),
-                new VertexPosition(corners[5]),
-
-                new VertexPosition(corners[2]),
-                new VertexPosition(corners[6]),
-
-                new VertexPosition(corners[3]),
-                new VertexPosition(corners[7])
-            };
-
-        _debugEffect.Parameters["World"]
-            .SetValue(Matrix.Identity);
-
-        _debugEffect.Parameters["View"]
-            .SetValue(_currentCamera.View);
-
-        _debugEffect.Parameters["Projection"]
-            .SetValue(_currentCamera.Projection);
-
-        _debugEffect.Parameters["DebugColor"]
-            .SetValue(Color.Red.ToVector4());
-
-        foreach (
-            EffectPass pass
-            in _debugEffect.CurrentTechnique.Passes
-        )
-        {
-            pass.Apply();
-
-            GraphicsDevice.DrawUserPrimitives(
-                PrimitiveType.LineList,
-                vertices,
-                0,
-                vertices.Length / 2
-            );
-        }
-    }
-    /*
-        private void RenderTank(Tank tank)
-        {
-
-            // 2. Crear la matriz base del tanque
-            Matrix tankWorldMatrix = _tanks[0]._world;
-
-            // 3. Juntar ambas listas (asumo que tenés raycastPointsRight también)
-            var allRaycasts = tank.raycastPointsLeft.Concat(tank.raycastPointsRight);
-
-            BoxRenderer boxRenderer = new BoxRenderer(GraphicsDevice, _effect);
-            foreach (TankRaycast raycast in allRaycasts)
-            {
-                boxRenderer.DrawWithWorld(raycast.DirectionGlobal(_tanks[0])* raycast._positionLocal * tankWorldMatrix, _currentCamera.View, _currentCamera.Projection,)
-            }  
-
-        }
-        */
     /// <summary>
     ///     Se llama cada vez que hay que refrescar la pantalla.
     ///     Escribir aqui el codigo referido al renderizado.
