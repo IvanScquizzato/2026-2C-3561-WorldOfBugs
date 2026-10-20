@@ -81,6 +81,8 @@ public class TGCGame : Game
     private GameState _gameState = GameState.MainMenu;
     private HUD.MainMenu _mainMenu;
 
+
+    private HUD.PauseMenu _pauseMenu;
     //fuente de texto
     private SpriteFont _menuFont;
 
@@ -341,7 +343,7 @@ public class TGCGame : Game
         _menuFont = Content.Load<SpriteFont>("MenuFont");
         Console.WriteLine(_menuFont == null);
         _mainMenu = new HUD.MainMenu(_pixel,_menuFont);
-        
+        _pauseMenu = new HUD.PauseMenu(_pixel, _menuFont);
 
         base.LoadContent();
 
@@ -363,7 +365,8 @@ public class TGCGame : Game
 
                 if (_mainMenu.StartGame)
                 {
-                    IsMouseVisible = false;
+                    
+                    _mainMenu.StartGame = false;
                     _gameState = GameState.Playing;
                 }
                 if (_mainMenu.LeaveGame)
@@ -390,10 +393,11 @@ public class TGCGame : Game
                     }
                 }
 
-                if (currentKeyboardState.IsKeyDown(Keys.Escape))
+                if (currentKeyboardState.IsKeyDown(Keys.Escape) && _previousKeyboardState.IsKeyUp(Keys.Escape))
                 {
-                    _mainMenu.StartGame = false;
-                    _gameState = GameState.MainMenu;
+                    _pauseMenu.StartMenu = false;
+                    _pauseMenu.ResumeGame = false;
+                    _gameState = GameState.Paused;
                 }
 
                 _tanks[0].Update(gameTime);
@@ -445,6 +449,21 @@ public class TGCGame : Game
 
                 _previousMouseState =
                     currentMouseState;
+                break;
+            case GameState.Paused:
+                _pauseMenu.Update();
+
+                if (_pauseMenu.ResumeGame)
+                {
+                    
+                    _gameState = GameState.Playing;
+                }
+                if (_pauseMenu.StartMenu)
+                {
+                    _mainMenu.StartGame = false;
+                    _gameState = GameState.MainMenu;
+
+                }
                 break;
         }
         base.Update(gameTime);
@@ -682,7 +701,10 @@ public class TGCGame : Game
                 }
 
 
-                _hud.Draw(_spriteBatch);
+                _hud.Draw(_spriteBatch, _tanks[0],_tanks);
+                break;
+            case GameState.Paused:
+                _pauseMenu.Draw(_spriteBatch);
                 break;
         }
 

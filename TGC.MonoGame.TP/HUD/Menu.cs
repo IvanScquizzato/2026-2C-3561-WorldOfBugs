@@ -31,7 +31,7 @@ namespace TGC.MonoGame.TP.HUD
             KeyboardState keyboard = Keyboard.GetState();
 
 
-            if (keyboard.IsKeyDown(Keys.Enter))
+            if (keyboard.IsKeyDown(Keys.Enter) && _previousKeyboard.IsKeyUp(Keys.Enter))
             {
                 if (_selectedOption == 0)
                 {
@@ -42,10 +42,10 @@ namespace TGC.MonoGame.TP.HUD
 
             }
 
-            if (keyboard.IsKeyDown(Keys.Down))
+            if (keyboard.IsKeyDown(Keys.Down) && _previousKeyboard.IsKeyUp(Keys.Down))
                 _selectedOption++;
 
-            if (keyboard.IsKeyDown(Keys.Up))
+            if (keyboard.IsKeyDown(Keys.Up) && _previousKeyboard.IsKeyUp(Keys.Up))
                 _selectedOption--;
 
             _selectedOption = Math.Clamp(_selectedOption, 0, Options.Length - 1);
