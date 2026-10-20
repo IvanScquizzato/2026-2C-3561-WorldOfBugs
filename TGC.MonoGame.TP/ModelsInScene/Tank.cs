@@ -7,6 +7,7 @@ using TGC.MonoGame.TP.ModelsInScene;
 using TGC.MonoGame.TP.Renderers;
 using TGC.MonoGame.TP.Forces;
 using TGC.MonoGame.TP.Contact;
+using TGC.MonoGame.TP.Cameras;
 using System.Collections.Generic;
 using System.Linq;
 using NumericVector = System.Numerics.Vector3;
@@ -17,8 +18,9 @@ using TGC.MonoGame.Utils;
 using TGC.MonoGame.TP.Colliders;
 using BepuPhysics.Collidables;
 using BepuUtilities.Memory;
-using Microsoft.Xna.Framework.Graphics;
 using TGC.MonoGame.TP.Physics.Bepu;
+using System.Diagnostics;
+
 using TGC.MonoGame.TP.Missile;
 using System.Security.Cryptography.X509Certificates;
 namespace TGC.MonoGame.TP.Tanks
@@ -44,6 +46,8 @@ namespace TGC.MonoGame.TP.Tanks
         private float cushioningDamping = 0.8f;
         private float quantityOfHorizontalRaycasts = 8f;
         private float quantityOfVerticalRaycasts = 18f;
+        private float alturaMinTorreta = -0.4f;
+        private float alturaMaxTorreta = 0.5f;
         private float coolDownSecs = 0.5f;
         private float currentCoolDownSecs = 0f;
         public Tank(
@@ -87,6 +91,18 @@ namespace TGC.MonoGame.TP.Tanks
                 effect, graphicsDevice
             );
         }
+
+        public void SetTurretRotation(float yaw,float pitch)
+        {
+            TurretYaw = yaw;
+            CannonPitch = MathHelper.Clamp(
+                pitch,
+                alturaMinTorreta,
+                alturaMaxTorreta
+            );
+        
+        Debug.WriteLine($"set yaw={yaw} pitch={pitch}");
+        }
         public void Update(GameTime gameTime)
         {
             MouseState mouse = Mouse.GetState();
@@ -112,10 +128,8 @@ namespace TGC.MonoGame.TP.Tanks
 
             //logica canon y torreta siguiendo el mouse
 
-            TurretYaw -= deltaX * 0.1f * elapsedSeconds;
-            CannonPitch += deltaY * 0.1f * elapsedSeconds;
+         
 
-            CannonPitch = MathHelper.Clamp(CannonPitch, -0.5f, 0f);
 
             Vector3 leftTrackGlobalPos = Vector3.Transform(new Vector3(_widthLocal * 0.385f, 0, 0), Matrix.CreateScale(_scale) * _rotation); ;
             Vector3 rightTrackGlobalPos = Vector3.Transform(new Vector3(-_widthLocal * 0.385f, 0, 0), Matrix.CreateScale(_scale) * _rotation);

@@ -91,6 +91,18 @@ public class TGCGame : Game
     public static Vector3 gravity = new Vector3(0, -1000f, 0);
     public static Dictionary<CollidableReference, ModelInScene> PhysicsToGameObjects = new Dictionary<CollidableReference, ModelInScene>();
 
+    private Texture2D _pixel;
+    private HUD.HUD _hud;
+
+    private GameState _gameState = GameState.MainMenu;
+    private HUD.MainMenu _mainMenu;
+
+
+    private HUD.PauseMenu _pauseMenu;
+    //fuente de texto
+    private SpriteFont _menuFont;
+
+    public static Dictionary<CollidableReference, object> PhysicsToGameObjects = new Dictionary<CollidableReference, object>();
     public static ConcurrentQueue<ImpactData> PendingImpacts { get; } = new();
     /// <summary>
     ///     Constructor del juego.
@@ -108,6 +120,13 @@ public class TGCGame : Game
         Content.RootDirectory = "Content";
         // Hace que el mouse sea visible.
         IsMouseVisible = true;
+    }
+
+    public enum GameState
+    {
+        MainMenu,
+        Playing,
+        Paused
     }
 
     /// <summary>
@@ -247,6 +266,7 @@ public class TGCGame : Game
             _decor.Add(new Grass(Content, ContentFolder3D + "Grass/source/grassExampleScene", new Vector3(x, y, z), Matrix.Identity, new Vector3(.5f), _basicRenderer));
         }
 
+      
 
         //cargo planta
         /*
@@ -279,6 +299,19 @@ public class TGCGame : Game
 
 
 
+
+        //creo un pixel para dibujar el hud
+        _pixel = new Texture2D(GraphicsDevice, 1, 1);
+        _pixel.SetData(new[] { Color.White });
+        
+        _hud = new HUD.HUD(_pixel);
+
+        //creo una variable para controlar el menu
+        _menuFont = Content.Load<SpriteFont>("MenuFont");
+        Console.WriteLine(_menuFont == null);
+        _mainMenu = new HUD.MainMenu(_pixel,_menuFont);
+        _pauseMenu = new HUD.PauseMenu(_pixel, _menuFont);
+
         base.LoadContent();
 
     }
@@ -291,34 +324,51 @@ public class TGCGame : Game
 
     protected override void Update(GameTime gameTime)
     {
-        KeyboardState currentKeyboardState =
-            Keyboard.GetState();
-
-        MouseState currentMouseState =
-            Mouse.GetState();
-
-        if (
-            currentKeyboardState.IsKeyDown(Keys.C) &&
-            _previousKeyboardState.IsKeyUp(Keys.C)
-        )
+        //logica del menu
+        switch (_gameState)
         {
-            if (_currentCamera == _camera2)
-            {
-                _currentCamera = _camera;
-            }
-            else
-            {
-                _currentCamera = _camera2;
-            }
-        }
+            case GameState.MainMenu:
+                _mainMenu.Update();
 
-        if (currentKeyboardState.IsKeyDown(Keys.Escape))
-        {
-            Exit();
-        }
+                if (_mainMenu.StartGame)
+                {
+                    
+                    _mainMenu.StartGame = false;
+                    _gameState = GameState.Playing;
+                }
+                if (_mainMenu.LeaveGame)
+                {
+                    Exit();
 
-        _tanks[0].Update(gameTime);
+                }
+                break;
 
+            case GameState.Playing:
+                IsMouseVisible = false;
+                KeyboardState currentKeyboardState = Keyboard.GetState();
+                MouseState currentMouseState =Mouse.GetState();
+
+                if (currentKeyboardState.IsKeyDown(Keys.C) &&_previousKeyboardState.IsKeyUp(Keys.C))
+                {
+                    if (_currentCamera == _camera2)
+                    {
+                        _currentCamera = _camera;
+                    }
+                    else
+                    {
+                        _currentCamera = _camera2;
+                    }
+                }
+                break;
+           }
+
+        if (currentKeyboardState.IsKeyDown(Keys.Escape) && _previousKeyboardState.IsKeyUp(Keys.Escape))
+              {
+                    _pauseMenu.StartMenu = false;
+                    _pauseMenu.ResumeGame = false;
+                    _gameState = GameState.Paused;
+              }
+              
         _simulation.Timestep(1 / 60f);
 
         HashSet<(ModelInScene, ModelInScene)> parejasProcesadas = new HashSet<(ModelInScene, ModelInScene)>();
@@ -404,22 +454,63 @@ public class TGCGame : Game
     /// </summary>
     protected override void Draw(GameTime gameTime)
     {
-
         // Aca deberiamos poner toda la logia de renderizado del juego.
-        GraphicsDevice.Clear(Color.Black);
-        foreach (var lista in _modelosEnEscenario)
+        GraphicsDevice.Clear(Color.LightBlue);
+
+
+        //aca ordenamos dibujar el escenario correspondiente
+        switch (_gameState)
         {
-            foreach (var modelo in lista)
-            {
-                modelo.Draw(_currentCamera.View, _currentCamera.Projection);
-            }
+            case GameState.MainMenu:
+                _mainMenu.Draw(_spriteBatch);
+                break;
+
+            case GameState.Playing:
+                GraphicsDevice.BlendState = BlendState.Opaque;
+                GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+                GraphicsDevice.RasterizerState = RasterizerState.CullNone;
+                foreach (var lista in _modelosEnEscenario)
+                {
+                    foreach (var modelo in lista)
+                    {
+                        modelo.Draw(_currentCamera.View, _currentCamera.Projection);
+                    }
+                }
+
+
+
+
+
+                // Dibujar hitbox del tanque
+                // Dibujar todas las BoxHitbox del escenario
+                foreach (var lista in _modelosEnEscenario)
+                {
+                    foreach (var modelo in lista)
+                    {
+                        if (modelo._hitbox is BoxHitbox boxHitbox)
+                        {
+                            DrawBoxHitbox(
+                                modelo,
+                                boxHitbox
+                            );
+                        }
+                    }
+                }
+
+
+                _hud.Draw(_spriteBatch, _tanks[0],_tanks);
+                break;
+            case GameState.Paused:
+                _pauseMenu.Draw(_spriteBatch);
+                break;
         }
-
-
 
         //RenderTank(_tanks[0]);
     }
+    public void HUD()
+    {
 
+    }
     /// <summary>
     ///     Libero los recursos que se cargaron en el juego.
     /// </summary>

@@ -20,7 +20,12 @@ namespace TGC.MonoGame.TP.Renderers
 
         public void Draw(SimpleTerrain terrain, Matrix view, Matrix projection)
         {
+
             var graphicsDevice = _effect.GraphicsDevice;
+
+
+            graphicsDevice.DepthStencilState = DepthStencilState.Default;
+            graphicsDevice.BlendState = BlendState.Opaque;
 
             _effect.Parameters["texColorMap"].SetValue(terrain.colorMapTexture);
             _effect.Parameters["texDiffuseMap"].SetValue(terrain.terrainTexture);
@@ -34,6 +39,10 @@ namespace TGC.MonoGame.TP.Renderers
             // Render con shader
             foreach (var pass in _effect.CurrentTechnique.Passes)
             {
+                graphicsDevice.SamplerStates[0] = SamplerState.LinearWrap;
+                graphicsDevice.DepthStencilState = DepthStencilState.Default;
+                graphicsDevice.BlendState = BlendState.Opaque;
+                graphicsDevice.SamplerStates[0] = SamplerState.LinearWrap;
                 pass.Apply();
                 graphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, terrain.vbTerrain.VertexCount / 3);
             }

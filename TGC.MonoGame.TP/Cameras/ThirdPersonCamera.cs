@@ -28,11 +28,16 @@ namespace TGC.MonoGame.TP.Cameras
         public readonly float distanceToModel;
         private float _turn = -MathHelper.PiOver2;
         private float _pitch = MathHelper.PiOver4;
-        private float _cameraYaw = 0f;
-        private float _cameraPitch = 0f;
-        private float sensibilidadX = 0.0005f;
-        private float sensibilidadY = 0.0005f;
+        public float _cameraYaw =  MathHelper.Pi * 2;
+        public float _cameraPitch = 0f;
+        private float sensibilidadX = 0.004f;
+        private float sensibilidadY = 0.005f;
+        private float alturaMaxCamara = 0.6f;
+        private float alturaMinCamara = 0f;
         private MouseState _previousMouseState;
+        
+
+        
 
         private readonly GraphicsDevice graphicsDevice;
         /// <summary>
@@ -83,16 +88,35 @@ namespace TGC.MonoGame.TP.Cameras
         public override void Update(GameTime gameTime)
         {
 
-            Vector3 offsetBase = -modelThatFollows._forward * distanceToModel + Vector3.Up * (distanceToModel * 0.5f);
+            MouseState mouse = Mouse.GetState();
+            float deltaX = mouse.X - _previousMouseState.X;
+            float deltaY = mouse.Y - _previousMouseState.Y;
+            _previousMouseState = mouse;
 
-            Matrix rotation = Matrix.CreateRotationY(((Tank)modelThatFollows).TurretYaw) * Matrix.CreateRotationX(((Tank)modelThatFollows).CannonPitch);
+            
+
+            _cameraYaw -= deltaX * sensibilidadX ;
+            _cameraPitch -= deltaY * sensibilidadY;
+
+            //limites camara verticalmente
+            _cameraPitch = MathHelper.Clamp(_cameraPitch,alturaMinCamara,alturaMaxCamara);
+            
+            Tank tank = (Tank)modelThatFollows;
+            float hullYaw =(float)Math.Atan2(tank._forward.X,tank._forward.Z);
+            tank.SetTurretRotation(_cameraYaw - hullYaw -MathHelper.Pi, -_cameraPitch);
+            
+            //con esto ajusto la distancia al tanque
+            Vector3 offsetBase = new Vector3(0,distanceToModel * 0.35f,distanceToModel);
+
+            Matrix rotation = Matrix.CreateRotationX(_cameraPitch) * Matrix.CreateRotationY(_cameraYaw);
 
             Position = Vector3.Transform(offsetBase, rotation);
 
-            View = Matrix.CreateLookAt(
-            modelThatFollows._position + Position,
-            modelThatFollows._position,
-            Vector3.Up);
+            Vector3 lookDirection = Vector3.Transform(Vector3.Forward, rotation);
+
+            Vector3 cameraPosition = modelThatFollows._position + Position;
+
+            View = Matrix.CreateLookAt(cameraPosition,cameraPosition + lookDirection,Vector3.Up);
         }
 
 
