@@ -50,6 +50,9 @@ namespace TGC.MonoGame.TP.Tanks
         private float alturaMaxTorreta = 0.5f;
         private float coolDownSecs = 0.5f;
         private float currentCoolDownSecs = 0f;
+        public float maxHealth = 100f;
+
+        public float health;
         public Tank(
             ContentManager Content,
             String modelPath,
@@ -70,6 +73,7 @@ namespace TGC.MonoGame.TP.Tanks
             )
         {
             desiredHeight = Height * 0.35f;
+            health = maxHealth;
         }
         public override void CreateHitbox(Effect effect, GraphicsDevice graphicsDevice)
         {
@@ -92,7 +96,7 @@ namespace TGC.MonoGame.TP.Tanks
             );
         }
 
-        public void SetTurretRotation(float yaw,float pitch)
+        public void SetTurretRotation(float yaw, float pitch)
         {
             TurretYaw = yaw;
             CannonPitch = MathHelper.Clamp(
@@ -100,8 +104,8 @@ namespace TGC.MonoGame.TP.Tanks
                 alturaMinTorreta,
                 alturaMaxTorreta
             );
-        
-        Debug.WriteLine($"set yaw={yaw} pitch={pitch}");
+
+            Debug.WriteLine($"set yaw={yaw} pitch={pitch}");
         }
         public void Update(GameTime gameTime)
         {
@@ -128,7 +132,7 @@ namespace TGC.MonoGame.TP.Tanks
 
             //logica canon y torreta siguiendo el mouse
 
-         
+
 
 
             Vector3 leftTrackGlobalPos = Vector3.Transform(new Vector3(_widthLocal * 0.385f, 0, 0), Matrix.CreateScale(_scale) * _rotation); ;
@@ -409,6 +413,7 @@ namespace TGC.MonoGame.TP.Tanks
 
                 Vector3 cambioDeVelocidad = -normal * breakImpulse * this.InverseMass();
                 _collider.ApplyImpulse(UtilsClass.ToNumericVector(cambioDeVelocidad), UtilsClass.ToNumericVector(contactPointOffset));
+                health -= 10f;
             }
         }
         public override bool ShouldCollideWith(ModelInScene model, Vector3 contactPointOffset, Vector3 thisPos, float impactImpulse, float destructiveImpactImpulse, Vector3 normal)

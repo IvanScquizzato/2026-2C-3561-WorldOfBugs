@@ -102,7 +102,6 @@ public class TGCGame : Game
     //fuente de texto
     private SpriteFont _menuFont;
 
-    public static Dictionary<CollidableReference, object> PhysicsToGameObjects = new Dictionary<CollidableReference, object>();
     public static ConcurrentQueue<ImpactData> PendingImpacts { get; } = new();
     /// <summary>
     ///     Constructor del juego.
@@ -266,7 +265,7 @@ public class TGCGame : Game
             _decor.Add(new Grass(Content, ContentFolder3D + "Grass/source/grassExampleScene", new Vector3(x, y, z), Matrix.Identity, new Vector3(.5f), _basicRenderer));
         }
 
-      
+
 
         //cargo planta
         /*
@@ -303,13 +302,13 @@ public class TGCGame : Game
         //creo un pixel para dibujar el hud
         _pixel = new Texture2D(GraphicsDevice, 1, 1);
         _pixel.SetData(new[] { Color.White });
-        
-        _hud = new HUD.HUD(_pixel);
+
+        _hud = new HUD.HUD(_pixel, _tanks[0]);
 
         //creo una variable para controlar el menu
         _menuFont = Content.Load<SpriteFont>("MenuFont");
         Console.WriteLine(_menuFont == null);
-        _mainMenu = new HUD.MainMenu(_pixel,_menuFont);
+        _mainMenu = new HUD.MainMenu(_pixel, _menuFont);
         _pauseMenu = new HUD.PauseMenu(_pixel, _menuFont);
 
         base.LoadContent();
@@ -324,6 +323,8 @@ public class TGCGame : Game
 
     protected override void Update(GameTime gameTime)
     {
+        KeyboardState currentKeyboardState = Keyboard.GetState();
+        MouseState currentMouseState = Mouse.GetState();
         //logica del menu
         switch (_gameState)
         {
@@ -332,7 +333,7 @@ public class TGCGame : Game
 
                 if (_mainMenu.StartGame)
                 {
-                    
+
                     _mainMenu.StartGame = false;
                     _gameState = GameState.Playing;
                 }
@@ -345,10 +346,9 @@ public class TGCGame : Game
 
             case GameState.Playing:
                 IsMouseVisible = false;
-                KeyboardState currentKeyboardState = Keyboard.GetState();
-                MouseState currentMouseState =Mouse.GetState();
 
-                if (currentKeyboardState.IsKeyDown(Keys.C) &&_previousKeyboardState.IsKeyUp(Keys.C))
+
+                if (currentKeyboardState.IsKeyDown(Keys.C) && _previousKeyboardState.IsKeyUp(Keys.C))
                 {
                     if (_currentCamera == _camera2)
                     {
@@ -360,15 +360,15 @@ public class TGCGame : Game
                     }
                 }
                 break;
-           }
+        }
 
         if (currentKeyboardState.IsKeyDown(Keys.Escape) && _previousKeyboardState.IsKeyUp(Keys.Escape))
-              {
-                    _pauseMenu.StartMenu = false;
-                    _pauseMenu.ResumeGame = false;
-                    _gameState = GameState.Paused;
-              }
-              
+        {
+            _pauseMenu.StartMenu = false;
+            _pauseMenu.ResumeGame = false;
+            _gameState = GameState.Paused;
+        }
+        _tanks[0].Update(gameTime);
         _simulation.Timestep(1 / 60f);
 
         HashSet<(ModelInScene, ModelInScene)> parejasProcesadas = new HashSet<(ModelInScene, ModelInScene)>();
@@ -478,27 +478,7 @@ public class TGCGame : Game
                 }
 
 
-
-
-
-                // Dibujar hitbox del tanque
-                // Dibujar todas las BoxHitbox del escenario
-                foreach (var lista in _modelosEnEscenario)
-                {
-                    foreach (var modelo in lista)
-                    {
-                        if (modelo._hitbox is BoxHitbox boxHitbox)
-                        {
-                            DrawBoxHitbox(
-                                modelo,
-                                boxHitbox
-                            );
-                        }
-                    }
-                }
-
-
-                _hud.Draw(_spriteBatch, _tanks[0],_tanks);
+                _hud.Draw(_spriteBatch, _tanks[0], _tanks);
                 break;
             case GameState.Paused:
                 _pauseMenu.Draw(_spriteBatch);
