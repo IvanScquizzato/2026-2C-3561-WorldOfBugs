@@ -10,7 +10,7 @@ namespace TGC.MonoGame.TP.HUD
     {
         private int _selectedOption = 0;
         private KeyboardState _previousKeyboard;
-        public bool StartGame { get; private set; }
+        public bool StartGame { get; set; }
         public bool LeaveGame { get; private set; }
         private readonly Texture2D _pixel;
         private readonly SpriteFont _font;
@@ -54,7 +54,7 @@ namespace TGC.MonoGame.TP.HUD
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.GraphicsDevice.Clear(Color.Black);
+            spriteBatch.GraphicsDevice.Clear(Color.White);
             int centerX = spriteBatch.GraphicsDevice.Viewport.Width / 2;
             int centerY = spriteBatch.GraphicsDevice.Viewport.Height / 2;
             Console.WriteLine(centerX);
@@ -62,23 +62,20 @@ namespace TGC.MonoGame.TP.HUD
             spriteBatch.Begin();
 
 
+            spriteBatch.Draw(_pixel, new Rectangle(centerX - 205, centerY - 55, 410, 90), Color.Black);
+            spriteBatch.Draw(_pixel,new Rectangle(centerX - 200, centerY -50, 400, 80),_selectedOption == 0? Color.Green: Color.Gray);
+            spriteBatch.DrawString(_font, "JUGAR", new Vector2(centerX - 40, centerY - 30), Color.Black);
 
-            spriteBatch.Draw(
-        _pixel,
-        new Rectangle(centerX - 200, centerY -50, 400, 80),
-        _selectedOption == 0
-            ? Color.Green
-            : Color.Gray);
+            spriteBatch.Draw(_pixel, new Rectangle(centerX - 205, centerY + 45, 410, 90), Color.Black);
+            spriteBatch.Draw(_pixel,new Rectangle(centerX - 200, centerY + 50, 400, 80),_selectedOption == 1? Color.Red: Color.Gray);
+            spriteBatch.DrawString(_font, "SALIR", new Vector2(centerX - 40, centerY + 70), Color.Black);
 
-            spriteBatch.Draw(
-                _pixel,
-                new Rectangle(centerX - 200, centerY + 50, 400, 80),
-                _selectedOption == 1
-                    ? Color.Green
-                    : Color.Gray);
+            spriteBatch.DrawString(_font, "WORLD OF TANKS", new Vector2(centerX - 150 , centerY - 200), Color.Green);
 
-            spriteBatch.DrawString(_font,"JUGAR",new Vector2(centerX - 200, centerY - 50),Color.Black);
-            spriteBatch.DrawString(_font, "SALIR", new Vector2(centerX - 200, centerY + 50), Color.Black);
+            spriteBatch.Draw(_pixel, new Rectangle(centerX - 205, centerY + 145, 410, 90), Color.Black);
+            spriteBatch.Draw(_pixel, new Rectangle(centerX - 200, centerY + 150, 400, 80), _selectedOption == 2 ? Color.Red : Color.Gray);
+            spriteBatch.DrawString(_font, "MODO GOD", new Vector2(centerX - 100, centerY + 170), Color.Black);
+
             spriteBatch.End();
 
             // esto protege al terreno de no renderizase mal

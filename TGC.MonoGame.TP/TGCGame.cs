@@ -363,6 +363,7 @@ public class TGCGame : Game
 
                 if (_mainMenu.StartGame)
                 {
+                    IsMouseVisible = false;
                     _gameState = GameState.Playing;
                 }
                 if (_mainMenu.LeaveGame)
@@ -373,16 +374,11 @@ public class TGCGame : Game
                 break;
 
             case GameState.Playing:
-                KeyboardState currentKeyboardState =
-           Keyboard.GetState();
+                IsMouseVisible = false;
+                KeyboardState currentKeyboardState = Keyboard.GetState();
+                MouseState currentMouseState =Mouse.GetState();
 
-                MouseState currentMouseState =
-                    Mouse.GetState();
-
-                if (
-                    currentKeyboardState.IsKeyDown(Keys.C) &&
-                    _previousKeyboardState.IsKeyUp(Keys.C)
-                )
+                if (currentKeyboardState.IsKeyDown(Keys.C) &&_previousKeyboardState.IsKeyUp(Keys.C))
                 {
                     if (_currentCamera == _camera2)
                     {
@@ -396,7 +392,8 @@ public class TGCGame : Game
 
                 if (currentKeyboardState.IsKeyDown(Keys.Escape))
                 {
-                    Exit();
+                    _mainMenu.StartGame = false;
+                    _gameState = GameState.MainMenu;
                 }
 
                 _tanks[0].Update(gameTime);

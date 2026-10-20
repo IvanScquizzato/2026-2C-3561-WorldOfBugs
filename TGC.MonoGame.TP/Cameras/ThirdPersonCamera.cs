@@ -28,10 +28,12 @@ namespace TGC.MonoGame.TP.Cameras
         public readonly float distanceToModel;
         private float _turn = -MathHelper.PiOver2;
         private float _pitch = MathHelper.PiOver4;
-        public float _cameraYaw = 0f;
+        public float _cameraYaw =  MathHelper.Pi * 2;
         public float _cameraPitch = 0f;
-        private float sensibilidadX = 0.005f;
+        private float sensibilidadX = 0.004f;
         private float sensibilidadY = 0.005f;
+        private float alturaMaxCamara = 0.6f;
+        private float alturaMinCamara = 0f;
         private MouseState _previousMouseState;
         
 
@@ -96,16 +98,17 @@ namespace TGC.MonoGame.TP.Cameras
             _cameraYaw -= deltaX * sensibilidadX ;
             _cameraPitch -= deltaY * sensibilidadY;
 
-            _cameraPitch = MathHelper.Clamp(_cameraPitch,-0.5f,0);
+            //limites camara verticalmente
+            _cameraPitch = MathHelper.Clamp(_cameraPitch,alturaMinCamara,alturaMaxCamara);
             
             Tank tank = (Tank)modelThatFollows;
             float hullYaw =(float)Math.Atan2(tank._forward.X,tank._forward.Z);
-            tank.SetTurretRotation(_cameraYaw - hullYaw -MathHelper.Pi, _cameraPitch);
+            tank.SetTurretRotation(_cameraYaw - hullYaw -MathHelper.Pi, -_cameraPitch);
             
             //con esto ajusto la distancia al tanque
             Vector3 offsetBase = new Vector3(0,distanceToModel * 0.35f,distanceToModel);
 
-            Matrix rotation = Matrix.CreateRotationY(_cameraYaw) * Matrix.CreateRotationX(_cameraPitch);
+            Matrix rotation = Matrix.CreateRotationX(_cameraPitch) * Matrix.CreateRotationY(_cameraYaw);
 
             Position = Vector3.Transform(offsetBase, rotation);
 

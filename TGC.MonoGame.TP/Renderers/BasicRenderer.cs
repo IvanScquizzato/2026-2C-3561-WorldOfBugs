@@ -38,7 +38,7 @@ namespace TGC.MonoGame.TP.Renderers
                 {
                     if (mesh.Name == "Turret")
                     {
-                        Debug.WriteLine("turret = " + tank.TurretYaw);
+                       
                         world =
                             relativeTransform *
                             Matrix.CreateRotationY(tank.TurretYaw) *
@@ -49,8 +49,8 @@ namespace TGC.MonoGame.TP.Renderers
                        
                         world =
                             relativeTransform *
-                            Matrix.CreateRotationY(tank.TurretYaw)*
                             Matrix.CreateRotationX(tank.CannonPitch) *
+                            Matrix.CreateRotationY(tank.TurretYaw)*
                             modelInScene._world;
                         
                     }

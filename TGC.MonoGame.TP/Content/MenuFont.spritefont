@@ -6,11 +6,11 @@
 
     <Size>24</Size>
 
-    <Spacing>0</Spacing>
+    <Spacing>1</Spacing>
 
     <UseKerning>true</UseKerning>
 
-    <Style>Regular</Style>
+    <Style>Bold</Style>
 
     <CharacterRegions>
       <CharacterRegion>

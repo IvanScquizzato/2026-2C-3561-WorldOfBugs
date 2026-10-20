@@ -44,6 +44,8 @@ namespace TGC.MonoGame.TP.Tanks
         private float cushioningDamping = 0.8f;
         private float quantityOfHorizontalRaycasts = 8f;
         private float quantityOfVerticalRaycasts = 18f;
+        private float alturaMinTorreta = -0.4f;
+        private float alturaMaxTorreta = 0.5f;
         public Tank(
             ContentManager Content,
             String modelPath,
@@ -85,9 +87,13 @@ namespace TGC.MonoGame.TP.Tanks
         public void SetTurretRotation(float yaw,float pitch)
         {
             TurretYaw = yaw;
-            CannonPitch = pitch;
-            Debug.WriteLine(TurretYaw);
-            Debug.WriteLine("yaw = " + yaw);
+            CannonPitch = MathHelper.Clamp(
+                pitch,
+                alturaMinTorreta,
+                alturaMaxTorreta
+            );
+        
+        Debug.WriteLine($"set yaw={yaw} pitch={pitch}");
         }
         public void Update(GameTime gameTime)
         {
@@ -344,8 +350,8 @@ namespace TGC.MonoGame.TP.Tanks
         public Matrix GetCannonRotation()
         {
             return
-                Matrix.CreateRotationY(TurretYaw) *
                 Matrix.CreateRotationX(CannonPitch) *
+                Matrix.CreateRotationY(TurretYaw) *
                 _rotation;
         }
 
