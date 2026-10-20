@@ -13,6 +13,7 @@ using BepuUtilities.Memory;
 using TGC.MonoGame.TP.Colliders;
 using NumericVector3 = System.Numerics.Vector3;
 using TGC.MonoGame.TP.Missile;
+using System;
 
 namespace TGC.MonoGame.TP.Terrain
 {
@@ -155,33 +156,53 @@ namespace TGC.MonoGame.TP.Terrain
 
         public new float Height(float x, float z)
         {
-            var width = HeightmapData.GetLength(0);
-            var length = HeightmapData.GetLength(1);
+            int width = HeightmapData.GetLength(0);
+            int length = HeightmapData.GetLength(1);
 
-            var pos_i = (x / _scaleXZ) + (width / 2.0f);
-            var pos_j = (z / _scaleXZ) + (length / 2.0f);
-            var pi = (int)pos_i;
-            var fracc_i = pos_i - pi;
-            var pj = (int)pos_j;
-            var fracc_j = pos_j - pj;
+            if (width < 2 || length < 2)
+                return 0f;
 
-            if (pi < 0) pi = 0;
-            else if (pi >= width) pi = width - 1;
-            if (pj < 0) pj = 0;
-            else if (pj >= length) pj = length - 1;
+            // Convertir coordenadas del mundo a coordenadas del heightmap.
+            // Usamos el mismo origen que LoadHeightmap().
+            float posX = (x - Center.X) / _scaleXZ;
+            float posZ = (z - Center.Z) / _scaleXZ;
 
-            var pi1 = pi + 1;
-            var pj1 = pj + 1;
-            if (pi1 >= width) pi1 = width - 1;
-            if (pj1 >= length) pj1 = length - 1;
+            // Limitar las coordenadas antes de interpolar.
+            posX = MathHelper.Clamp(posX, 0f, width - 1f);
+            posZ = MathHelper.Clamp(posZ, 0f, length - 1f);
 
-            var h0 = HeightmapData[pi, pj];
-            var h1 = HeightmapData[pi1, pj];
-            var h2 = HeightmapData[pi, pj1];
-            var h3 = HeightmapData[pi1, pj1];
-            var h = (((h0 * (1 - fracc_i)) + (h1 * fracc_i)) * (1 - fracc_j)) + (((h2 * (1 - fracc_i)) + (h3 * fracc_i)) * fracc_j);
+            int x0 = Math.Min((int)MathF.Floor(posX), width - 2);
+            int z0 = Math.Min((int)MathF.Floor(posZ), length - 2);
 
-            return h * _scaleY;
+            float fx = posX - x0;
+            float fz = posZ - z0;
+
+            float h00 = HeightmapData[x0, z0];
+            float h10 = HeightmapData[x0 + 1, z0];
+            float h01 = HeightmapData[x0, z0 + 1];
+            float h11 = HeightmapData[x0 + 1, z0 + 1];
+
+            // Interpolar sobre los mismos dos triángulos de la malla.
+            float height;
+
+            if (fz >= fx)
+            {
+                // Triángulo v1, v2, v4
+                height =
+                    h00 * (1f - fz) +
+                    h01 * (fz - fx) +
+                    h11 * fx;
+            }
+            else
+            {
+                // Triángulo v1, v4, v3
+                height =
+                    h00 * (1f - fx) +
+                    h11 * fz +
+                    h10 * (fx - fz);
+            }
+
+            return Center.Y + height * _scaleY;
         }
 
         public override void Draw(Matrix view, Matrix projection)
