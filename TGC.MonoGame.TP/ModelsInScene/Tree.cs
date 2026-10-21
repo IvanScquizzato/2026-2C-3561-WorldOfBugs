@@ -83,6 +83,11 @@ namespace TGC.MonoGame.TP.Trees
                 Destroy();
             }
         }
+        public override void Destroy()
+        {
+            TGCGame.TreeBreakSound.Play();
+            base.Destroy();
+        }
 
 
 

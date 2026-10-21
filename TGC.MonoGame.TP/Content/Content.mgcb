@@ -962,6 +962,48 @@
 /processorParam:TextureFormat=Color
 /build:Models/Tree/tree2.jpeg
 
+#begin Music/determined_pursuit_loop.wav
+/importer:WavImporter
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/determined_pursuit_loop.wav
+
+#begin Sounds/cannon_fire.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/cannon_fire.ogg
+
+#begin Sounds/click.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/click.wav
+
+#begin Sounds/engine_heavy_loop.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/engine_heavy_loop.ogg
+
+#begin Sounds/mechanical_explosion.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/mechanical_explosion.wav
+
+#begin Sounds/metal_hit_01.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/metal_hit_01.ogg
+
+#begin Sounds/wood_breaking_01.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/wood_breaking_01.ogg
+
 #begin Textures/Heightmaps/colormap.jpg
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -997,18 +1039,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Textures/Heightmaps/ground.jpg
-
-#begin Textures/Heightmaps/heightmap-3.jpg
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Textures/Heightmaps/heightmap-3.jpg
 
 #begin Textures/Heightmaps/heightmap.jpg
 /importer:TextureImporter

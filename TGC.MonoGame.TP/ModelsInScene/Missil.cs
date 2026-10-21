@@ -56,6 +56,11 @@ namespace TGC.MonoGame.TP.Missile
         }
         public void CollidedWithObject(ModelInScene model)
         {
+            // si toca dos cosas en el mismo frame la explosion suena una sola vez
+            if (!_isDisabled)
+            {
+                TGCGame.ExplosionSound.Play();
+            }
             _isDisabled = true;
         }
     }

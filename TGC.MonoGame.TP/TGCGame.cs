@@ -4,6 +4,8 @@ using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
 using TGC.MonoGame.TP.Bush;
 using TGC.MonoGame.TP.Cameras;
 using TGC.MonoGame.TP.Car;
@@ -108,6 +110,14 @@ public class TGCGame : Game
     public static Dictionary<CollidableReference, ModelInScene> PhysicsToGameObjects = new Dictionary<CollidableReference, ModelInScene>();
 
     public static ConcurrentQueue<ImpactData> PendingImpacts { get; } = new();
+
+    // sonidos los static los usan los objetos en sus eventos de colision
+    public static SoundEffect ExplosionSound;
+    public static SoundEffect CrashSound;
+    public static SoundEffect TreeBreakSound;
+    public static SoundEffect ClickSound;
+    private SoundEffect _cannonSound;
+    private SoundEffectInstance _engineSound;
     /// <summary>
     ///     Constructor del juego.
     /// </summary>
@@ -260,6 +270,19 @@ public class TGCGame : Game
         _menuFont = Content.Load<SpriteFont>("MenuFont");
         _mainMenu = new HUD.MainMenu(_pixel, _menuFont);
         _pauseMenu = new HUD.PauseMenu(_pixel, _menuFont);
+
+        // sonidos y musica cargados igual que en los samples de la catedra
+        _cannonSound = Content.Load<SoundEffect>(ContentFolderSounds + "cannon_fire");
+        ExplosionSound = Content.Load<SoundEffect>(ContentFolderSounds + "mechanical_explosion");
+        CrashSound = Content.Load<SoundEffect>(ContentFolderSounds + "metal_hit_01");
+        TreeBreakSound = Content.Load<SoundEffect>(ContentFolderSounds + "wood_breaking_01");
+        ClickSound = Content.Load<SoundEffect>(ContentFolderSounds + "click");
+        _engineSound = Content.Load<SoundEffect>(ContentFolderSounds + "engine_heavy_loop").CreateInstance();
+        _engineSound.IsLooped = true;
+
+        MediaPlayer.IsRepeating = true;
+        MediaPlayer.Volume = 0.3f;
+        MediaPlayer.Play(Content.Load<Song>(ContentFolderMusic + "determined_pursuit_loop"));
 
         base.LoadContent();
 
@@ -629,6 +652,18 @@ public class TGCGame : Game
                     _currentCamera = _currentCamera == _camera2 ? _camera : _camera2;
                 }
 
+                // motor suena mientras el tanque se mueve
+                bool moviendose = currentKeyboardState.IsKeyDown(Keys.W) || currentKeyboardState.IsKeyDown(Keys.A) ||
+                                  currentKeyboardState.IsKeyDown(Keys.S) || currentKeyboardState.IsKeyDown(Keys.D);
+                if (moviendose)
+                {
+                    _engineSound.Play();
+                }
+                else
+                {
+                    _engineSound.Pause();
+                }
+
                 _tanks[0].Update(gameTime);
 
                 _simulation.Timestep(1 / 60f);
@@ -670,6 +705,7 @@ public class TGCGame : Game
                     );
 
                     _missiles.Add(missile);
+                    _cannonSound.Play();
                 }
                 for (int i = _missiles.Count - 1; i >= 0; i--)
                 {
@@ -701,6 +737,12 @@ public class TGCGame : Game
                 _camera2.Update(gameTime);
 
                 break;
+        }
+
+        // el motor no suena en los menus ni en el editor
+        if (_gameState != GameState.Playing || _sceneEditor.Enabled)
+        {
+            _engineSound.Pause();
         }
 
         _previousKeyboardState = currentKeyboardState;

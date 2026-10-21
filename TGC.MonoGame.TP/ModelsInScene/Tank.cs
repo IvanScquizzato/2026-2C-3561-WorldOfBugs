@@ -22,6 +22,7 @@ using TGC.MonoGame.TP.Physics.Bepu;
 using System.Diagnostics;
 
 using TGC.MonoGame.TP.Missile;
+using TGC.MonoGame.TP.Terrain;
 using System.Security.Cryptography.X509Certificates;
 namespace TGC.MonoGame.TP.Tanks
 {
@@ -50,6 +51,9 @@ namespace TGC.MonoGame.TP.Tanks
         private float alturaMaxTorreta = 0.5f;
         private float coolDownSecs = 0.5f;
         private float currentCoolDownSecs = 0f;
+        private float minCrashSoundSpeed = 50f;
+        private const long crashSoundCoolDownMs = 500;
+        private static long lastCrashSoundTicks = 0;
         public float maxHealth = 100f;
 
         public float health;
@@ -407,6 +411,16 @@ namespace TGC.MonoGame.TP.Tanks
         }
         public override void CollidedWith(ModelInScene model, Vector3 contactPointOffset, Vector3 thisPos, float impactImpulse, float destructiveImpactImpulse, Vector3 normal)
         {
+            // golpe metalico al chocar fuerte contra algo que no sea el piso
+            // la pausa evita que se repita porque este metodo se llama en cada frame mientras dura el contacto
+            float velocidadDelGolpe = impactImpulse * InverseMass();
+            if (model is not SimpleTerrain && velocidadDelGolpe > minCrashSoundSpeed &&
+                Environment.TickCount64 - lastCrashSoundTicks > crashSoundCoolDownMs)
+            {
+                TGCGame.CrashSound.Play();
+                lastCrashSoundTicks = Environment.TickCount64;
+            }
+
             if (model.IsDestroyedWith(destructiveImpactImpulse))
             {
                 float breakImpulse = Math.Min(impactImpulse, model.strength);

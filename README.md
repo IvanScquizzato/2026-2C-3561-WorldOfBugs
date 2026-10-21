@@ -35,3 +35,14 @@ TGC, Tgcito  |  Apellido, Nombre
 ## Game Play
 
 [![Watch the video](https://img.youtube.com/vi/pgEwUC0jvH4/0.jpg)](https://www.youtube.com/playlist?list=PLRM4L32DjvnazuMl8wZlbpEYL5Qh63ulG)
+
+## Sonidos
+
+Todos los sonidos son de [OpenGameArt](https://opengameart.org):
+
+- Música: [Determined Pursuit (epic orchestra loop)](https://opengameart.org/content/determined-pursuit-epic-orchestra-loop), de Emma_MA (CC0).
+- Disparo: [Cannon fire](https://opengameart.org/content/cannon-fire), de Thimras (CC0).
+- Explosión: [Mechanical Explosion](https://opengameart.org/content/mechanical-explosion), de Spring Spring (CC0).
+- Motor: [Engine-loop heavy vehicle/tank](https://opengameart.org/content/engine-loop-heavy-vehicletank), de Nayckron ([CC-BY 3.0](https://creativecommons.org/licenses/by/3.0/)).
+- Choque y árbol: [100 CC0 metal and wood SFX](https://opengameart.org/content/100-cc0-metal-and-wood-sfx), de rubberduck (CC0).
+- Click del menú: [Click](https://opengameart.org/content/click), de qubodup (CC0).

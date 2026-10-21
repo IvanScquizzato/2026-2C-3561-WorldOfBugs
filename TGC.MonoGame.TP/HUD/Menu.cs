@@ -33,6 +33,7 @@ namespace TGC.MonoGame.TP.HUD
 
             if (keyboard.IsKeyDown(Keys.Enter) && _previousKeyboard.IsKeyUp(Keys.Enter))
             {
+                TGCGame.ClickSound.Play();
                 if (_selectedOption == 0)
                 {
                     StartGame = true;
@@ -43,10 +44,16 @@ namespace TGC.MonoGame.TP.HUD
             }
 
             if (keyboard.IsKeyDown(Keys.Down) && _previousKeyboard.IsKeyUp(Keys.Down))
+            {
+                TGCGame.ClickSound.Play();
                 _selectedOption++;
+            }
 
             if (keyboard.IsKeyDown(Keys.Up) && _previousKeyboard.IsKeyUp(Keys.Up))
+            {
+                TGCGame.ClickSound.Play();
                 _selectedOption--;
+            }
 
             _selectedOption = Math.Clamp(_selectedOption, 0, Options.Length - 1);
             _previousKeyboard = keyboard;
