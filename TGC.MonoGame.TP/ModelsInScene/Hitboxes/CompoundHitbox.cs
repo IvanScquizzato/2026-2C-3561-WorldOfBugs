@@ -8,7 +8,7 @@ namespace TGC.MonoGame.TP.ModelsInScene
 {
     public class CompoundHitbox : Hitbox
     {
-        public List<Hitbox> hitboxes;
+        public List<Hitbox> hitboxes { get; set; } = new List<Hitbox>();
         private Vector3 lastWorldPoint = Vector3.Zero;
         private Matrix lastWorld = Matrix.Identity;
         private Hitbox lastHitbox = null;

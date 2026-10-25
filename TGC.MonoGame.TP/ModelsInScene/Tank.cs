@@ -83,23 +83,26 @@ namespace TGC.MonoGame.TP.Tanks
         }
         public override void CreateHitbox(Effect effect, GraphicsDevice graphicsDevice)
         {
-            Vector3 halfSize = new Vector3(
-                _widthLocal * 0.49f,
-                _heightLocal * 0.3f,
-                _depthLocal * 0.3f
+            Vector3 halfSizeChasis = new Vector3(
+                Width * 0.87f,
+                Height * 0.28f,
+                Depth * 0.5f
             );
 
-            Vector3 center = new Vector3(
+            Vector3 centerChasis = new Vector3(
                 _midpoint.X,
                 _midpoint.Y * 0.8f,
                 _midpoint.Z * -0.13f
             );
 
-            _hitbox = new BoxHitbox(
-                center - halfSize,
-                center + halfSize,
+            BoxHitbox chasis = new BoxHitbox(
+                centerChasis - halfSizeChasis,
+                centerChasis + halfSizeChasis,
                 effect, graphicsDevice
             );
+            CompoundHitbox newHitbox = new CompoundHitbox();
+            newHitbox.hitboxes.Add(chasis);
+            _hitbox = newHitbox;
         }
 
         public void SetTurretRotation(float yaw, float pitch)
@@ -466,9 +469,9 @@ namespace TGC.MonoGame.TP.Tanks
         {
             Vector3 missilLocal = Vector3.Transform(missil._position, Matrix.Invert(_world));
 
-            float maxDistance = missil.Width * 5f;
-            float deformationDepth = missil.Depth * 0.1f;
-            Vector3 missilDirectionNormalized = Vector3.Normalize(missil.Direction);
+            float maxDistance = missil.Width * 7f;
+            float deformationDepth = missil.Depth * 1f;
+            Vector3 missilDirectionNormalized = Vector3.Normalize(Vector3.TransformNormal(missil.Direction, Matrix.Invert(_world)));
             Vector3 closestVector = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
             List<ModelMeshPart> modelMeshParts = verticesPorMeshPart.Keys.ToList();
 
@@ -481,17 +484,21 @@ namespace TGC.MonoGame.TP.Tanks
 
                 VertexPositionNormalTexture[] vertexs = verticesPorMeshPart[modelMeshPart].Item1;
                 var relativeTransform = modelMeshesBaseTransforms[verticesPorMeshPart[modelMeshPart].Item2.ParentBone.Index];
-
+                Matrix invertRelative = Matrix.Invert(relativeTransform);
                 for (int i = 0; i < vertexs.Length; i++)
                 {
-                    float distanceToImpact = Vector3.Distance(Vector3.Transform(vertexs[i].Position, relativeTransform), missilLocal);
-                    if (distanceToImpact < Vector3.Distance(closestVector, missilLocal))
+                    Vector3 vertexPositionModelSpace = Vector3.Transform(vertexs[i].Position, relativeTransform);
+
+                    Vector3 vectorToVertex = vertexPositionModelSpace - missilLocal;
+
+                    float distanceAlongAxis = Vector3.Dot(vectorToVertex, missilDirectionNormalized);
+
+                    float distanceToLine = Vector3.Cross(Vector3.Subtract(vertexPositionModelSpace, missilLocal), missilDirectionNormalized).Length();
+
+                    if (distanceToLine < maxDistance && Math.Abs(distanceAlongAxis) < maxDistance)
                     {
-                        closestVector = Vector3.Transform(vertexs[i].Position, relativeTransform);
-                    }
-                    if (distanceToImpact < maxDistance)
-                    {
-                        vertexs[i].Position += missilDirectionNormalized * deformationDepth * (1 - distanceToImpact / maxDistance);
+                        Vector3 missilDirectionNormalizedBoneSpace = Vector3.TransformNormal(missilDirectionNormalized, invertRelative);
+                        vertexs[i].Position += missilDirectionNormalizedBoneSpace * deformationDepth * (1 - distanceToLine / maxDistance);
                     }
                 }
                 Debug.WriteLine("Vertice mas cercano " + Vector3.Distance(closestVector, missilLocal));
@@ -504,8 +511,6 @@ namespace TGC.MonoGame.TP.Tanks
                     stride
                 );
             }
-
-
         }
         protected override void cargarModelo(ContentManager Content, string modelPath)
         {
