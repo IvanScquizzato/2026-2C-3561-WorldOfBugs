@@ -62,6 +62,7 @@ namespace TGC.MonoGame.TP.Missile
                 TGCGame.ExplosionSound.Play();
             }
             _isDisabled = true;
+
         }
     }
 }

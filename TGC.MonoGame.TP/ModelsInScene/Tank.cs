@@ -24,6 +24,7 @@ using System.Diagnostics;
 using TGC.MonoGame.TP.Missile;
 using TGC.MonoGame.TP.Terrain;
 using System.Security.Cryptography.X509Certificates;
+using System.Reflection.Metadata;
 namespace TGC.MonoGame.TP.Tanks
 {
     public class Tank : ModelInScene
@@ -57,6 +58,7 @@ namespace TGC.MonoGame.TP.Tanks
         public float maxHealth = 100f;
 
         public float health;
+        private Dictionary<ModelMeshPart, (VertexPositionNormalTexture[], ModelMesh)> verticesPorMeshPart = new Dictionary<ModelMeshPart, (VertexPositionNormalTexture[], ModelMesh)>();
         public Tank(
             ContentManager Content,
             String modelPath,
@@ -459,6 +461,66 @@ namespace TGC.MonoGame.TP.Tanks
             position = Vector3.Zero;
             rotation = Matrix.Identity;
             return false;
+        }
+        public override void CollidedWithMissil(Missil missil)
+        {
+            Vector3 missilLocal = Vector3.Transform(missil._position, Matrix.Invert(_world));
+
+            float maxDistance = missil.Width * 5f;
+            float deformationDepth = missil.Depth * 0.1f;
+            Vector3 missilDirectionNormalized = Vector3.Normalize(missil.Direction);
+            Vector3 closestVector = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+            List<ModelMeshPart> modelMeshParts = verticesPorMeshPart.Keys.ToList();
+
+            var modelMeshesBaseTransforms = new Matrix[_model.Bones.Count];
+
+            _model.CopyAbsoluteBoneTransformsTo(modelMeshesBaseTransforms);
+
+            foreach (ModelMeshPart modelMeshPart in modelMeshParts)
+            {
+
+                VertexPositionNormalTexture[] vertexs = verticesPorMeshPart[modelMeshPart].Item1;
+                var relativeTransform = modelMeshesBaseTransforms[verticesPorMeshPart[modelMeshPart].Item2.ParentBone.Index];
+
+                for (int i = 0; i < vertexs.Length; i++)
+                {
+                    float distanceToImpact = Vector3.Distance(Vector3.Transform(vertexs[i].Position, relativeTransform), missilLocal);
+                    if (distanceToImpact < Vector3.Distance(closestVector, missilLocal))
+                    {
+                        closestVector = Vector3.Transform(vertexs[i].Position, relativeTransform);
+                    }
+                    if (distanceToImpact < maxDistance)
+                    {
+                        vertexs[i].Position += missilDirectionNormalized * deformationDepth * (1 - distanceToImpact / maxDistance);
+                    }
+                }
+                Debug.WriteLine("Vertice mas cercano " + Vector3.Distance(closestVector, missilLocal));
+                int stride = modelMeshPart.VertexBuffer.VertexDeclaration.VertexStride;
+                modelMeshPart.VertexBuffer.SetData(
+                    modelMeshPart.VertexOffset * stride,
+                    vertexs,
+                    0,
+                    vertexs.Length,
+                    stride
+                );
+            }
+
+
+        }
+        protected override void cargarModelo(ContentManager Content, string modelPath)
+        {
+            base.cargarModelo(Content, modelPath);
+
+            foreach (var mesh in this._model.Meshes)
+            {
+
+                foreach (var meshPart in mesh.MeshParts)
+                {
+                    VertexPositionNormalTexture[] vertexs = new VertexPositionNormalTexture[meshPart.VertexBuffer.VertexCount];
+                    meshPart.VertexBuffer.GetData<VertexPositionNormalTexture>(vertexs);
+                    verticesPorMeshPart[meshPart] = (vertexs, mesh);
+                }
+            }
         }
     }
 

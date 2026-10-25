@@ -136,7 +136,7 @@ namespace TGC.MonoGame.TP.ModelsInScene
             }
             return new List<Texture2D>();
         }
-        private void cargarModelo(ContentManager Content, String modelPath)
+        protected virtual void cargarModelo(ContentManager Content, String modelPath)
         {
             if (modelPath == null)
             {
@@ -158,14 +158,17 @@ namespace TGC.MonoGame.TP.ModelsInScene
                             {
                                 texturasExtraidas.Add(basicEffect.Texture);
                             }
+
                             else
                             {
                                 texturasExtraidas.Add(null);
                             }
                             Console.WriteLine(mesh.Name);
                             meshPart.Effect = _renderer._effect;
+
                         }
                     }
+
                     _texturasPorPath[modelPath] = texturasExtraidas;
                 }
 
