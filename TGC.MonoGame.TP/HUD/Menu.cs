@@ -64,20 +64,19 @@ namespace TGC.MonoGame.TP.HUD
             spriteBatch.GraphicsDevice.Clear(Color.White);
             int centerX = spriteBatch.GraphicsDevice.Viewport.Width / 2;
             int centerY = spriteBatch.GraphicsDevice.Viewport.Height / 2;
-            Console.WriteLine(centerX);
-            Console.WriteLine(centerY);
+
             spriteBatch.Begin();
 
 
             spriteBatch.Draw(_pixel, new Rectangle(centerX - 205, centerY - 55, 410, 90), Color.Black);
-            spriteBatch.Draw(_pixel,new Rectangle(centerX - 200, centerY -50, 400, 80),_selectedOption == 0? Color.Green: Color.Gray);
+            spriteBatch.Draw(_pixel, new Rectangle(centerX - 200, centerY - 50, 400, 80), _selectedOption == 0 ? Color.Green : Color.Gray);
             spriteBatch.DrawString(_font, "JUGAR", new Vector2(centerX - 40, centerY - 30), Color.Black);
 
             spriteBatch.Draw(_pixel, new Rectangle(centerX - 205, centerY + 45, 410, 90), Color.Black);
-            spriteBatch.Draw(_pixel,new Rectangle(centerX - 200, centerY + 50, 400, 80),_selectedOption == 1? Color.Red: Color.Gray);
+            spriteBatch.Draw(_pixel, new Rectangle(centerX - 200, centerY + 50, 400, 80), _selectedOption == 1 ? Color.Red : Color.Gray);
             spriteBatch.DrawString(_font, "SALIR", new Vector2(centerX - 40, centerY + 70), Color.Black);
 
-            spriteBatch.DrawString(_font, "WORLD OF TANKS", new Vector2(centerX - 150 , centerY - 200), Color.Green);
+            spriteBatch.DrawString(_font, "WORLD OF TANKS", new Vector2(centerX - 150, centerY - 200), Color.Green);
 
             spriteBatch.Draw(_pixel, new Rectangle(centerX - 205, centerY + 145, 410, 90), Color.Black);
             spriteBatch.Draw(_pixel, new Rectangle(centerX - 200, centerY + 150, 400, 80), _selectedOption == 2 ? Color.Red : Color.Gray);

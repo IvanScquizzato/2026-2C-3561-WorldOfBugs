@@ -59,13 +59,18 @@ namespace TGC.MonoGame.TP.Tanks
 
         public float health;
         private Dictionary<ModelMeshPart, (VertexPositionNormalTexture[], ModelMesh)> verticesPorMeshPart = new Dictionary<ModelMeshPart, (VertexPositionNormalTexture[], ModelMesh)>();
+        private Dictionary<(ModelMeshPart, int), float> deformacionPorVertice = new Dictionary<(ModelMeshPart, int), float>();
+        private float maxDeformation;
+        public Dictionary<ModelMeshPart, DynamicVertexBuffer> _dynamicVertexBuffers = new Dictionary<ModelMeshPart, DynamicVertexBuffer>();
+        public Dictionary<ModelMeshPart, IndexBuffer> _indexBuffers = new Dictionary<ModelMeshPart, IndexBuffer>();
+
         public Tank(
             ContentManager Content,
             String modelPath,
             Vector3 position,
             Matrix rotation,
             Vector3 scale,
-            IModelInSceneRenderer renderer,
+            TankRenderer renderer,
             float mass
         )
             : base(
@@ -80,19 +85,20 @@ namespace TGC.MonoGame.TP.Tanks
         {
             desiredHeight = Height * 0.35f;
             health = maxHealth;
+            maxDeformation = Width * 0.15f;
         }
         public override void CreateHitbox(Effect effect, GraphicsDevice graphicsDevice)
         {
             Vector3 halfSizeChasis = new Vector3(
                 Width * 0.87f,
-                Height * 0.28f,
-                Depth * 0.5f
+                Height * 0.12f,
+                Depth * 0.52f
             );
 
             Vector3 centerChasis = new Vector3(
                 _midpoint.X,
-                _midpoint.Y * 0.8f,
-                _midpoint.Z * -0.13f
+                _midpoint.Y * 1.15f,
+                _midpoint.Z * -0.21f
             );
 
             BoxHitbox chasis = new BoxHitbox(
@@ -100,8 +106,136 @@ namespace TGC.MonoGame.TP.Tanks
                 centerChasis + halfSizeChasis,
                 effect, graphicsDevice
             );
+            Vector3 halfSizeLowerChasis = new Vector3(
+                Width * 0.89f,
+                Height * 0.13f,
+                Depth * 0.55f
+            );
+
+            Vector3 centerLowerChasis = new Vector3(
+                _midpoint.X,
+                _midpoint.Y * 0.9f,
+                _midpoint.Z * -0.15f
+            );
+
+            BoxHitbox lowerchasis = new BoxHitbox(
+                centerLowerChasis - halfSizeLowerChasis,
+                centerLowerChasis + halfSizeLowerChasis,
+                effect, graphicsDevice
+            );
+            Vector3 halfSizeLowererChasis = new Vector3(
+                Width * 0.57f,
+                Height * 0.25f,
+                Depth * 0.6f
+            );
+
+            Vector3 centerLowererChasis = new Vector3(
+                _midpoint.X,
+                _midpoint.Y * 0.55f,
+                _midpoint.Z * -0f
+            );
+
+            BoxHitbox lowererchasis = new BoxHitbox(
+                centerLowererChasis - halfSizeLowererChasis,
+                centerLowererChasis + halfSizeLowererChasis,
+                effect, graphicsDevice
+            );
+            Vector3 halfSizeTurret = new Vector3(
+                Width * 0.55f,
+                Height * 0.25f,
+                Depth * 0.28f
+            );
+
+            Vector3 centerTurret = new Vector3(
+                _midpoint.X,
+                _midpoint.Y * 1.5f,
+                _midpoint.Z * -0.15f
+            );
+
+            BoxHitbox turret = new BoxHitbox(
+                centerTurret - halfSizeTurret,
+                centerTurret + halfSizeTurret,
+                effect, graphicsDevice
+            );
+            Vector3 halfSizeTreadmillLeft = new Vector3(
+                Width * 0.22f,
+                Height * 0.43f,
+                Depth * 0.6f
+            );
+
+            Vector3 centerTreadMillLeft = new Vector3(
+                _midpoint.X + 135f,
+                _midpoint.Y * 0.4f,
+                _midpoint.Z * -0f
+            );
+
+            BoxHitbox treadMillLeft = new BoxHitbox(
+                centerTreadMillLeft - halfSizeTreadmillLeft,
+                centerTreadMillLeft + halfSizeTreadmillLeft,
+                effect, graphicsDevice
+            );
+            Vector3 halfSizeTreadmillRight = new Vector3(
+                Width * 0.22f,
+                Height * 0.43f,
+                Depth * 0.6f
+            );
+
+            Vector3 centerTreadMillRight = new Vector3(
+                _midpoint.X - 135f,
+                _midpoint.Y * 0.4f,
+                _midpoint.Z * -0f
+            );
+
+            BoxHitbox treadMillRight = new BoxHitbox(
+                centerTreadMillRight - halfSizeTreadmillRight,
+                centerTreadMillRight + halfSizeTreadmillRight,
+                effect, graphicsDevice
+            );
+
+            Vector3 halfSizeTubeRight = new Vector3(
+                Width * 0.1f,
+                Height * 0.4f,
+                Depth * 0.05f
+            );
+
+            Vector3 centerTubeRight = new Vector3(
+                _midpoint.X - 37f,
+                _midpoint.Y * 0.95f,
+                _midpoint.Z * -1.85f
+            );
+
+            BoxHitbox tubeRight = new BoxHitbox(
+                centerTubeRight - halfSizeTubeRight,
+                centerTubeRight + halfSizeTubeRight,
+                effect, graphicsDevice
+            );
+
+            Vector3 halfSizeTubeLeft = new Vector3(
+                Width * 0.1f,
+                Height * 0.4f,
+                Depth * 0.05f
+            );
+
+            Vector3 centerTubeLeft = new Vector3(
+                _midpoint.X + 37f,
+                _midpoint.Y * 0.95f,
+                _midpoint.Z * -1.85f
+            );
+
+            BoxHitbox tubeLeft = new BoxHitbox(
+                centerTubeLeft - halfSizeTubeLeft,
+                centerTubeLeft + halfSizeTubeLeft,
+                effect, graphicsDevice
+            );
             CompoundHitbox newHitbox = new CompoundHitbox();
             newHitbox.hitboxes.Add(chasis);
+            newHitbox.hitboxes.Add(lowerchasis);
+            newHitbox.hitboxes.Add(lowererchasis);
+            newHitbox.hitboxes.Add(turret);
+            newHitbox.hitboxes.Add(treadMillLeft);
+            newHitbox.hitboxes.Add(treadMillRight);
+            newHitbox.hitboxes.Add(tubeRight);
+            newHitbox.hitboxes.Add(tubeLeft);
             _hitbox = newHitbox;
         }
 
@@ -469,10 +603,10 @@ namespace TGC.MonoGame.TP.Tanks
         {
             Vector3 missilLocal = Vector3.Transform(missil._position, Matrix.Invert(_world));
 
-            float maxDistance = missil.Width * 7f;
+            float maxDistanceToCylinder = missil.Width * 7f;
+            float maxDistanceAlongAxis = missil.Depth * 5f;
             float deformationDepth = missil.Depth * 1f;
             Vector3 missilDirectionNormalized = Vector3.Normalize(Vector3.TransformNormal(missil.Direction, Matrix.Invert(_world)));
-            Vector3 closestVector = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
             List<ModelMeshPart> modelMeshParts = verticesPorMeshPart.Keys.ToList();
 
             var modelMeshesBaseTransforms = new Matrix[_model.Bones.Count];
@@ -481,52 +615,77 @@ namespace TGC.MonoGame.TP.Tanks
 
             foreach (ModelMeshPart modelMeshPart in modelMeshParts)
             {
-
-                VertexPositionNormalTexture[] vertexs = verticesPorMeshPart[modelMeshPart].Item1;
-                var relativeTransform = modelMeshesBaseTransforms[verticesPorMeshPart[modelMeshPart].Item2.ParentBone.Index];
-                Matrix invertRelative = Matrix.Invert(relativeTransform);
-                for (int i = 0; i < vertexs.Length; i++)
+                ModelMesh mesh = verticesPorMeshPart[modelMeshPart].Item2;
+                if (mesh.Name.Equals("Hull") || mesh.Name.Equals("Turret"))
                 {
-                    Vector3 vertexPositionModelSpace = Vector3.Transform(vertexs[i].Position, relativeTransform);
-
-                    Vector3 vectorToVertex = vertexPositionModelSpace - missilLocal;
-
-                    float distanceAlongAxis = Vector3.Dot(vectorToVertex, missilDirectionNormalized);
-
-                    float distanceToLine = Vector3.Cross(Vector3.Subtract(vertexPositionModelSpace, missilLocal), missilDirectionNormalized).Length();
-
-                    if (distanceToLine < maxDistance && Math.Abs(distanceAlongAxis) < maxDistance)
+                    VertexPositionNormalTexture[] vertexs = verticesPorMeshPart[modelMeshPart].Item1;
+                    var relativeTransform = modelMeshesBaseTransforms[mesh.ParentBone.Index];
+                    Matrix invertRelative = Matrix.Invert(relativeTransform);
+                    for (int i = 0; i < vertexs.Length; i++)
                     {
-                        Vector3 missilDirectionNormalizedBoneSpace = Vector3.TransformNormal(missilDirectionNormalized, invertRelative);
-                        vertexs[i].Position += missilDirectionNormalizedBoneSpace * deformationDepth * (1 - distanceToLine / maxDistance);
+                        Vector3 vertexPositionModelSpace = Vector3.Transform(vertexs[i].Position, relativeTransform);
+
+                        Vector3 vectorToVertex = vertexPositionModelSpace - missilLocal;
+
+                        float distanceAlongAxis = Vector3.Dot(vectorToVertex, missilDirectionNormalized);
+
+                        float distanceToLine = Vector3.Cross(Vector3.Subtract(vertexPositionModelSpace, missilLocal), missilDirectionNormalized).Length();
+
+                        if (distanceToLine < maxDistanceToCylinder && Math.Abs(distanceAlongAxis) < maxDistanceAlongAxis)
+                        {
+                            Vector3 missilDirectionNormalizedBoneSpace = Vector3.TransformNormal(missilDirectionNormalized, invertRelative);
+                            if (!deformacionPorVertice.TryGetValue((modelMeshPart, i), out float deformacionActual))
+                            {
+                                deformacionActual = 0f;
+                            }
+                            float deformacionNueva = deformationDepth * (1 - distanceToLine / maxDistanceToCylinder);
+                            if (deformacionActual + deformacionNueva > maxDeformation)
+                            {
+                                deformacionNueva = maxDeformation - deformacionActual;
+                            }
+                            deformacionPorVertice[(modelMeshPart, i)] = deformacionActual + deformacionNueva;
+                            vertexs[i].Position += missilDirectionNormalizedBoneSpace * deformacionNueva;
+                        }
                     }
+                    int stride = modelMeshPart.VertexBuffer.VertexDeclaration.VertexStride;
+                    _dynamicVertexBuffers[modelMeshPart].SetData(
+                        modelMeshPart.VertexOffset * stride,
+                        vertexs,
+                        0,
+                        vertexs.Length,
+                        stride
+                    );
                 }
-                Debug.WriteLine("Vertice mas cercano " + Vector3.Distance(closestVector, missilLocal));
-                int stride = modelMeshPart.VertexBuffer.VertexDeclaration.VertexStride;
-                modelMeshPart.VertexBuffer.SetData(
-                    modelMeshPart.VertexOffset * stride,
-                    vertexs,
-                    0,
-                    vertexs.Length,
-                    stride
-                );
             }
         }
         protected override void cargarModelo(ContentManager Content, string modelPath)
         {
             base.cargarModelo(Content, modelPath);
-
             foreach (var mesh in this._model.Meshes)
             {
-
                 foreach (var meshPart in mesh.MeshParts)
                 {
+
                     VertexPositionNormalTexture[] vertexs = new VertexPositionNormalTexture[meshPart.VertexBuffer.VertexCount];
                     meshPart.VertexBuffer.GetData<VertexPositionNormalTexture>(vertexs);
+
+                    DynamicVertexBuffer dynamicVB = new DynamicVertexBuffer(
+                        _renderer._graphicsDevice,
+                        VertexPositionNormalTexture.VertexDeclaration,
+                        vertexs.Length,
+                        BufferUsage.WriteOnly
+                    );
+
+                    dynamicVB.SetData(vertexs);
+
+                    _dynamicVertexBuffers[meshPart] = dynamicVB;
+                    _indexBuffers[meshPart] = meshPart.IndexBuffer;
+
                     verticesPorMeshPart[meshPart] = (vertexs, mesh);
                 }
             }
+
         }
     }
-
 }
+

@@ -88,9 +88,9 @@ namespace TGC.MonoGame.TP.ModelsInScene
         }
         public float _mass { get; set; }
 
-        private static ConcurrentDictionary<string, List<Texture2D>> _texturasPorPath = new();
-        private static ConcurrentDictionary<string, Model> _modeloPorPath = new();
-        private static readonly object _lockObj = new object();
+        protected static ConcurrentDictionary<string, List<Texture2D>> _texturasPorPath = new();
+        protected static ConcurrentDictionary<string, Model> _modeloPorPath = new();
+        protected static readonly object _lockObj = new object();
 
         protected Vector3 _midpoint
         {

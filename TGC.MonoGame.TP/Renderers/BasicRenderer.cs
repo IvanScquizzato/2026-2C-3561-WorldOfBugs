@@ -34,41 +34,7 @@ namespace TGC.MonoGame.TP.Renderers
             {
                 var relativeTransform = modelMeshesBaseTransforms[mesh.ParentBone.Index];
 
-                Matrix world = modelInScene._world;
-
-                if (modelInScene is Tank tank)
-                {
-                    if (mesh.Name == "Turret")
-                    {
-                       
-                        world =
-                            relativeTransform *
-                            Matrix.CreateRotationY(tank.TurretYaw) *
-                            modelInScene._world;
-                    }
-                    else if (mesh.Name == "Cannon")
-                    {
-                       
-                        world =
-                            relativeTransform *
-                            Matrix.CreateRotationX(tank.CannonPitch) *
-                            Matrix.CreateRotationY(tank.TurretYaw)*
-                            modelInScene._world;
-                        
-                    }
-                    else
-                    {
-                        world =
-                            relativeTransform *
-                            modelInScene._world;
-                    }
-                }
-                else
-                {
-                    world =
-                        relativeTransform *
-                        modelInScene._world;
-                }
+                Matrix world = relativeTransform * modelInScene._world;
 
                 _effect.Parameters["World"].SetValue(world);
                 foreach (var meshPart in mesh.MeshParts)
@@ -83,10 +49,6 @@ namespace TGC.MonoGame.TP.Renderers
                     _graphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, meshPart.VertexOffset, meshPart.StartIndex, meshPart.PrimitiveCount);
                     index++;
                 }
-
-
-
-
             }
         }
     }
