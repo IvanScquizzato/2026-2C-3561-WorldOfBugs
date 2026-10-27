@@ -114,7 +114,7 @@ namespace TGC.MonoGame.TP.Tanks
 
             // Turret
             newHitbox.CreateSubHitbox(
-                Width * 0.57f, Height * 0.32f, Depth * 0.28f,
+                Width * 0.57f, Height * 0.38f, Depth * 0.28f,
                 _midpoint.X, _midpoint.Y * 1.5f, _midpoint.Z * -0.15f,
                 effect, graphicsDevice
             );
