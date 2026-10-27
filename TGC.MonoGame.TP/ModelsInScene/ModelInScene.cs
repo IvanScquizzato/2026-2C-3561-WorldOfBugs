@@ -105,15 +105,6 @@ namespace TGC.MonoGame.TP.ModelsInScene
 
         public Hitbox _hitbox { get; protected set; } = null;
 
-        // Estructura para guardar nuestra flecha
-        public struct DebugArrow
-        {
-            public Vector3 Start;
-            public Vector3 End;
-            public Color Color;
-        }
-
-        // Lista que limpiaremos y llenaremos en cada frame
         public List<DebugArrow> DebugForces = new List<DebugArrow>();
 
         public ModelInScene(ContentManager Content, String modelPath, Vector3 position, Matrix rotation, Vector3 scale, IModelInSceneRenderer renderer, float mass)
@@ -313,39 +304,12 @@ namespace TGC.MonoGame.TP.ModelsInScene
                 }
                 if (renderForces)
                 {
-                    DrawLines(DebugForces, view, projection, _renderer._effect, _renderer._graphicsDevice);
+                    ArrowRenderer.DrawLines(DebugForces, view, projection, _renderer._effect, _renderer._graphicsDevice);
                 }
             }
             DebugForces.Clear();
         }
-        public static void DrawLines(List<DebugArrow> arrows, Matrix view, Matrix projection, Effect effect, GraphicsDevice graphicsDevice)
-        {
-            if (arrows == null || arrows.Count == 0) return;
 
-            // Configuramos las matrices de la cámara
-            if (effect.Parameters["World"] != null)
-            {
-                effect.Parameters["World"].SetValue(Matrix.Identity);
-            }
-            effect.Parameters["View"].SetValue(view);
-            effect.Parameters["Projection"].SetValue(projection);
-            // Creamos los vértices para las líneas
-            var vertices = new VertexPositionColor[arrows.Count * 2];
-            int index = 0;
-
-            foreach (var arrow in arrows)
-            {
-                vertices[index++] = new VertexPositionColor(arrow.Start, arrow.Color);
-                vertices[index++] = new VertexPositionColor(arrow.End, arrow.Color);
-            }
-
-            // Renderizamos
-            foreach (var pass in effect.CurrentTechnique.Passes)
-            {
-                pass.Apply();
-                graphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, vertices, 0, arrows.Count);
-            }
-        }
         public virtual Vector3 Correction()
         {
             return Vector3.Zero;

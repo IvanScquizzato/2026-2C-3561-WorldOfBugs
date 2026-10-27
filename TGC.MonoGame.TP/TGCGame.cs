@@ -726,13 +726,12 @@ public class TGCGame : Game
                 {
                     Missil missil = _missiles[i];
 
+                    missil.Update(gameTime);
                     if (missil._isDisabled)
                     {
                         _missiles.RemoveAt(i);
                         continue;
                     }
-
-                    missil.Update(gameTime);
 
                     foreach (var lista in _modelosEnEscenario)
                     {

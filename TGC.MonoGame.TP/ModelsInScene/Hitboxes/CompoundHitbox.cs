@@ -44,5 +44,33 @@ namespace TGC.MonoGame.TP.ModelsInScene
         {
             CompoundHitboxRenderer.Draw(model, this, world, view, projection);
         }
+        public BoxHitbox CreateSubHitbox(
+        float halfWidth, float halfHeight, float halfDepth,
+        float xCenter, float yCenter, float zCenter,
+        Effect effect, GraphicsDevice graphicsDevice)
+        {
+            Vector3 halfSize = new Vector3(
+                halfWidth,
+                halfHeight,
+                halfDepth
+            );
+
+            Vector3 center = new Vector3(
+                xCenter,
+                yCenter,
+                zCenter
+            );
+            BoxHitbox newBoxHitbox = new BoxHitbox(center - halfSize, center + halfSize, effect, graphicsDevice);
+            hitboxes.Add(newBoxHitbox);
+            return newBoxHitbox;
+        }
+        public void CreateSubHitboxSymmetricalToYZ(
+        float halfWidth, float halfHeight, float halfDepth,
+        float xCenter, float yCenter, float zCenter,
+        Effect effect, GraphicsDevice graphicsDevice)
+        {
+            CreateSubHitbox(halfWidth, halfHeight, halfDepth, xCenter, yCenter, zCenter, effect, graphicsDevice);
+            CreateSubHitbox(halfWidth, halfHeight, halfDepth, -xCenter, yCenter, zCenter, effect, graphicsDevice);
+        }
     }
 }

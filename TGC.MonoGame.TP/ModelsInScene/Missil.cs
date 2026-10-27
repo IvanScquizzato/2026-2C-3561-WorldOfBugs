@@ -12,8 +12,8 @@ namespace TGC.MonoGame.TP.Missile
 
         public float Speed { get; set; } = 1500f;
 
-        public bool IsAlive { get; set; } = true;
-
+        private float maxLifetimeSecs = 6f;
+        private float lifeTime = 0f;
         public Missil(
             ContentManager content,
             string modelPath,
@@ -52,6 +52,11 @@ namespace TGC.MonoGame.TP.Missile
                 Direction *
                 Speed *
                 deltaTime;
+            lifeTime += deltaTime;
+            if (lifeTime >= maxLifetimeSecs)
+            {
+                _isDisabled = true;
+            }
 
         }
         public void CollidedWithObject(ModelInScene model)

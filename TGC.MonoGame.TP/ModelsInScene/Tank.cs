@@ -58,11 +58,11 @@ namespace TGC.MonoGame.TP.Tanks
         public float maxHealth = 100f;
 
         public float health;
-        private Dictionary<ModelMeshPart, (VertexPositionNormalTexture[], ModelMesh)> verticesPorMeshPart = new Dictionary<ModelMeshPart, (VertexPositionNormalTexture[], ModelMesh)>();
+        public Dictionary<ModelMeshPart, (VertexPositionNormalTexture[], ModelMesh)> verticesPorMeshPart = new Dictionary<ModelMeshPart, (VertexPositionNormalTexture[], ModelMesh)>();
         private Dictionary<(ModelMeshPart, int), float> deformacionPorVertice = new Dictionary<(ModelMeshPart, int), float>();
         private float maxDeformation;
         public Dictionary<ModelMeshPart, DynamicVertexBuffer> _dynamicVertexBuffers = new Dictionary<ModelMeshPart, DynamicVertexBuffer>();
-        public Dictionary<ModelMeshPart, IndexBuffer> _indexBuffers = new Dictionary<ModelMeshPart, IndexBuffer>();
+        public Dictionary<ModelMeshPart, int[]> _indexBuffers = new Dictionary<ModelMeshPart, int[]>();
 
         public Tank(
             ContentManager Content,
@@ -89,153 +89,50 @@ namespace TGC.MonoGame.TP.Tanks
         }
         public override void CreateHitbox(Effect effect, GraphicsDevice graphicsDevice)
         {
-            Vector3 halfSizeChasis = new Vector3(
-                Width * 0.87f,
-                Height * 0.12f,
-                Depth * 0.52f
-            );
-
-            Vector3 centerChasis = new Vector3(
-                _midpoint.X,
-                _midpoint.Y * 1.15f,
-                _midpoint.Z * -0.21f
-            );
-
-            BoxHitbox chasis = new BoxHitbox(
-                centerChasis - halfSizeChasis,
-                centerChasis + halfSizeChasis,
-                effect, graphicsDevice
-            );
-            Vector3 halfSizeLowerChasis = new Vector3(
-                Width * 0.89f,
-                Height * 0.13f,
-                Depth * 0.55f
-            );
-
-            Vector3 centerLowerChasis = new Vector3(
-                _midpoint.X,
-                _midpoint.Y * 0.9f,
-                _midpoint.Z * -0.15f
-            );
-
-            BoxHitbox lowerchasis = new BoxHitbox(
-                centerLowerChasis - halfSizeLowerChasis,
-                centerLowerChasis + halfSizeLowerChasis,
-                effect, graphicsDevice
-            );
-            Vector3 halfSizeLowererChasis = new Vector3(
-                Width * 0.57f,
-                Height * 0.25f,
-                Depth * 0.6f
-            );
-
-            Vector3 centerLowererChasis = new Vector3(
-                _midpoint.X,
-                _midpoint.Y * 0.55f,
-                _midpoint.Z * -0f
-            );
-
-            BoxHitbox lowererchasis = new BoxHitbox(
-                centerLowererChasis - halfSizeLowererChasis,
-                centerLowererChasis + halfSizeLowererChasis,
-                effect, graphicsDevice
-            );
-            Vector3 halfSizeTurret = new Vector3(
-                Width * 0.55f,
-                Height * 0.25f,
-                Depth * 0.28f
-            );
-
-            Vector3 centerTurret = new Vector3(
-                _midpoint.X,
-                _midpoint.Y * 1.5f,
-                _midpoint.Z * -0.15f
-            );
-
-            BoxHitbox turret = new BoxHitbox(
-                centerTurret - halfSizeTurret,
-                centerTurret + halfSizeTurret,
-                effect, graphicsDevice
-            );
-            Vector3 halfSizeTreadmillLeft = new Vector3(
-                Width * 0.22f,
-                Height * 0.43f,
-                Depth * 0.6f
-            );
-
-            Vector3 centerTreadMillLeft = new Vector3(
-                _midpoint.X + 135f,
-                _midpoint.Y * 0.4f,
-                _midpoint.Z * -0f
-            );
-
-            BoxHitbox treadMillLeft = new BoxHitbox(
-                centerTreadMillLeft - halfSizeTreadmillLeft,
-                centerTreadMillLeft + halfSizeTreadmillLeft,
-                effect, graphicsDevice
-            );
-            Vector3 halfSizeTreadmillRight = new Vector3(
-                Width * 0.22f,
-                Height * 0.43f,
-                Depth * 0.6f
-            );
-
-            Vector3 centerTreadMillRight = new Vector3(
-                _midpoint.X - 135f,
-                _midpoint.Y * 0.4f,
-                _midpoint.Z * -0f
-            );
-
-            BoxHitbox treadMillRight = new BoxHitbox(
-                centerTreadMillRight - halfSizeTreadmillRight,
-                centerTreadMillRight + halfSizeTreadmillRight,
-                effect, graphicsDevice
-            );
-
-            Vector3 halfSizeTubeRight = new Vector3(
-                Width * 0.1f,
-                Height * 0.4f,
-                Depth * 0.05f
-            );
-
-            Vector3 centerTubeRight = new Vector3(
-                _midpoint.X - 37f,
-                _midpoint.Y * 0.95f,
-                _midpoint.Z * -1.85f
-            );
-
-            BoxHitbox tubeRight = new BoxHitbox(
-                centerTubeRight - halfSizeTubeRight,
-                centerTubeRight + halfSizeTubeRight,
-                effect, graphicsDevice
-            );
-
-            Vector3 halfSizeTubeLeft = new Vector3(
-                Width * 0.1f,
-                Height * 0.4f,
-                Depth * 0.05f
-            );
-
-            Vector3 centerTubeLeft = new Vector3(
-                _midpoint.X + 37f,
-                _midpoint.Y * 0.95f,
-                _midpoint.Z * -1.85f
-            );
-
-            BoxHitbox tubeLeft = new BoxHitbox(
-                centerTubeLeft - halfSizeTubeLeft,
-                centerTubeLeft + halfSizeTubeLeft,
-                effect, graphicsDevice
-            );
             CompoundHitbox newHitbox = new CompoundHitbox();
-            newHitbox.hitboxes.Add(chasis);
-            newHitbox.hitboxes.Add(lowerchasis);
-            newHitbox.hitboxes.Add(lowererchasis);
-            newHitbox.hitboxes.Add(turret);
-            newHitbox.hitboxes.Add(treadMillLeft);
-            newHitbox.hitboxes.Add(treadMillRight);
-            newHitbox.hitboxes.Add(tubeRight);
-            newHitbox.hitboxes.Add(tubeLeft);
+
+            // Chasis
+            newHitbox.CreateSubHitbox(
+                Width * 0.87f, Height * 0.12f, Depth * 0.52f,           // Half Sizes
+                _midpoint.X, _midpoint.Y * 1.15f, _midpoint.Z * -0.21f, // Centers
+                effect, graphicsDevice
+            );
+
+            // Lower Chasis
+            newHitbox.CreateSubHitbox(
+                Width * 0.89f, Height * 0.13f, Depth * 0.55f,
+                _midpoint.X, _midpoint.Y * 0.9f, _midpoint.Z * -0.15f,
+                effect, graphicsDevice
+            );
+
+            // Lowerer Chasis
+            newHitbox.CreateSubHitbox(
+                Width * 0.67f, Height * 0.3f, Depth * 0.6f,
+                _midpoint.X, _midpoint.Y * 0.6f, _midpoint.Z * -0f,
+                effect, graphicsDevice
+            );
+
+            // Turret
+            newHitbox.CreateSubHitbox(
+                Width * 0.57f, Height * 0.32f, Depth * 0.28f,
+                _midpoint.X, _midpoint.Y * 1.5f, _midpoint.Z * -0.15f,
+                effect, graphicsDevice
+            );
+
+            //Treadmills
+            newHitbox.CreateSubHitboxSymmetricalToYZ(
+                Width * 0.22f, Height * 0.41f, Depth * 0.6f,
+                _midpoint.X + 135f, _midpoint.Y * 0.46f, _midpoint.Z * -0f,
+                effect, graphicsDevice
+            );
+
+            //Tubes
+            newHitbox.CreateSubHitboxSymmetricalToYZ(
+                Width * 0.1f, Height * 0.4f, Depth * 0.03f,
+                _midpoint.X - 37f, _midpoint.Y * 0.95f, _midpoint.Z * -1.9f,
+                effect, graphicsDevice
+            );
+
             _hitbox = newHitbox;
         }
 
@@ -274,9 +171,6 @@ namespace TGC.MonoGame.TP.Tanks
             if (keyboardState.IsKeyDown(Keys.A)) { turnInput -= 1; estaDoblando = true; }
 
             //logica canon y torreta siguiendo el mouse
-
-
-
 
             Vector3 leftTrackGlobalPos = Vector3.Transform(new Vector3(_widthLocal * 0.385f, 0, 0), Matrix.CreateScale(_scale) * _rotation); ;
             Vector3 rightTrackGlobalPos = Vector3.Transform(new Vector3(-_widthLocal * 0.385f, 0, 0), Matrix.CreateScale(_scale) * _rotation);
@@ -604,7 +498,7 @@ namespace TGC.MonoGame.TP.Tanks
             Vector3 missilLocal = Vector3.Transform(missil._position, Matrix.Invert(_world));
 
             float maxDistanceToCylinder = missil.Width * 7f;
-            float maxDistanceAlongAxis = missil.Depth * 5f;
+            float maxDistanceAlongAxis = missil.Depth * 6f;
             float deformationDepth = missil.Depth * 1f;
             Vector3 missilDirectionNormalized = Vector3.Normalize(Vector3.TransformNormal(missil.Direction, Matrix.Invert(_world)));
             List<ModelMeshPart> modelMeshParts = verticesPorMeshPart.Keys.ToList();
@@ -620,36 +514,76 @@ namespace TGC.MonoGame.TP.Tanks
                 {
                     VertexPositionNormalTexture[] vertexs = verticesPorMeshPart[modelMeshPart].Item1;
                     var relativeTransform = modelMeshesBaseTransforms[mesh.ParentBone.Index];
-                    Matrix invertRelative = Matrix.Invert(relativeTransform);
-                    for (int i = 0; i < vertexs.Length; i++)
+                    if (mesh.Name.Equals("Turret"))
                     {
-                        Vector3 vertexPositionModelSpace = Vector3.Transform(vertexs[i].Position, relativeTransform);
+                        relativeTransform *= GetCannonRotation();
+                    }
+                    Matrix invertRelative = Matrix.Invert(relativeTransform);
 
-                        Vector3 vectorToVertex = vertexPositionModelSpace - missilLocal;
+                    int[] indices = _indexBuffers[modelMeshPart];
+                    bool[] fueModificado = new bool[vertexs.Length];
 
-                        float distanceAlongAxis = Vector3.Dot(vectorToVertex, missilDirectionNormalized);
-
-                        float distanceToLine = Vector3.Cross(Vector3.Subtract(vertexPositionModelSpace, missilLocal), missilDirectionNormalized).Length();
-
-                        if (distanceToLine < maxDistanceToCylinder && Math.Abs(distanceAlongAxis) < maxDistanceAlongAxis)
+                    for (int i = 0; i < indices.Length; i++)
+                    {
+                        int indiceActual = indices[i];
+                        if (!fueModificado[indiceActual])
                         {
-                            Vector3 missilDirectionNormalizedBoneSpace = Vector3.TransformNormal(missilDirectionNormalized, invertRelative);
-                            if (!deformacionPorVertice.TryGetValue((modelMeshPart, i), out float deformacionActual))
+                            vertexs[indiceActual].Normal = Vector3.Zero;
+                            Vector3 vertexPositionModelSpace = Vector3.Transform(vertexs[indiceActual].Position, relativeTransform);
+
+                            Vector3 vectorToVertex = vertexPositionModelSpace - missilLocal;
+
+                            float distanceAlongAxis = Vector3.Dot(vectorToVertex, missilDirectionNormalized);
+
+                            float distanceToLine = Vector3.Cross(Vector3.Subtract(vertexPositionModelSpace, missilLocal), missilDirectionNormalized).Length();
+
+                            if (distanceToLine < maxDistanceToCylinder && Math.Abs(distanceAlongAxis) < maxDistanceAlongAxis)
                             {
-                                deformacionActual = 0f;
+                                Vector3 missilDirectionNormalizedBoneSpace = Vector3.TransformNormal(missilDirectionNormalized, invertRelative);
+                                if (!deformacionPorVertice.TryGetValue((modelMeshPart, indiceActual), out float deformacionActual))
+                                {
+                                    deformacionActual = 0f;
+                                }
+                                float deformacionNueva = deformationDepth * (1 - distanceToLine / maxDistanceToCylinder);
+                                if (deformacionActual + deformacionNueva > maxDeformation)
+                                {
+                                    deformacionNueva = maxDeformation - deformacionActual;
+                                }
+                                deformacionPorVertice[(modelMeshPart, indiceActual)] = deformacionActual + deformacionNueva;
+                                vertexs[indiceActual].Position += missilDirectionNormalizedBoneSpace * deformacionNueva;
+                                fueModificado[indiceActual] = true;
                             }
-                            float deformacionNueva = deformationDepth * (1 - distanceToLine / maxDistanceToCylinder);
-                            if (deformacionActual + deformacionNueva > maxDeformation)
-                            {
-                                deformacionNueva = maxDeformation - deformacionActual;
-                            }
-                            deformacionPorVertice[(modelMeshPart, i)] = deformacionActual + deformacionNueva;
-                            vertexs[i].Position += missilDirectionNormalizedBoneSpace * deformacionNueva;
+                        }
+
+                        //Si está en el último vértice del triángulo recalcula las normales
+                        if (i % 3 == 2)
+                        {
+                            int i1 = indices[i - 2];
+                            int i2 = indices[i - 1];
+                            int i3 = indiceActual;
+
+                            Vector3 arista1 = vertexs[i3].Position - vertexs[i1].Position;
+                            Vector3 arista2 = vertexs[i2].Position - vertexs[i1].Position;
+                            Vector3 normalAlTriangulo = Vector3.Cross(arista1, arista2);
+
+                            vertexs[i1].Normal += normalAlTriangulo;
+                            vertexs[i2].Normal += normalAlTriangulo;
+                            vertexs[i3].Normal += normalAlTriangulo;
                         }
                     }
+
+
+                    for (int i = 0; i < vertexs.Length; i++)
+                    {
+                        if (vertexs[i].Normal != Vector3.Zero)
+                        {
+                            vertexs[i].Normal = Vector3.Normalize(vertexs[i].Normal);
+                        }
+                    }
+
                     int stride = modelMeshPart.VertexBuffer.VertexDeclaration.VertexStride;
                     _dynamicVertexBuffers[modelMeshPart].SetData(
-                        modelMeshPart.VertexOffset * stride,
+                        0,
                         vertexs,
                         0,
                         vertexs.Length,
@@ -666,9 +600,18 @@ namespace TGC.MonoGame.TP.Tanks
                 foreach (var meshPart in mesh.MeshParts)
                 {
 
-                    VertexPositionNormalTexture[] vertexs = new VertexPositionNormalTexture[meshPart.VertexBuffer.VertexCount];
-                    meshPart.VertexBuffer.GetData<VertexPositionNormalTexture>(vertexs);
+                    VertexPositionNormalTexture[] vertexs = new VertexPositionNormalTexture[meshPart.NumVertices];
 
+                    int vertexStride = meshPart.VertexBuffer.VertexDeclaration.VertexStride;
+                    int offsetInBytes = meshPart.VertexOffset * vertexStride;
+
+                    meshPart.VertexBuffer.GetData(
+                        offsetInBytes,
+                        vertexs,
+                        0,
+                        meshPart.NumVertices,
+                        vertexStride
+                    );
                     DynamicVertexBuffer dynamicVB = new DynamicVertexBuffer(
                         _renderer._graphicsDevice,
                         VertexPositionNormalTexture.VertexDeclaration,
@@ -679,8 +622,25 @@ namespace TGC.MonoGame.TP.Tanks
                     dynamicVB.SetData(vertexs);
 
                     _dynamicVertexBuffers[meshPart] = dynamicVB;
-                    _indexBuffers[meshPart] = meshPart.IndexBuffer;
 
+                    IndexBuffer indexBuffer = meshPart.IndexBuffer;
+                    int cantIndices = meshPart.PrimitiveCount * 3;
+                    int[] indices = new int[cantIndices];
+                    if (indexBuffer.IndexElementSize == IndexElementSize.SixteenBits)
+                    {
+                        ushort[] indicesCortos = new ushort[cantIndices];
+                        indexBuffer.GetData(meshPart.StartIndex * 2, indicesCortos, 0, cantIndices);
+
+                        for (int i = 0; i < cantIndices; i++)
+                        {
+                            indices[i] = indicesCortos[i];
+                        }
+                    }
+                    else
+                    {
+                        indexBuffer.GetData(meshPart.StartIndex * 4, indices, 0, cantIndices);
+                    }
+                    _indexBuffers[meshPart] = indices;
                     verticesPorMeshPart[meshPart] = (vertexs, mesh);
                 }
             }
