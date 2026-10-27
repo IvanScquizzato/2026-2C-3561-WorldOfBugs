@@ -13,7 +13,7 @@ namespace TGC.MonoGame.TP.Renderers
         public GraphicsDevice _graphicsDevice { get; set; }
         public Effect _effect { get; set; }
         public Effect _hitBoxEffect { get; set; }
-        public bool drawNormals = true;
+        public bool drawNormals = false;
         public TankRenderer(GraphicsDevice graphicsDevice, Effect effect, Effect hitboxEffect)
         {
             _graphicsDevice = graphicsDevice;

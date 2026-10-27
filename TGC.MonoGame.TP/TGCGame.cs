@@ -704,22 +704,24 @@ public class TGCGame : Game
                         _basicRenderer,
                         direction
                     );
+                    if (_currentCamera == _camera)
+                    {
+                        Matrix cameraWorld = Matrix.Invert(_camera.View);
 
-                    Matrix cameraWorld = Matrix.Invert(_camera.View);
+                        Quaternion cameraRotation = Quaternion.CreateFromRotationMatrix(cameraWorld);
+                        Missil missile2 = new Missil(
+                            Content,
+                            ContentFolder3D + "missile/source/rocket2",
+                            cameraWorld.Translation,
+                            Matrix.CreateFromQuaternion(cameraRotation),
+                            new Vector3(4.2f),
+                            _basicRenderer,
+                            Matrix.CreateFromQuaternion(cameraRotation).Forward
+                        );
+                        _missiles.Add(missile2);
 
-                    Quaternion cameraRotation = Quaternion.CreateFromRotationMatrix(cameraWorld);
-                    Missil missile2 = new Missil(
-                        Content,
-                        ContentFolder3D + "missile/source/rocket2",
-                        cameraWorld.Translation,
-                        Matrix.CreateFromQuaternion(cameraRotation),
-                        new Vector3(4.2f),
-                        _basicRenderer,
-                        Matrix.CreateFromQuaternion(cameraRotation).Forward
-                    );
-
+                    }
                     _missiles.Add(missile);
-                    _missiles.Add(missile2);
                     _cannonSound.Play();
                 }
                 for (int i = _missiles.Count - 1; i >= 0; i--)
