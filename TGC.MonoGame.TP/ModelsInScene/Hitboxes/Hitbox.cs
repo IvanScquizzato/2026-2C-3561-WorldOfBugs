@@ -18,6 +18,11 @@ namespace TGC.MonoGame.TP.ModelsInScene
             return CheckContainsPoint(worldPoint, world);
         }
         public abstract bool CheckContainsPoint(Vector3 worldPoint, Matrix world);
+        public virtual Hitbox GetHitboxInContact(Vector3 worldPoint, Matrix world)
+        {
+            return this;
+        }
+
         public abstract void Draw(ModelInScene model, Matrix world, Matrix view, Matrix projection);
         public void Remove()
         {

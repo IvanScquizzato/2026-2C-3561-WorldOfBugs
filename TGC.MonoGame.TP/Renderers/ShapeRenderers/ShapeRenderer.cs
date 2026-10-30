@@ -32,7 +32,7 @@ namespace TGC.MonoGame.TP.ShapeRenderers
             _effect = effect;
             Load();
         }
-        protected abstract void Load();
+        protected virtual void Load() { }
         public abstract void Draw(Matrix world, Matrix view, Matrix projection);
         protected void DrawWithLines(Matrix world, Matrix view, Matrix projection, int lines)
         {

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Xna.Framework;
@@ -192,6 +192,7 @@ public class TGCGame : Game
         _effect = Content.Load<Effect>(ContentFolderEffects + "BasicShader");
         _basicRenderer = new BasicRenderer(GraphicsDevice, _effect, _debugEffect);
 
+        TankRenderer tankRenderer = new TankRenderer(GraphicsDevice, _effect, _debugEffect);
         //Cargo terreno
         var terrainEffect = Content.Load<Effect>(ContentFolderEffects + "Terrain");
 
@@ -210,11 +211,11 @@ public class TGCGame : Game
         _terrains.Add(new SimpleTerrain(Content, terrainHeigthmap, terrainColorMap, terrainGrass, terrainGround, _terrainRenderer));
         //Cargo tanque
         float altura_tanque = _terrains[0].Height(0, -300) + 30;
-        _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(0, altura_tanque + 300, -600), Matrix.Identity, new Vector3(0.5f), _basicRenderer, 11000f));
+        _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(0, altura_tanque + 300, -600), Matrix.Identity, new Vector3(0.5f), tankRenderer, 11000f));
         // tanques enemigos, por ahora quietos
-        _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(1500, _terrains[0].Height(1500, -600) + 300, -600), Matrix.Identity, new Vector3(0.5f), _basicRenderer, 11000f));
-        _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(-1500, _terrains[0].Height(-1500, -600) + 300, -600), Matrix.Identity, new Vector3(0.5f), _basicRenderer, 11000f));
-        _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(0, _terrains[0].Height(0, 1000) + 300, 1000), Matrix.Identity, new Vector3(0.5f), _basicRenderer, 11000f));
+        _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(1500, _terrains[0].Height(1500, -600) + 300, -600), Matrix.Identity, new Vector3(0.5f), tankRenderer, 11000f));
+        _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(-1500, _terrains[0].Height(-1500, -600) + 300, -600), Matrix.Identity, new Vector3(0.5f), tankRenderer, 11000f));
+        _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(0, _terrains[0].Height(0, 1000) + 300, 1000), Matrix.Identity, new Vector3(0.5f), tankRenderer, 11000f));
         _camera2 = new ThirdPersonCamera(_tanks[0], 1000f, 0.005f, GraphicsDevice.Viewport.AspectRatio, 500f, 400f, 1f, 20000f, GraphicsDevice);
         _currentCamera = _camera2;
         // El JSON es la fuente de verdad del escenario estático.
@@ -703,7 +704,23 @@ public class TGCGame : Game
                         _basicRenderer,
                         direction
                     );
+                    if (_currentCamera == _camera)
+                    {
+                        Matrix cameraWorld = Matrix.Invert(_camera.View);
 
+                        Quaternion cameraRotation = Quaternion.CreateFromRotationMatrix(cameraWorld);
+                        Missil missile2 = new Missil(
+                            Content,
+                            ContentFolder3D + "missile/source/rocket2",
+                            cameraWorld.Translation,
+                            Matrix.CreateFromQuaternion(cameraRotation),
+                            new Vector3(4.2f),
+                            _basicRenderer,
+                            Matrix.CreateFromQuaternion(cameraRotation).Forward
+                        );
+                        _missiles.Add(missile2);
+
+                    }
                     _missiles.Add(missile);
                     _cannonSound.Play();
                 }
@@ -711,13 +728,12 @@ public class TGCGame : Game
                 {
                     Missil missil = _missiles[i];
 
+                    missil.Update(gameTime);
                     if (missil._isDisabled)
                     {
                         _missiles.RemoveAt(i);
                         continue;
                     }
-
-                    missil.Update(gameTime);
 
                     foreach (var lista in _modelosEnEscenario)
                     {

@@ -220,7 +220,7 @@ namespace TGC.MonoGame.TP.Terrain
             missil._position.Z
             );
 
-            const float groundTolerance = 30f;
+            const float groundTolerance = 5f;
 
             if (missil._position.Y <= terrainHeight + groundTolerance)
             {
