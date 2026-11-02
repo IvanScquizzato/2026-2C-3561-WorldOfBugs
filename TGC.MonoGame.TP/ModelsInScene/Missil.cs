@@ -3,11 +3,27 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework;
 using TGC.MonoGame.TP.ModelsInScene;
 using TGC.MonoGame.TP.Renderers;
-
+using TGC.MonoGame.TP.Materials;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework.Graphics;
 namespace TGC.MonoGame.TP.Missile
 {
     public class Missil : ModelInScene
     {
+        private static readonly Dictionary<Texture, Texture> _normalMaps =
+        new Dictionary<Texture, Texture>();
+
+        public override Dictionary<Texture, Texture> _normalMapsOfTexture
+        => _normalMaps;
+        public override Dictionary<string, string> _namesNormalMapsOfNameTexture { get; set; } = new Dictionary<string, string>
+{
+    { "Models\\missile\\textures\\rocket2_body_BaseColor_0", "Models\\missile\\textures\\rocket2_body_Normal" }
+};
+
+        public override Dictionary<string, IMaterial> _materialOfNameTexture { get; set; } = new Dictionary<string, IMaterial>
+{
+    { "Models\\missile\\textures\\rocket2_body_BaseColor_0", Metal }
+};
         public Vector3 Direction { get; private set; }
 
         public float Speed { get; set; } = 1500f;
@@ -56,6 +72,7 @@ namespace TGC.MonoGame.TP.Missile
             if (lifeTime >= maxLifetimeSecs)
             {
                 _isDisabled = true;
+                Destroy();
             }
 
         }
@@ -65,9 +82,9 @@ namespace TGC.MonoGame.TP.Missile
             if (!_isDisabled)
             {
                 TGCGame.ExplosionSound.Play();
+                Destroy();
             }
             _isDisabled = true;
-
         }
     }
 }

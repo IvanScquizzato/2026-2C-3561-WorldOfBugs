@@ -11,12 +11,27 @@ using NumericVector3 = System.Numerics.Vector3;
 using Microsoft.Xna.Framework.Graphics;
 using System.Diagnostics;
 using TGC.MonoGame.TP.Missile;
-
+using System.Collections.Generic;
+using TGC.MonoGame.TP.Materials;
 namespace TGC.MonoGame.TP.Trees
 {
     public class Tree : ModelInScene
     {
+        private static readonly Dictionary<Texture, Texture> _normalMaps =
+        new Dictionary<Texture, Texture>();
+
+        public override Dictionary<Texture, Texture> _normalMapsOfTexture
+        => _normalMaps;
         private float _health = 300f;
+        public override Dictionary<string, string> _namesNormalMapsOfNameTexture { get; set; } = new Dictionary<string, string>
+        {
+            { "Models\\Tree\\Tree.fbm\\DB2X2_L01_0", "Models\\Tree\\Tree.fbm\\DB2X2_L01_Nor" }
+        };
+        public override Dictionary<string, IMaterial> _materialOfNameTexture { get; set; } = new Dictionary<string, IMaterial>
+        {
+            { "Models\\Tree\\Tree.fbm\\DB2X2_L01_0", Leaves},
+            {"Models\\Tree\\bark_0021_0", Wood }
+        };
         public Tree(
             ContentManager content,
             string modelPath,
@@ -88,7 +103,10 @@ namespace TGC.MonoGame.TP.Trees
             TGCGame.TreeBreakSound.Play();
             base.Destroy();
         }
-
+        protected override void cargarModelo(ContentManager content, string modelPath)
+        {
+            base.cargarModelo(content, modelPath);
+        }
 
 
     }

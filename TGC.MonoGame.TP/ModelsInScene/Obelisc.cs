@@ -9,11 +9,28 @@ using TGC.MonoGame.TP.Colliders;
 using TGC.MonoGame.TP.ModelsInScene;
 using TGC.MonoGame.TP.Renderers;
 using NumericVector = System.Numerics.Vector3;
-
+using TGC.MonoGame.TP.Materials;
+using System.Collections.Generic;
 namespace TGC.MonoGame.TP.Monument
 {
     public class Obelisc : ModelInScene
     {
+        private static readonly Dictionary<Texture, Texture> _normalMaps =
+        new Dictionary<Texture, Texture>();
+
+        public override Dictionary<Texture, Texture> _normalMapsOfTexture
+        => _normalMaps;
+        public override Dictionary<string, string> _namesNormalMapsOfNameTexture { get; set; } = new Dictionary<string, string>
+{
+    { "Models\\Monumento\\Monumento.fbm\\Mat.1_BaseColor_0", "Models\\Monumento\\textures\\Mat.1_Normal" },
+{ "Models\\Monumento\\Monumento.fbm\\Mat_BaseColor_0", "Models\\Monumento\\textures\\Mat_Normal" }
+};
+
+        public override Dictionary<string, IMaterial> _materialOfNameTexture { get; set; } = new Dictionary<string, IMaterial>
+{
+    { "Models\\Monumento\\Monumento.fbm\\Mat.1_BaseColor_0", Rock },
+    { "Models\\Monumento\\Monumento.fbm\\Mat_BaseColor_0", Rock }
+};
         public Obelisc(
             ContentManager content,
             string modelPath,

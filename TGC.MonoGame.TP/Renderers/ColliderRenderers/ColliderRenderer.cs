@@ -55,5 +55,10 @@ namespace TGC.MonoGame.TP.ColliderRenderers
             }
 
         }
+        public void DrawForces(Collider collider, List<DebugArrow> debugArrows, Matrix view, Matrix projection)
+        {
+            ArrowRenderer.DrawLines(debugArrows, view, projection, _effect, _graphicsDevice);
+
+        }
     }
 }

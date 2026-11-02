@@ -1,4 +1,5 @@
-﻿#if OPENGL
+﻿#include "PBR.fx"
+#if OPENGL
 	#define SV_POSITION POSITION
 	#define VS_SHADERMODEL vs_3_0
 	#define PS_SHADERMODEL ps_3_0
@@ -10,9 +11,9 @@
 float4x4 World;
 float4x4 View;
 float4x4 Projection;
+float4x4 WorldInverseTranspose;
 
 float alphaValue = 1;
-float3 lightPosition = float3(1000, 1000, 1000);
 float time = 0;
 
 //Textura para DiffuseMap
@@ -76,10 +77,9 @@ VS_OUTPUT vs_RenderTerrain(VS_INPUT input)
     //Enviar Texcoord directamente
     output.Texcoord = input.Texcoord;
 
-    //todo: que le pase el inv trasp. word
-    float4x4 matInverseTransposeWorld = World;
+
     output.WorldPos = worldPosition.xyz;
-    output.WorldNormal = mul(float4(input.Normal ,0.0), matInverseTransposeWorld).xyz;
+    output.WorldNormal = mul(float4(input.Normal ,0.0), WorldInverseTranspose).xyz;
 
     return output;
 }
@@ -94,15 +94,21 @@ struct PS_INPUT
 //Pixel Shader
 float4 ps_RenderTerrain(PS_INPUT input) : COLOR0
 {
-    float3 N = normalize(input.WorldNormal);
-    float3 L = normalize(lightPosition - input.WorldPos);
-    float kd = saturate(0.4 + 0.7 * saturate(dot(N, L)));
-
-    float3 c = tex2D(colorMap, input.Texcoord).rgb;
+    float3 blendMap = tex2D(colorMap, input.Texcoord).rgb;
     float3 tex1 = tex2D(diffuseMap, input.Texcoord * 31).rgb;
     float3 tex2 = tex2D(diffuseMap2, input.Texcoord * 27).rgb;
-    float3 clr = lerp(lerp(tex1, tex2, c.r), c, 0.3);
-    return float4(clr * kd, 1);
+    float3 albedo = lerp(lerp(tex1, tex2, blendMap.r), blendMap, 0.3);
+
+    float3 N = normalize(input.WorldNormal);
+    float3 omega0 = normalize(CameraPosition - input.WorldPos);
+    float3 omegai = normalize(-SunlightDirection);
+
+    float3 hdrColor = BDRF(albedo, omega0, omegai, N);
+
+    float a = 2.51f, b = 0.03f, c = 2.43f, d = 0.59f, e = 0.14f;
+    float3 mappedColor = saturate((hdrColor*(a*hdrColor+b))/(hdrColor*(c*hdrColor+d)+e));
+
+    return float4(mappedColor, 1.0f);
 }
 
 technique RenderTerrain

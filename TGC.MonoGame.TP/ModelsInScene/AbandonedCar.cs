@@ -11,11 +11,25 @@ using BepuUtilities.Memory;
 using TGC.MonoGame.TP.Colliders;
 using System.Runtime.InteropServices;
 using NumericVector3 = System.Numerics.Vector3;
-
+using TGC.MonoGame.TP.Materials;
 namespace TGC.MonoGame.TP.Car
 {
     public class AbandonedCar : ModelInScene
     {
+        private static readonly Dictionary<Texture, Texture> _normalMaps =
+        new Dictionary<Texture, Texture>();
+
+        public override Dictionary<Texture, Texture> _normalMapsOfTexture
+        => _normalMaps;
+        public override Dictionary<string, string> _namesNormalMapsOfNameTexture { get; set; } = new Dictionary<string, string>
+{
+    { "Models\\Car\\source\\car_low.fbm\\car_low_Chasis_BaseColor_0", "Models\\Car\\textures\\car_low_Chasis_Normal" }
+};
+
+        public override Dictionary<string, IMaterial> _materialOfNameTexture { get; set; } = new Dictionary<string, IMaterial>
+{
+    { "Models\\Car\\source\\car_low.fbm\\car_low_Chasis_BaseColor_0", Metal }
+};
         public AbandonedCar(ContentManager Content, String modelPath, Vector3 position, Matrix rotation, Vector3 scale, IModelInSceneRenderer renderer)
             : base(Content, modelPath, position, rotation, scale, renderer, 1f)
         {
@@ -46,6 +60,10 @@ namespace TGC.MonoGame.TP.Car
         {
             var center = new NumericVector3(_position.X, _position.Y + Height / 2f, _position.Z - 50);
             this._collider = new StaticBoxCollider(Width, Height, Depth, center, simulation, bufferPool, effect, graphicsDevice);
+        }
+        protected override void cargarModelo(ContentManager Content, string modelPath)
+        {
+            base.cargarModelo(Content, modelPath);
         }
     }
 }

@@ -16,6 +16,8 @@ using TGC.MonoGame.TP.Colliders;
 using System.Reflection.Metadata.Ecma335;
 using BepuUtilities.Memory;
 using TGC.MonoGame.TP.Missile;
+using TGC.MonoGame.TP.Materials;
+
 namespace TGC.MonoGame.TP.ModelsInScene
 {
     /// <summary>
@@ -25,9 +27,9 @@ namespace TGC.MonoGame.TP.ModelsInScene
     {
         public Model _model { get; set; }
         public string _modelPath { get; private set; }
-        public bool renderColliders { get; set; } = true;
-        public bool renderHitboxes { get; set; } = true;
-        public bool renderForces { get; set; } = true;
+        public bool renderColliders { get; set; } = false;
+        public bool renderHitboxes { get; set; } = false;
+        public bool renderForces { get; set; } = false;
         public Vector3 _position
         {
             get;
@@ -106,7 +108,14 @@ namespace TGC.MonoGame.TP.ModelsInScene
         public Hitbox _hitbox { get; protected set; } = null;
 
         public List<DebugArrow> DebugForces = new List<DebugArrow>();
+        public abstract Dictionary<Texture, Texture> _normalMapsOfTexture { get; }
+        public virtual Dictionary<string, string> _namesNormalMapsOfNameTexture { get; set; } = new Dictionary<string, string>();
+        public virtual Dictionary<string, IMaterial> _materialOfNameTexture { get; set; } = new Dictionary<string, IMaterial>();
 
+        protected static readonly IMaterial Leaves = new Leaves();
+        protected static readonly IMaterial Wood = new Wood();
+        protected static readonly IMaterial Metal = new Metal();
+        protected static readonly IMaterial Rock = new Rock();
         public ModelInScene(ContentManager Content, String modelPath, Vector3 position, Matrix rotation, Vector3 scale, IModelInSceneRenderer renderer, float mass)
         {
             _content = Content;
@@ -148,8 +157,12 @@ namespace TGC.MonoGame.TP.ModelsInScene
                             if (meshPart.Effect is BasicEffect basicEffect)
                             {
                                 texturasExtraidas.Add(basicEffect.Texture);
+                                if (basicEffect.Texture != null && _namesNormalMapsOfNameTexture.TryGetValue(basicEffect.Texture.Name, out string normalMapName))
+                                {
+                                    Texture normalMap = Content.Load<Texture>(normalMapName);
+                                    _normalMapsOfTexture[basicEffect.Texture] = normalMap;
+                                }
                             }
-
                             else
                             {
                                 texturasExtraidas.Add(null);
@@ -162,7 +175,6 @@ namespace TGC.MonoGame.TP.ModelsInScene
 
                     _texturasPorPath[modelPath] = texturasExtraidas;
                 }
-
                 else
                 {
                     _model = _modeloPorPath[modelPath];
@@ -302,9 +314,9 @@ namespace TGC.MonoGame.TP.ModelsInScene
                 {
                     _hitbox.Draw(this, _world, view, projection);
                 }
-                if (renderForces)
+                if (_collider != null && renderForces)
                 {
-                    ArrowRenderer.DrawLines(DebugForces, view, projection, _renderer._effect, _renderer._graphicsDevice);
+                    _collider.DrawForces(DebugForces, view, projection);
                 }
             }
             DebugForces.Clear();
@@ -369,6 +381,7 @@ namespace TGC.MonoGame.TP.ModelsInScene
                 _hitbox.Remove();
             }
         }
+
     }
 
 
