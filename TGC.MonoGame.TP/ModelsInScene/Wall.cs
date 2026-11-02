@@ -9,11 +9,16 @@ using TGC.MonoGame.TP.Colliders;
 using BepuPhysics;
 using BepuUtilities.Memory;
 using NumericVector3 = System.Numerics.Vector3;
-
+using System.Collections.Generic;
 namespace TGC.MonoGame.TP.Walls
 {
     public class Wall : ModelInScene
     {
+        private static readonly Dictionary<Texture, Texture> _normalMaps =
+        new Dictionary<Texture, Texture>();
+
+        public override Dictionary<Texture, Texture> _normalMapsOfTexture
+        => _normalMaps;
         public Wall(
             ContentManager content,
             string modelPath,

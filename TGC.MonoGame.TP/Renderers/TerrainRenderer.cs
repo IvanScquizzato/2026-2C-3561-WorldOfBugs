@@ -33,7 +33,16 @@ namespace TGC.MonoGame.TP.Renderers
             _effect.Parameters["World"].SetValue(terrain._world);
             _effect.Parameters["View"].SetValue(view);
             _effect.Parameters["Projection"].SetValue(projection);
+            _effect.Parameters["LightIntensity"].SetValue(1.0f);
+            _effect.Parameters["Roughness"].SetValue(0.9f);
+            _effect.Parameters["K"].SetValue(0.45f);
+            _effect.Parameters["F0"].SetValue(new Vector3(0.04f, 0.04f, 0.04f));
+            _effect.Parameters["CameraPosition"].SetValue(
+                Matrix.Invert(view).Translation
+            );
+            Matrix normalMatrix = Matrix.Transpose(Matrix.Invert(terrain._world));
 
+            _effect.Parameters["WorldInverseTranspose"].SetValue(normalMatrix);
             graphicsDevice.SetVertexBuffer(terrain.vbTerrain);
 
             // Render con shader

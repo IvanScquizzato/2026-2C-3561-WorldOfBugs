@@ -25,11 +25,29 @@ using TGC.MonoGame.TP.Missile;
 using TGC.MonoGame.TP.Terrain;
 using System.Security.Cryptography.X509Certificates;
 using System.Reflection.Metadata;
+using TGC.MonoGame.TP.Materials;
 namespace TGC.MonoGame.TP.Tanks
 {
     public class Tank : ModelInScene
     {
+        private static readonly Dictionary<Texture, Texture> _normalMaps =
+        new Dictionary<Texture, Texture>();
 
+        public override Dictionary<Texture, Texture> _normalMapsOfTexture
+        => _normalMaps;
+        public override Dictionary<string, string> _namesNormalMapsOfNameTexture { get; set; } = new Dictionary<string, string>
+{
+    // Tanque Panzer
+    { "Models\\Tanks\\Panzer\\PzVl_Tiger_I_0", "Models\\Tanks\\Panzer\\PzVI_Tiger_I_NM" },
+    { "Models\\Tanks\\Panzer\\PzVI_Tiger_I_track_0", "Models\\Tanks\\Panzer\\PzVI_Tiger_I_track_NM" },
+};
+
+        public override Dictionary<string, IMaterial> _materialOfNameTexture { get; set; } = new Dictionary<string, IMaterial>
+{
+    { "Models\\Tanks\\Panzer\\PzVl_Tiger_I_0", Metal },
+    { "Models\\Tanks\\Panzer\\PzVI_Tiger_I_track_0", Metal },
+
+};
         //public List<ContactPoint> leftContactPoints { get; } = new List<ContactPoint>();
         //public List<ContactPoint> rightContactPoints { get; } = new List<ContactPoint>();
         public List<TankRaycast> raycastPointsLeft = new List<TankRaycast>();
@@ -498,7 +516,7 @@ namespace TGC.MonoGame.TP.Tanks
             Vector3 missilLocal = Vector3.Transform(missil._position, Matrix.Invert(_world));
 
             float maxDistanceToCylinder = missil.Width * 7f;
-            float maxDistanceAlongAxis = missil.Depth * 6f;
+            float maxDistanceAlongAxis = missil.Depth * 15f;
             float deformationDepth = missil.Depth * 1f;
             Vector3 missilDirectionNormalized = Vector3.Normalize(Vector3.TransformNormal(missil.Direction, Matrix.Invert(_world)));
             List<ModelMeshPart> modelMeshParts = verticesPorMeshPart.Keys.ToList();
@@ -516,19 +534,18 @@ namespace TGC.MonoGame.TP.Tanks
                     var relativeTransform = modelMeshesBaseTransforms[mesh.ParentBone.Index];
                     if (mesh.Name.Equals("Turret"))
                     {
-                        relativeTransform *= GetCannonRotation();
+                        relativeTransform = relativeTransform * Matrix.CreateRotationY(TurretYaw);
                     }
                     Matrix invertRelative = Matrix.Invert(relativeTransform);
 
                     int[] indices = _indexBuffers[modelMeshPart];
                     bool[] fueModificado = new bool[vertexs.Length];
-
+                    bool[] trianguloModificado = new bool[indices.Length / 3];
                     for (int i = 0; i < indices.Length; i++)
                     {
                         int indiceActual = indices[i];
                         if (!fueModificado[indiceActual])
                         {
-                            vertexs[indiceActual].Normal = Vector3.Zero;
                             Vector3 vertexPositionModelSpace = Vector3.Transform(vertexs[indiceActual].Position, relativeTransform);
 
                             Vector3 vectorToVertex = vertexPositionModelSpace - missilLocal;
@@ -552,23 +569,32 @@ namespace TGC.MonoGame.TP.Tanks
                                 deformacionPorVertice[(modelMeshPart, indiceActual)] = deformacionActual + deformacionNueva;
                                 vertexs[indiceActual].Position += missilDirectionNormalizedBoneSpace * deformacionNueva;
                                 fueModificado[indiceActual] = true;
+                                trianguloModificado[i / 3] = true;
                             }
                         }
 
                         //Si está en el último vértice del triángulo recalcula las normales
                         if (i % 3 == 2)
                         {
-                            int i1 = indices[i - 2];
-                            int i2 = indices[i - 1];
-                            int i3 = indiceActual;
+                            int indiceTriangulo = i / 3;
+                            if (trianguloModificado[indiceTriangulo])
+                            {
+                                int i1 = indices[i - 2];
+                                int i2 = indices[i - 1];
+                                int i3 = indiceActual;
 
-                            Vector3 arista1 = vertexs[i3].Position - vertexs[i1].Position;
-                            Vector3 arista2 = vertexs[i2].Position - vertexs[i1].Position;
-                            Vector3 normalAlTriangulo = Vector3.Cross(arista1, arista2);
+                                Vector3 arista1 = vertexs[i3].Position - vertexs[i1].Position;
+                                Vector3 arista2 = vertexs[i2].Position - vertexs[i1].Position;
+                                Vector3 normalAlTriangulo = Vector3.Cross(arista1, arista2);
 
-                            vertexs[i1].Normal += normalAlTriangulo;
-                            vertexs[i2].Normal += normalAlTriangulo;
-                            vertexs[i3].Normal += normalAlTriangulo;
+                                if (fueModificado[i1]) { vertexs[i1].Normal = Vector3.Zero; fueModificado[i1] = false; }
+                                if (fueModificado[i2]) { vertexs[i2].Normal = Vector3.Zero; fueModificado[i2] = false; }
+                                if (fueModificado[i3]) { vertexs[i3].Normal = Vector3.Zero; fueModificado[i3] = false; }
+
+                                vertexs[i1].Normal += normalAlTriangulo;
+                                vertexs[i2].Normal += normalAlTriangulo;
+                                vertexs[i3].Normal += normalAlTriangulo;
+                            }
                         }
                     }
 

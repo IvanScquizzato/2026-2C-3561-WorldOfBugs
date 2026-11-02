@@ -19,6 +19,11 @@ namespace TGC.MonoGame.TP.Terrain
 {
     public class SimpleTerrain : ModelInScene
     {
+        private static readonly Dictionary<Texture, Texture> _normalMaps =
+        new Dictionary<Texture, Texture>();
+
+        public override Dictionary<Texture, Texture> _normalMapsOfTexture
+        => _normalMaps;
         public readonly Texture2D colorMapTexture;
         public readonly Texture2D terrainTexture;
         public readonly Texture2D terrainTexture2;

@@ -75,6 +75,14 @@ namespace TGC.MonoGame.TP.Colliders
             if (Exists())
             {
                 _colliderRenderer.Draw(this, view, projection);
+
+            }
+        }
+        public void DrawForces(List<DebugArrow> debugArrows, Matrix view, Matrix projection)
+        {
+            if (Exists())
+            {
+                _colliderRenderer.DrawForces(this, debugArrows, view, projection);
             }
         }
         private void createChildColliders()

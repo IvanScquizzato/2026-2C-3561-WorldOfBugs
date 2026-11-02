@@ -10,11 +10,25 @@ using BepuPhysics;
 using BepuUtilities.Memory;
 using TGC.MonoGame.TP.Colliders;
 using NumericVector = System.Numerics.Vector3;
-
+using TGC.MonoGame.TP.Materials;
 namespace TGC.MonoGame.TP.Fences
 {
     public class Fence : ModelInScene
     {
+        private static readonly Dictionary<Texture, Texture> _normalMaps =
+        new Dictionary<Texture, Texture>();
+
+        public override Dictionary<Texture, Texture> _normalMapsOfTexture
+        => _normalMaps;
+        public override Dictionary<string, string> _namesNormalMapsOfNameTexture { get; set; } = new Dictionary<string, string>
+{
+    { "Models\\Rocks\\textures\\stone_fence_old_low_rock_BaseColor_0", "Models\\Rocks\\textures\\stone_fence_old_low_rock_Normal" }
+};
+
+        public override Dictionary<string, IMaterial> _materialOfNameTexture { get; set; } = new Dictionary<string, IMaterial>
+{
+    { "Models\\Rocks\\textures\\stone_fence_old_low_rock_BaseColor_0", Rock }
+};
         public Fence(ContentManager Content, String modelPath, Vector3 position, Matrix rotation, Vector3 scale, IModelInSceneRenderer renderer)
             : base(Content, modelPath, position, rotation, scale, renderer, 1f)
         {

@@ -10,10 +10,24 @@ using BepuPhysics;
 using BepuUtilities.Memory;
 using NumericVector3 = System.Numerics.Vector3;
 using TGC.MonoGame.TP.Colliders;
+using TGC.MonoGame.TP.Materials;
 namespace TGC.MonoGame.TP.RuinHouse
 {
     public class RuinHouse1 : ModelInScene
     {
+        private static readonly Dictionary<Texture, Texture> _normalMaps =
+        new Dictionary<Texture, Texture>();
+
+        public override Dictionary<Texture, Texture> _normalMapsOfTexture
+        => _normalMaps;
+        public override Dictionary<string, string> _namesNormalMapsOfNameTexture { get; set; } = new Dictionary<string, string>
+        {
+            { "Models\\AbandonedHouse\\source\\abandonhouse.fbm\\AbHouse_Base_Color_0", "Models\\AbandonedHouse\\textures\\AbHouse_Normal" }
+        };
+        public override Dictionary<string, IMaterial> _materialOfNameTexture { get; set; } = new Dictionary<string, IMaterial>
+        {
+            { "Models\\AbandonedHouse\\source\\abandonhouse.fbm\\AbHouse_Base_Color_0", Wood}
+        };
         public RuinHouse1(ContentManager Content, String modelPath, Vector3 position, Matrix rotation, Vector3 scale, IModelInSceneRenderer renderer)
             : base(Content, modelPath, position, rotation, scale, renderer, 1f)
         {
@@ -44,6 +58,10 @@ namespace TGC.MonoGame.TP.RuinHouse
         {
             var center = new NumericVector3(_position.X, _position.Y + Height / 2f, _position.Z + 100f);
             this._collider = new StaticBoxCollider(Width - 1000, Height, Depth - 1200, center, simulation, bufferPool, effect, graphicsDevice);
+        }
+        protected override void cargarModelo(ContentManager Content, string modelPath)
+        {
+            base.cargarModelo(Content, modelPath);
         }
     }
 }

@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Input;
 using TGC.MonoGame.TP.ModelsInScene;
 using TGC.MonoGame.TP.Tanks;
 using System.Diagnostics;
+using TGC.MonoGame.TP.Materials;
 namespace TGC.MonoGame.TP.Renderers
 {
     public class TankRenderer : IModelInSceneRenderer
@@ -13,12 +14,14 @@ namespace TGC.MonoGame.TP.Renderers
         public GraphicsDevice _graphicsDevice { get; set; }
         public Effect _effect { get; set; }
         public Effect _hitBoxEffect { get; set; }
+        public Effect _arrowEffect { get; set; }
         public bool drawNormals = false;
-        public TankRenderer(GraphicsDevice graphicsDevice, Effect effect, Effect hitboxEffect)
+        public TankRenderer(GraphicsDevice graphicsDevice, Effect effect, Effect hitboxEffect, Effect arrowEffect)
         {
             _graphicsDevice = graphicsDevice;
             _effect = effect;
             _hitBoxEffect = hitboxEffect;
+            _arrowEffect = arrowEffect;
         }
 
         public void Draw(ModelInScene modelInScene, Matrix view, Matrix projection)
@@ -27,6 +30,16 @@ namespace TGC.MonoGame.TP.Renderers
             {
                 _effect.Parameters["View"].SetValue(view);
                 _effect.Parameters["Projection"].SetValue(projection);
+                _effect.Parameters["Roughness"].SetValue(0.7f);
+                _effect.Parameters["K"].SetValue((0.7f + 1f) * (0.7f + 1f) / 8f);
+                _effect.Parameters["F0"].SetValue(new Vector3(0.04f, 0.04f, 0.04f));
+                _effect.Parameters["LightIntensity"].SetValue(1.0f);
+                Vector3 lightDir = new Vector3(-1, -1, -1);
+                lightDir.Normalize();
+                _effect.Parameters["SunlightDirection"].SetValue(lightDir);
+                Vector3 realCameraPosition = Matrix.Invert(view).Translation;
+                _effect.Parameters["CameraPosition"].SetValue(realCameraPosition);
+                _effect.CurrentTechnique = _effect.Techniques["WithoutNormalMap"];
 
                 var modelMeshesBaseTransforms = new Matrix[tank._model.Bones.Count];
                 tank._model.CopyAbsoluteBoneTransformsTo(modelMeshesBaseTransforms);
@@ -78,19 +91,33 @@ namespace TGC.MonoGame.TP.Renderers
                                     Color = Color.Aqua
                                 });
                             }
-                            ArrowRenderer.DrawLines(debugArrows, view, projection, _effect, _graphicsDevice);
+                            ArrowRenderer.DrawLines(debugArrows, view, projection, _arrowEffect, _graphicsDevice);
                         }
                         _effect.Parameters["World"].SetValue(world);
-                        _effect.CurrentTechnique = _effect.Techniques["BasicColorDrawing"];
 
                         if (tank.GetTextures()[index] != null)
                         {
                             _effect.Parameters["ModelTexture"].SetValue(tank.GetTextures()[index]);
+                            if (modelInScene._normalMapsOfTexture.TryGetValue(modelInScene.GetTextures()[index], out Texture normalMap))
+                            {
+                                _effect.Parameters["NormalMap"].SetValue(normalMap);
+                                _effect.CurrentTechnique = _effect.Techniques["WithNormalMap"];
+                            }
+                            else
+                            {
+                                _effect.CurrentTechnique = _effect.Techniques["WithoutNormalMap"];
+                            }
+                            if (modelInScene._materialOfNameTexture.TryGetValue(modelInScene.GetTextures()[index].Name, out IMaterial material))
+                            {
+                                _effect.Parameters["Roughness"].SetValue(material.Roughness);
+                                _effect.Parameters["K"].SetValue(material.K);
+                                _effect.Parameters["F0"].SetValue(material.F0);
+                            }
                         }
                         _effect.CurrentTechnique.Passes[0].Apply();
                         _graphicsDevice.SetVertexBuffer(tank._dynamicVertexBuffers[meshPart]);
                         _graphicsDevice.Indices = meshPart.IndexBuffer;
-                        _graphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, meshPart.VertexOffset, meshPart.StartIndex, meshPart.PrimitiveCount);
+                        _graphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, meshPart.StartIndex, meshPart.PrimitiveCount);
                         index++;
                     }
                 }

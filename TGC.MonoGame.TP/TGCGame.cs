@@ -87,7 +87,9 @@ public class TGCGame : Game
     private SpriteFont _menuFont;
 
     private Effect _effect;
+    private Effect _PBREffect;
     private BasicRenderer _basicRenderer;
+    private PBRRenderer _PBRRenderer;
     private TerrainRenderer _terrainRenderer;
     private KeyboardState _previousKeyboardState;
     private SpriteBatch _spriteBatch;
@@ -192,7 +194,10 @@ public class TGCGame : Game
         _effect = Content.Load<Effect>(ContentFolderEffects + "BasicShader");
         _basicRenderer = new BasicRenderer(GraphicsDevice, _effect, _debugEffect);
 
-        TankRenderer tankRenderer = new TankRenderer(GraphicsDevice, _effect, _debugEffect);
+        _PBREffect = Content.Load<Effect>(ContentFolderEffects + "PBRShader");
+        _PBRRenderer = new PBRRenderer(GraphicsDevice, _PBREffect, _debugEffect);
+
+        TankRenderer tankRenderer = new TankRenderer(GraphicsDevice, _PBREffect, _debugEffect, _effect);
         //Cargo terreno
         var terrainEffect = Content.Load<Effect>(ContentFolderEffects + "Terrain");
 
@@ -296,13 +301,13 @@ public class TGCGame : Game
         Random _rng = new Random(12345); // Semilla fija para que la escena guardada conserve sus IDs.
 
         //cargo arbol
-        _trees.Add(new Tree(Content, ContentFolder3D + "Tree/Tree", new Vector3(200, 500, 0), Matrix.Identity, new Vector3(150f), _basicRenderer));
+        _trees.Add(new Tree(Content, ContentFolder3D + "Tree/Tree", new Vector3(200, 500, 0), Matrix.Identity, new Vector3(150f), _PBRRenderer));
         for (int i = 0; i < 200; i++)
         {
             float x = (float)(_rng.NextDouble() * 13000 - 6000);
             float z = (float)(_rng.NextDouble() * 12000 - 6000);
             float y = _terrains[0].Height(x, z) - 10;
-            _trees.Add(new Tree(Content, ContentFolder3D + "Tree/Tree", new Vector3(x, y, z), Matrix.Identity, new Vector3(150f), _basicRenderer));
+            _trees.Add(new Tree(Content, ContentFolder3D + "Tree/Tree", new Vector3(x, y, z), Matrix.Identity, new Vector3(150f), _PBRRenderer));
         }
 
         // Estructuras de relleno
@@ -405,7 +410,7 @@ public class TGCGame : Game
         var nuevos = new List<(string Id, ModelInScene Model)>();
         foreach (SceneRepository.SceneObject data in scene.Objects)
         {
-            ModelInScene modelo = SceneRepository.Create(data, Content, _basicRenderer);
+            ModelInScene modelo = SceneRepository.Create(data, Content, _PBRRenderer);
             nuevos.Add((data.Id, modelo));
         }
 
@@ -734,7 +739,6 @@ public class TGCGame : Game
                         _missiles.RemoveAt(i);
                         continue;
                     }
-
                     foreach (var lista in _modelosEnEscenario)
                     {
                         foreach (ModelInScene model in lista)
@@ -790,6 +794,7 @@ public class TGCGame : Game
             {
                 foreach (var modelo in lista)
                 {
+
                     modelo.Draw(_currentCamera.View, _currentCamera.Projection);
                 }
             }
