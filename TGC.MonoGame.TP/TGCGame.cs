@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Media;
 using TGC.MonoGame.TP.Bush;
+
 using TGC.MonoGame.TP.Cameras;
 using TGC.MonoGame.TP.Car;
 using TGC.MonoGame.TP.Debri;
@@ -96,6 +97,7 @@ public class TGCGame : Game
     private List<SimpleTerrain> _terrains = new List<SimpleTerrain>();
 
     private List<Tank> _tanks = new List<Tank>();
+    private List<EnemyTank> _enemyTanks = new ();
     private List<Tree> _trees = new List<Tree>();
     private List<Plant> _plants = new List<Plant>();
     private List<ModelInScene> _decor = new List<ModelInScene>();
@@ -216,6 +218,9 @@ public class TGCGame : Game
         _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(1500, _terrains[0].Height(1500, -600) + 300, -600), Matrix.Identity, new Vector3(0.5f), tankRenderer, 11000f));
         _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(-1500, _terrains[0].Height(-1500, -600) + 300, -600), Matrix.Identity, new Vector3(0.5f), tankRenderer, 11000f));
         _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(0, _terrains[0].Height(0, 1000) + 300, 1000), Matrix.Identity, new Vector3(0.5f), tankRenderer, 11000f));
+        _enemyTanks.Add(new EnemyTank(_tanks[1]));
+        _enemyTanks.Add(new EnemyTank(_tanks[2]));
+        _enemyTanks.Add(new EnemyTank(_tanks[3]));
         _camera2 = new ThirdPersonCamera(_tanks[0], _terrains[0],1000f, 0.005f, GraphicsDevice.Viewport.AspectRatio, 500f, 400f, 1f, 20000f, GraphicsDevice);
         _currentCamera = _camera2;
 
@@ -668,6 +673,8 @@ public class TGCGame : Game
 
                 _tanks[0].Update(gameTime);
 
+
+              
                 _simulation.Timestep(1 / 60f);
 
                 HashSet<(ModelInScene, ModelInScene)> parejasProcesadas = new HashSet<(ModelInScene, ModelInScene)>();
@@ -694,6 +701,11 @@ public class TGCGame : Game
                     tanque.updateBodyPosition();
 
                 }
+                foreach (var enemyAI in _enemyTanks)
+                {
+                    enemyAI.Update(_tanks[0], gameTime);
+                }
+
                 if (_tanks[0].ShouldFireMissile(gameTime, out Vector3 direction, out Vector3 position, out Matrix rotation))
                 {
                     Missil missile = new Missil(

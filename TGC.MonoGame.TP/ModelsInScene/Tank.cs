@@ -592,6 +592,22 @@ namespace TGC.MonoGame.TP.Tanks
                 }
             }
         }
+        public void MoveForward(float amount, float deltaTime)
+        {
+            Debug.WriteLine("ME QUIERO MOVER");
+            Vector3 force =_forward * amount;
+
+            agregarFuerzaAAplicar(
+                new Force(force, Vector3.Zero),
+                deltaTime);
+        }
+        public void Drive(float forwardInput,float turnInput,float elapsedSeconds)
+        {
+            float leftThrust = forwardInput + (turnInput * 1.5f);
+            float rightThrust = forwardInput - (turnInput * 1.5f);
+
+            // toda la lógica de fuerzas que hoy está en Update()
+        }
         protected override void cargarModelo(ContentManager Content, string modelPath)
         {
             base.cargarModelo(Content, modelPath);
