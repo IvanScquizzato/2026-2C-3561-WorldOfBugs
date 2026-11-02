@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using TGC.MonoGame.TP.ModelsInScene;
 using System.Diagnostics;
+using TGC.MonoGame.TP.Terrain;
 namespace TGC.MonoGame.TP.Cameras
 {
     /// <summary>
@@ -32,12 +33,14 @@ namespace TGC.MonoGame.TP.Cameras
         public float _cameraPitch = 0f;
         private float sensibilidadX = 0.004f;
         private float sensibilidadY = 0.005f;
-        private float alturaMaxCamara = 0.6f;
-        private float alturaMinCamara = 0f;
+        private float alturaMaxCamara = 0.5f;
+        private float alturaMinCamara = -0.2f;
+        private float minDistanceFromGround = 50f;
         private MouseState _previousMouseState;
-        
+        private readonly SimpleTerrain _terrain;
 
-        
+
+
 
         private readonly GraphicsDevice graphicsDevice;
         /// <summary>
@@ -50,7 +53,7 @@ namespace TGC.MonoGame.TP.Cameras
         /// <param name="angle">The angle of movement.</param>
         /// <param name="nearPlaneDistance">Distance to the near view plane.</param>
         /// <param name="farPlaneDistance">Distance to the far view plane.</param>
-        public ThirdPersonCamera(ModelInScene modelThatFollows, float distanceToModel, float sensitivity, float aspectRatio, float speed, float angle, float nearPlaneDistance,
+        public ThirdPersonCamera(ModelInScene modelThatFollows, SimpleTerrain terrain,float distanceToModel, float sensitivity, float aspectRatio, float speed, float angle, float nearPlaneDistance,
             float farPlaneDistance, GraphicsDevice graphicsDevice)
             : base(aspectRatio, nearPlaneDistance, farPlaneDistance)
         {
@@ -59,6 +62,7 @@ namespace TGC.MonoGame.TP.Cameras
             this._sensitivity = sensitivity;
             this.modelThatFollows = modelThatFollows;
             BuildView(Position, speed, angle);
+            _terrain = terrain;
         }
 
         /// <summary>
@@ -87,13 +91,16 @@ namespace TGC.MonoGame.TP.Cameras
         /// <inheritdoc />
         public override void Update(GameTime gameTime)
         {
-
             MouseState mouse = Mouse.GetState();
-            float deltaX = mouse.X - _previousMouseState.X;
-            float deltaY = mouse.Y - _previousMouseState.Y;
-            _previousMouseState = mouse;
 
-            
+            int centerX = graphicsDevice.Viewport.Width / 2;
+            int centerY = graphicsDevice.Viewport.Height / 2;
+
+            float deltaX = mouse.X - centerX;
+            float deltaY = mouse.Y - centerY;
+
+            Mouse.SetPosition(centerX, centerY);
+
 
             _cameraYaw -= deltaX * sensibilidadX ;
             _cameraPitch -= deltaY * sensibilidadY;
@@ -115,6 +122,18 @@ namespace TGC.MonoGame.TP.Cameras
             Vector3 lookDirection = Vector3.Transform(Vector3.Forward, rotation);
 
             Vector3 cameraPosition = modelThatFollows._position + Position;
+
+            //obtengo la altura del terreno donde tengo la camara
+            float terrainHeight =_terrain.Height(cameraPosition.X,cameraPosition.Z);
+
+            
+            //lo comparo con la altura de la camara
+            if (cameraPosition.Y <
+                terrainHeight + minDistanceFromGround)
+            {
+                cameraPosition.Y =
+                    terrainHeight + minDistanceFromGround;
+            }
 
             View = Matrix.CreateLookAt(cameraPosition,cameraPosition + lookDirection,Vector3.Up);
         }
