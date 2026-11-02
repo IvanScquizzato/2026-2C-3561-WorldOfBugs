@@ -36,11 +36,11 @@ namespace TGC.MonoGame.TP.Tanks
         public override Dictionary<Texture, Texture> _normalMapsOfTexture
         => _normalMaps;
         public override Dictionary<string, string> _namesNormalMapsOfNameTexture { get; set; } = new Dictionary<string, string>
-{
-    // Tanque Panzer
-    { "Models\\Tanks\\Panzer\\PzVl_Tiger_I_0", "Models\\Tanks\\Panzer\\PzVI_Tiger_I_NM" },
-    { "Models\\Tanks\\Panzer\\PzVI_Tiger_I_track_0", "Models\\Tanks\\Panzer\\PzVI_Tiger_I_track_NM" },
-};
+        {
+            // Tanque Panzer
+            { "Models\\Tanks\\Panzer\\PzVl_Tiger_I_0", "Models\\Tanks\\Panzer\\PzVI_Tiger_I_NM" },
+            { "Models\\Tanks\\Panzer\\PzVI_Tiger_I_track_0", "Models\\Tanks\\Panzer\\PzVI_Tiger_I_track_NM" },
+        };
 
         public override Dictionary<string, IMaterial> _materialOfNameTexture { get; set; } = new Dictionary<string, IMaterial>
 {
