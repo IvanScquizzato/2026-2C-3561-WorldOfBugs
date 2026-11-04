@@ -214,13 +214,25 @@ public class TGCGame : Game
         //Cargo tanque
         float altura_tanque = _terrains[0].Height(0, -300) + 30;
         _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(0, altura_tanque + 300, -600), Matrix.Identity, new Vector3(0.5f), tankRenderer, 11000f));
+        _tanks[0].esEnemigo = false;
         // tanques enemigos, por ahora quietos
         _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(1500, _terrains[0].Height(1500, -600) + 300, -600), Matrix.Identity, new Vector3(0.5f), tankRenderer, 11000f));
         _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(-1500, _terrains[0].Height(-1500, -600) + 300, -600), Matrix.Identity, new Vector3(0.5f), tankRenderer, 11000f));
-        _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(0, _terrains[0].Height(0, 1000) + 300, 1000), Matrix.Identity, new Vector3(0.5f), tankRenderer, 11000f));
+        _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(0, _terrains[0].Height(0, 1000) + 300, -600), Matrix.Identity, new Vector3(0.5f), tankRenderer, 11000f));
+
+        _enemyTanks.Clear();
         _enemyTanks.Add(new EnemyTank(_tanks[1]));
-        _enemyTanks.Add(new EnemyTank(_tanks[2]));
-        _enemyTanks.Add(new EnemyTank(_tanks[3]));
+        for (int i = 1; i < _tanks.Count; i++)
+        {
+            _tanks[i].esEnemigo = true;
+            var enemyAI = new EnemyTank(_tanks[i]);
+
+            enemyAI.FireMissile += FireEnemyMissile;
+
+            _enemyTanks.Add(enemyAI);
+        }
+        //_enemyTanks.Add(new EnemyTank(_tanks[2]));
+        //_enemyTanks.Add(new EnemyTank(_tanks[3]));
         _camera2 = new ThirdPersonCamera(_tanks[0], _terrains[0],1000f, 0.005f, GraphicsDevice.Viewport.AspectRatio, 500f, 400f, 1f, 20000f, GraphicsDevice);
         _currentCamera = _camera2;
 
@@ -294,6 +306,41 @@ public class TGCGame : Game
         base.LoadContent();
 
     }
+
+    private void FireEnemyMissile(Tank tank)
+    {
+    
+        Vector3 direction =
+            tank.GetCannonDirection();
+
+        Vector3 position =
+            tank.GetCannonMuzzlePosition();
+  
+        Matrix rotation =
+            tank.GetCannonRotation();
+
+        Missil missile = new Missil(
+            Content,
+            ContentFolder3D + "missile/source/rocket2",
+            position,
+            rotation,
+            new Vector3(4.2f),
+            _basicRenderer,
+            direction
+        );
+
+        _missiles.Add(missile);
+       
+        _cannonSound.Play();
+        missile.CreateHitbox(_effect, GraphicsDevice);
+        missile.CreateCollider(
+            _simulation,
+            _bufferPool,
+            _effect,
+            GraphicsDevice
+        );
+    }
+
 
     // Se ejecuta una sola vez para generar la escena de ejemplo anterior.
     // A partir del primer guardado, la escena se crea SOLO desde JSON.
@@ -671,6 +718,7 @@ public class TGCGame : Game
                     _engineSound.Pause();
                 }
 
+
                 _tanks[0].Update(gameTime);
 
 
@@ -704,6 +752,7 @@ public class TGCGame : Game
                 foreach (var enemyAI in _enemyTanks)
                 {
                     enemyAI.Update(_tanks[0], gameTime);
+                    
                 }
 
                 if (_tanks[0].ShouldFireMissile(gameTime, out Vector3 direction, out Vector3 position, out Matrix rotation))

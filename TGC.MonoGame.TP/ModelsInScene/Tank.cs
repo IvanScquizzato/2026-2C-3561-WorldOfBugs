@@ -46,16 +46,20 @@ namespace TGC.MonoGame.TP.Tanks
         public float suspension { get; set; }
         public float cushioning { get; set; }
         private float cushioningDamping = 0.8f;
-        private float quantityOfHorizontalRaycasts = 8f;
-        private float quantityOfVerticalRaycasts = 18f;
+        private float quantityOfHorizontalRaycasts = 4f;
+        private float quantityOfVerticalRaycasts = 8f;
         private float alturaMinTorreta = -0.4f;
         private float alturaMaxTorreta = 0.5f;
-        private float coolDownSecs = 0.5f;
-        private float currentCoolDownSecs = 0f;
+        private float coolDownSecs = 1f;
+        private float currentCoolDownSecs = 5f;
         private float minCrashSoundSpeed = 50f;
         private const long crashSoundCoolDownMs = 500;
         private static long lastCrashSoundTicks = 0;
         public float maxHealth = 100f;
+        public bool IsColliding { get; set; }
+        public bool esEnemigo { get; set; }
+
+
 
         public float health;
         public Dictionary<ModelMeshPart, (VertexPositionNormalTexture[], ModelMesh)> verticesPorMeshPart = new Dictionary<ModelMeshPart, (VertexPositionNormalTexture[], ModelMesh)>();
@@ -145,80 +149,37 @@ namespace TGC.MonoGame.TP.Tanks
                 alturaMaxTorreta
             );
 
-            Debug.WriteLine($"set yaw={yaw} pitch={pitch}");
+            
         }
         public void Update(GameTime gameTime)
         {
-            MouseState mouse = Mouse.GetState();
-
-            float deltaX = mouse.X - _previousMouseState.X;
-            float deltaY = mouse.Y - _previousMouseState.Y;
-            _previousMouseState = mouse;
-            float elapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            currentCoolDownSecs -= currentCoolDownSecs <= 0 ? 0 : elapsedSeconds;
-            if (elapsedSeconds <= 0.0001f)
-                return;
+            IsColliding = false;
+            KeyboardState keyboardState = Keyboard.GetState();
             float forwardInput = 0f;
             float turnInput = 0f;
-            bool estaDoblando = false;
-            bool estaAcelerando = false;
-            KeyboardState keyboardState = Keyboard.GetState();
+            float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (keyboardState.IsKeyDown(Keys.W)) { forwardInput += 1; estaAcelerando = true; }
-            if (keyboardState.IsKeyDown(Keys.S)) { forwardInput -= 1; estaAcelerando = true; }
+            currentCoolDownSecs -= currentCoolDownSecs <= 0? 0: deltaTime;
 
-            if (keyboardState.IsKeyDown(Keys.D)) { turnInput += 1; estaDoblando = true; }
-            if (keyboardState.IsKeyDown(Keys.A)) { turnInput -= 1; estaDoblando = true; }
+            if (deltaTime <= 0.0001f)
+                return;
 
-            //logica canon y torreta siguiendo el mouse
+            if (keyboardState.IsKeyDown(Keys.W))
+                forwardInput += 1;
 
-            Vector3 leftTrackGlobalPos = Vector3.Transform(new Vector3(_widthLocal * 0.385f, 0, 0), Matrix.CreateScale(_scale) * _rotation); ;
-            Vector3 rightTrackGlobalPos = Vector3.Transform(new Vector3(-_widthLocal * 0.385f, 0, 0), Matrix.CreateScale(_scale) * _rotation);
+            if (keyboardState.IsKeyDown(Keys.S))
+                forwardInput -= 1;
 
-            float currentForwardSpeed = Vector3.Dot(_velocity, _forward);
+            if (keyboardState.IsKeyDown(Keys.D))
+                turnInput += 1;
 
-            float speedLimitFactor = 1f;
-            if ((currentForwardSpeed > 0 && forwardInput > 0) || (currentForwardSpeed < 0 && forwardInput < 0))
-            {
-                speedLimitFactor = MathF.Max(0f, 1f - (MathF.Abs(currentForwardSpeed) / _maxSpeed));
-            }
+            if (keyboardState.IsKeyDown(Keys.A))
+                turnInput -= 1;
 
-            float limitedForwardThrust = forwardInput * speedLimitFactor;
-
-
-            float leftThrust = limitedForwardThrust + (turnInput * 1.5f);
-            float rightThrust = limitedForwardThrust - (turnInput * 1.5f);
-
-
-            Vector3 applicationPoint = leftTrackGlobalPos;
-            float totalRaycastInContact = 0;
-            foreach ((List<TankRaycast>, float) listThrust in GetBothRaycastLists(leftThrust, rightThrust))
-            {
-                var list = listThrust.Item1;
-                var thrust = listThrust.Item2;
-                var raycastsCount = list.Count;
-                List<Force> forcesToApply = list.Select(r => r.CalculateSuspensionForce(this)).Where(f => f != null).ToList();
-                float raycastsInContactCount = forcesToApply.Count;
-                totalRaycastInContact += raycastsInContactCount;
-                if (raycastsInContactCount == 0) continue; // Si la oruga no toca el suelo, no tracciona
-
-                foreach (Force suspensionForce in forcesToApply)
-                {
-                    this.agregarFuerzaAAplicar(suspensionForce, elapsedSeconds);
-                }
-
-                Vector3 force = _forward * (thrust * _engineThrust);
-                this.agregarFuerzaAAplicar(new Force(force, applicationPoint), elapsedSeconds);
-
-                applicationPoint = rightTrackGlobalPos;
-            }
-            if (totalRaycastInContact > 0)
-            {
-                Vector3 globalGravity = new Vector3(0, -1000f, 0);
-                aplicarFriccionLateral(elapsedSeconds, globalGravity);
-                aplicarFriccionAngular(elapsedSeconds, estaDoblando);
-                aplicarFriccionFrontal(elapsedSeconds, globalGravity, estaAcelerando);
-            }
+            Drive(
+                forwardInput,
+                turnInput,
+                deltaTime);
         }
         private void aplicarFriccionLateral(float elapsedSeconds, Vector3 globalGravity)
         {
@@ -319,6 +280,11 @@ namespace TGC.MonoGame.TP.Tanks
         }
         private void LoadRaycastPoints(Simulation simulation)
         {
+            if (esEnemigo)
+            {
+                quantityOfHorizontalRaycasts = 2f;
+                quantityOfVerticalRaycasts = 4f;
+            }
             var leftCenterUR = new Vector3(_widthLocal * 0.31f, -_heightLocal * -0.01f, _depthLocal * 0.18f);
             var leftCenterUL = new Vector3(_widthLocal * 0.46f, -_heightLocal * -0.01f, _depthLocal * 0.18f);
             var leftCenterDL = new Vector3(_widthLocal * 0.46f, -_heightLocal * -0.01f, -_depthLocal * 0.18f);
@@ -446,10 +412,12 @@ namespace TGC.MonoGame.TP.Tanks
         {
             // golpe metalico al chocar fuerte contra algo que no sea el piso
             // la pausa evita que se repita porque este metodo se llama en cada frame mientras dura el contacto
+            
             float velocidadDelGolpe = impactImpulse * InverseMass();
             if (model is not SimpleTerrain && velocidadDelGolpe > minCrashSoundSpeed &&
                 Environment.TickCount64 - lastCrashSoundTicks > crashSoundCoolDownMs)
             {
+                IsColliding = true;
                 TGCGame.CrashSound.Play();
                 lastCrashSoundTicks = Environment.TickCount64;
             }
@@ -592,21 +560,101 @@ namespace TGC.MonoGame.TP.Tanks
                 }
             }
         }
-        public void MoveForward(float amount, float deltaTime)
-        {
-            Debug.WriteLine("ME QUIERO MOVER");
-            Vector3 force =_forward * amount;
-
-            agregarFuerzaAAplicar(
-                new Force(force, Vector3.Zero),
-                deltaTime);
-        }
         public void Drive(float forwardInput,float turnInput,float elapsedSeconds)
         {
-            float leftThrust = forwardInput + (turnInput * 1.5f);
-            float rightThrust = forwardInput - (turnInput * 1.5f);
+            bool estaDoblando = turnInput != 0;
+            bool estaAcelerando = forwardInput != 0;
 
-            // toda la lógica de fuerzas que hoy está en Update()
+
+
+            Vector3 leftTrackGlobalPos =
+                Vector3.Transform(
+                    new Vector3(_widthLocal * 0.385f, 0, 0),
+                    Matrix.CreateScale(_scale) * _rotation);
+
+            Vector3 rightTrackGlobalPos =
+                Vector3.Transform(
+                    new Vector3(-_widthLocal * 0.385f, 0, 0),
+                    Matrix.CreateScale(_scale) * _rotation);
+
+
+           
+            float currentForwardSpeed =
+                Vector3.Dot(_velocity, _forward);
+
+            float speedLimitFactor = 1f;
+
+            if ((currentForwardSpeed > 0 && forwardInput > 0) ||
+                (currentForwardSpeed < 0 && forwardInput < 0))
+            {
+                speedLimitFactor = MathF.Max(
+                    0f,
+                    1f - (MathF.Abs(currentForwardSpeed) / _maxSpeed));
+            }
+
+            float limitedForwardThrust = forwardInput * speedLimitFactor;
+
+            float leftThrust = limitedForwardThrust + (turnInput * 1.5f);
+
+            float rightThrust = limitedForwardThrust - (turnInput * 1.5f);
+            Vector3 applicationPoint = leftTrackGlobalPos;
+            float totalRaycastInContact = 0;
+
+            foreach ((List<TankRaycast>, float) listThrust in
+                     GetBothRaycastLists(leftThrust, rightThrust))
+            {
+                var list = listThrust.Item1;
+                var thrust = listThrust.Item2;
+
+                List<Force> forcesToApply =
+                    list.Select(r => r.CalculateSuspensionForce(this))
+                        .Where(f => f != null)
+                        .ToList();
+
+                float raycastsInContactCount =
+                    forcesToApply.Count;
+
+                totalRaycastInContact +=
+                    raycastsInContactCount;
+
+                if (raycastsInContactCount == 0)
+                    continue;
+
+                foreach (Force suspensionForce in forcesToApply)
+                {
+                    agregarFuerzaAAplicar(
+                        suspensionForce,
+                        elapsedSeconds);
+                }
+
+                Vector3 force =
+                    _forward * (thrust * _engineThrust);
+
+                agregarFuerzaAAplicar(
+                    new Force(force, applicationPoint),
+            elapsedSeconds);
+
+                applicationPoint = rightTrackGlobalPos;
+            }
+
+            if (totalRaycastInContact > 0)
+            {
+                Vector3 globalGravity =
+                    new Vector3(0, -1000f, 0);
+
+                aplicarFriccionLateral(
+                    elapsedSeconds,
+                    globalGravity);
+
+                aplicarFriccionAngular(
+                    elapsedSeconds,
+                    estaDoblando);
+
+                aplicarFriccionFrontal(
+                    elapsedSeconds,
+                    globalGravity,
+                    estaAcelerando);
+            }
         }
         protected override void cargarModelo(ContentManager Content, string modelPath)
         {
