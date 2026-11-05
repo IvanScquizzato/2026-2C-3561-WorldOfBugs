@@ -58,6 +58,8 @@ namespace TGC.MonoGame.TP.Tanks
         public float maxHealth = 100f;
         public bool IsColliding { get; set; }
         public bool esEnemigo { get; set; }
+        public float CooldownProgress => 1f - MathHelper.Clamp(currentCoolDownSecs / coolDownSecs,0f,1f);
+
 
 
 
@@ -418,8 +420,11 @@ namespace TGC.MonoGame.TP.Tanks
                 Environment.TickCount64 - lastCrashSoundTicks > crashSoundCoolDownMs)
             {
                 IsColliding = true;
-                TGCGame.CrashSound.Play();
-                lastCrashSoundTicks = Environment.TickCount64;
+                if (!esEnemigo)
+                {
+                    TGCGame.CrashSound.Play();
+                    lastCrashSoundTicks = Environment.TickCount64;
+                }
             }
 
             if (model.IsDestroyedWith(destructiveImpactImpulse))

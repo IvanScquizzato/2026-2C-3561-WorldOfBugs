@@ -8,8 +8,8 @@ using System.Diagnostics;
 public class EnemyTank
 {
     private readonly Tank _tank;
-    private float _shootCooldown = 20f;
-    private float _currentCooldown = 10f;
+    private float _shootCooldown = 10f;
+    private float _currentCooldown = 5f;
     private float presicion = 0.55f;
     public Action<Tank>? FireMissile;
     private static Random _random = new();
@@ -91,6 +91,9 @@ public class EnemyTank
             {
                 // se aleja del jugador
                 _tank.Drive(-speed, turnInput, deltaTime);
+            }else
+            {
+                _tank.Drive(0, 0, deltaTime);
             }
         }
         if (_tank.IsColliding)

@@ -285,8 +285,9 @@ public class TGCGame : Game
         _pixel = new Texture2D(GraphicsDevice, 1, 1);
         _pixel.SetData(new[] { Color.White });
 
-        _hud = new HUD.HUD(_pixel, _tanks[0]);
+        
         _menuFont = Content.Load<SpriteFont>("MenuFont");
+        _hud = new HUD.HUD(_pixel, _tanks[0],_menuFont);
         _mainMenu = new HUD.MainMenu(_pixel, _menuFont);
         _pauseMenu = new HUD.PauseMenu(_pixel, _menuFont);
 
