@@ -581,6 +581,27 @@ namespace TGC.MonoGame.TP.Tanks
                 }
             }
         }
+        public void UpdateTracks(float deltaTime)
+        {
+            // velocidad hacia adelante y velocidad de giro del tanque
+            float forwardSpeed = Vector3.Dot(_velocity, _forward);
+            float yawSpeed = Vector3.Dot(_angularVelocity, _up);
+
+            // al doblar una oruga va mas rapido que la otra
+            float halfTrackWidth = Width * 0.385f; // distancia del centro a cada oruga igual que en drive
+            float leftSpeed = forwardSpeed - yawSpeed * halfTrackWidth;
+            float rightSpeed = forwardSpeed + yawSpeed * halfTrackWidth;
+
+            // cuanto avanza la textura de la oruga por cada unidad que avanza el tanque
+            // sale de medir el modelo
+            // la textura de la oruga se repite cada 73 unidades o sea avanza 0.0136 por unidad
+            // la rueda tiene radio 20 y con el -4 de velocidad_ruedas necesita 0.0125 por unidad
+            // 0.013 queda en el medio asi las dos siguen al piso
+            float trackFactor = 0.013f;
+            LeftTrackOffset -= leftSpeed * trackFactor * deltaTime;
+            RightTrackOffset -= rightSpeed * trackFactor * deltaTime;
+        }
+
         public void Drive(float forwardInput,float turnInput,float elapsedSeconds)
         {
             bool estaDoblando = turnInput != 0;
@@ -616,10 +637,6 @@ namespace TGC.MonoGame.TP.Tanks
             float leftThrust = limitedForwardThrust + (turnInput * 1.5f);
 
             float rightThrust = limitedForwardThrust - (turnInput * 1.5f);
-
-            LeftTrackOffset -= leftThrust * elapsedSeconds;
-
-            RightTrackOffset -= rightThrust * elapsedSeconds;
 
             Vector3 applicationPoint = leftTrackGlobalPos;
             float totalRaycastInContact = 0;

@@ -756,6 +756,7 @@ public class TGCGame : Game
                 foreach (var tanque in _tanks)
                 {
                     tanque.updateBodyPosition();
+                    tanque.UpdateTracks((float)gameTime.ElapsedGameTime.TotalSeconds);
 
                 }
                 foreach (var enemyAI in _enemyTanks)
