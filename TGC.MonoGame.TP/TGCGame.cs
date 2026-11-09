@@ -718,12 +718,20 @@ public class TGCGame : Game
                 {
                     _engineSound.Pause();
                 }
-
-
+                //los dejo de actualizar
+                for (int i = _tanks.Count - 1; i >= 0; i--)
+                {
+                    if (_tanks[i]._isDisabled)
+                    {
+                        _tanks[i].Destroy();
+                        _tanks.RemoveAt(i);
+                    }
+                }
+                _enemyTanks.RemoveAll(e => e.Tank._isDisabled);
                 _tanks[0].Update(gameTime);
+                
 
 
-              
                 _simulation.Timestep(1 / 60f);
 
                 HashSet<(ModelInScene, ModelInScene)> parejasProcesadas = new HashSet<(ModelInScene, ModelInScene)>();
@@ -802,8 +810,12 @@ public class TGCGame : Game
                     {
                         foreach (ModelInScene model in lista)
                         {
+                           
                             if (model.ShouldCollideWithMissile(missil))
                             {
+
+                                
+
                                 model.CollidedWithMissil(missil);
                                 missil.CollidedWithObject(model);
                             }

@@ -153,6 +153,7 @@ namespace TGC.MonoGame.TP.Tanks
 
             
         }
+        
         public void Update(GameTime gameTime)
         {
             IsColliding = false;
@@ -434,8 +435,11 @@ namespace TGC.MonoGame.TP.Tanks
                 Vector3 cambioDeVelocidad = -normal * breakImpulse * this.InverseMass();
                 _collider.ApplyImpulse(UtilsClass.ToNumericVector(cambioDeVelocidad), UtilsClass.ToNumericVector(contactPointOffset));
                 health -= 10f;
+              
             }
         }
+
+
         public override bool ShouldCollideWith(ModelInScene model, Vector3 contactPointOffset, Vector3 thisPos, float impactImpulse, float destructiveImpactImpulse, Vector3 normal)
         {
             if (model.IsDestroyedWith(destructiveImpactImpulse))
@@ -469,6 +473,17 @@ namespace TGC.MonoGame.TP.Tanks
         public override void CollidedWithMissil(Missil missil)
         {
             Vector3 missilLocal = Vector3.Transform(missil._position, Matrix.Invert(_world));
+            
+            health -= 10f;
+            Debug.WriteLine(
+    $"IMPACTO enemigo={esEnemigo} hp={health}");
+
+            if (health <= 0)
+            {
+                health = 0;
+                _isDisabled = true;
+            }
+            
 
             float maxDistanceToCylinder = missil.Width * 7f;
             float maxDistanceAlongAxis = missil.Depth * 6f;

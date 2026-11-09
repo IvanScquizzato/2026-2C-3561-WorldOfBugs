@@ -8,6 +8,7 @@ using System.Diagnostics;
 public class EnemyTank
 {
     private readonly Tank _tank;
+    public Tank Tank => _tank;
     private float _shootCooldown = 10f;
     private float _currentCooldown = 5f;
     private float presicion = 0.55f;
@@ -25,6 +26,8 @@ public class EnemyTank
 
     public void Update(Tank player,GameTime gameTime){
 
+
+     
         _tank.IsColliding = false;
         Vector3 direction = player._position - _tank._position;
 

@@ -355,7 +355,8 @@ namespace TGC.MonoGame.TP.ModelsInScene
             }
             return false;
         }
-        public virtual void CollidedWithMissil(Missil missil) { }
+        public virtual void CollidedWithMissil(Missil missil) {
+        }
 
         public virtual void Destroy()
         {
