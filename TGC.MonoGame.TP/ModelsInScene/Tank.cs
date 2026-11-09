@@ -60,7 +60,9 @@ namespace TGC.MonoGame.TP.Tanks
         public bool esEnemigo { get; set; }
         public float CooldownProgress => 1f - MathHelper.Clamp(currentCoolDownSecs / coolDownSecs,0f,1f);
 
-
+        //valor para transmitir la velocidad de movimiento de la oruga
+        public float LeftTrackOffset;
+        public float RightTrackOffset;
 
 
         public float health;
@@ -475,8 +477,7 @@ namespace TGC.MonoGame.TP.Tanks
             Vector3 missilLocal = Vector3.Transform(missil._position, Matrix.Invert(_world));
             
             health -= 10f;
-            Debug.WriteLine(
-    $"IMPACTO enemigo={esEnemigo} hp={health}");
+            
 
             if (health <= 0)
             {
@@ -585,8 +586,6 @@ namespace TGC.MonoGame.TP.Tanks
             bool estaDoblando = turnInput != 0;
             bool estaAcelerando = forwardInput != 0;
 
-
-
             Vector3 leftTrackGlobalPos =
                 Vector3.Transform(
                     new Vector3(_widthLocal * 0.385f, 0, 0),
@@ -617,6 +616,11 @@ namespace TGC.MonoGame.TP.Tanks
             float leftThrust = limitedForwardThrust + (turnInput * 1.5f);
 
             float rightThrust = limitedForwardThrust - (turnInput * 1.5f);
+
+            LeftTrackOffset -= leftThrust * elapsedSeconds;
+
+            RightTrackOffset -= rightThrust * elapsedSeconds;
+
             Vector3 applicationPoint = leftTrackGlobalPos;
             float totalRaycastInContact = 0;
 

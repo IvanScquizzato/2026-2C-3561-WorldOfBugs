@@ -14,6 +14,7 @@ namespace TGC.MonoGame.TP.Renderers
         public Effect _effect { get; set; }
         public Effect _hitBoxEffect { get; set; }
         public bool drawNormals = false;
+        private float velocidad_ruedas = -4f; 
         public TankRenderer(GraphicsDevice graphicsDevice, Effect effect, Effect hitboxEffect)
         {
             _graphicsDevice = graphicsDevice;
@@ -33,6 +34,24 @@ namespace TGC.MonoGame.TP.Renderers
                 var index = 0;
                 foreach (var mesh in tank._model.Meshes)
                 {
+
+                    if (mesh.Name == "Treadmill1")
+                    {
+                        _effect.Parameters["TrackOffset"]
+                            .SetValue(tank.LeftTrackOffset);
+                    }
+                    else if (mesh.Name == "Treadmill2")
+                    {
+                        _effect.Parameters["TrackOffset"]
+                            .SetValue(tank.RightTrackOffset);
+                    }
+                    else
+                    {
+                        _effect.Parameters["TrackOffset"]
+                            .SetValue(0f);
+                    }
+                    
+
                     var relativeTransform = modelMeshesBaseTransforms[mesh.ParentBone.Index];
 
                     Matrix world = tank._world;
@@ -54,6 +73,21 @@ namespace TGC.MonoGame.TP.Renderers
                             Matrix.CreateRotationY(tank.TurretYaw) *
                             tank._world;
 
+                    }
+                    else if (mesh.Name.StartsWith("Wheel"))
+                    {
+                        int wheelNumber =
+                            int.Parse(mesh.Name.Replace("Wheel", ""));
+
+                        float rotation =
+                            wheelNumber <= 10
+                                ? tank.LeftTrackOffset * velocidad_ruedas
+                                : tank.RightTrackOffset * velocidad_ruedas;
+
+                        world =
+                            Matrix.CreateRotationX(rotation) *
+                            relativeTransform *
+                            tank._world;
                     }
                     else
                     {

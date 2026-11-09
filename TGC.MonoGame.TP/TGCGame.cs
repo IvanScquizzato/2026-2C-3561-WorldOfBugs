@@ -718,7 +718,7 @@ public class TGCGame : Game
                 {
                     _engineSound.Pause();
                 }
-                //los dejo de actualizar
+                //los dejo de actualizar (y los borro) 
                 for (int i = _tanks.Count - 1; i >= 0; i--)
                 {
                     if (_tanks[i]._isDisabled)

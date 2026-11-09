@@ -16,6 +16,7 @@ using TGC.MonoGame.TP.Colliders;
 using System.Reflection.Metadata.Ecma335;
 using BepuUtilities.Memory;
 using TGC.MonoGame.TP.Missile;
+using System.Diagnostics;
 namespace TGC.MonoGame.TP.ModelsInScene
 {
     /// <summary>
@@ -154,7 +155,7 @@ namespace TGC.MonoGame.TP.ModelsInScene
                             {
                                 texturasExtraidas.Add(null);
                             }
-                            Console.WriteLine(mesh.Name);
+                            
                             meshPart.Effect = _renderer._effect;
 
                         }
@@ -296,15 +297,15 @@ namespace TGC.MonoGame.TP.ModelsInScene
                 _renderer.Draw(this, view, projection);
                 if (_collider != null && renderColliders)
                 {
-                    _collider.Draw(view, projection);
+                   // _collider.Draw(view, projection);
                 }
                 if (_hitbox != null && renderHitboxes)
                 {
-                    _hitbox.Draw(this, _world, view, projection);
+                   // _hitbox.Draw(this, _world, view, projection);
                 }
                 if (renderForces)
                 {
-                    ArrowRenderer.DrawLines(DebugForces, view, projection, _renderer._effect, _renderer._graphicsDevice);
+                    //ArrowRenderer.DrawLines(DebugForces, view, projection, _renderer._effect, _renderer._graphicsDevice);
                 }
             }
             DebugForces.Clear();
