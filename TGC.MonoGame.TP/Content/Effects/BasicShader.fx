@@ -21,6 +21,8 @@ float3 DiffuseColor;
 
 float Time = 0;
 
+float TrackOffset = 0;
+
 texture ModelTexture;
 sampler2D TextureSampler = sampler_state
 {
@@ -64,7 +66,8 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
     float4 viewPosition = mul(worldPosition, View);	
 	// View space to Projection space
     output.Position = mul(viewPosition, Projection);
-	output.TexCoord = input.TexCoord;
+    output.TexCoord = input.TexCoord;
+    output.TexCoord.y += TrackOffset;
     return output;
 }
 

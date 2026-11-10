@@ -38,7 +38,7 @@ namespace TGC.MonoGame.TP.Renderers
 
                 _effect.Parameters["World"].SetValue(world);
                 foreach (var meshPart in mesh.MeshParts)
-                {
+                { 
                     if (modelInScene.GetTextures()[index] != null)
                     {
                         _effect.Parameters["ModelTexture"].SetValue(modelInScene.GetTextures()[index]);
