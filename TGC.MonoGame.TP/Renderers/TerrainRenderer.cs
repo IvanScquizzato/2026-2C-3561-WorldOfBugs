@@ -11,11 +11,16 @@ namespace TGC.MonoGame.TP.Renderers
     {
         public GraphicsDevice _graphicsDevice { get; set; }
         public Effect _effect { get; set; }
+        private readonly Texture2D _grassNormalMap;
+        private readonly Texture2D _groundNormalMap;
 
-        public TerrainRenderer(GraphicsDevice graphicsDevice, Effect effect)
+        public TerrainRenderer(GraphicsDevice graphicsDevice, Effect effect,
+            Texture2D grassNormalMap, Texture2D groundNormalMap)
         {
             _graphicsDevice = graphicsDevice;
             _effect = effect;
+            _grassNormalMap = grassNormalMap;
+            _groundNormalMap = groundNormalMap;
         }
 
         public void Draw(SimpleTerrain terrain, Matrix view, Matrix projection)
@@ -30,10 +35,11 @@ namespace TGC.MonoGame.TP.Renderers
             _effect.Parameters["texColorMap"].SetValue(terrain.colorMapTexture);
             _effect.Parameters["texDiffuseMap"].SetValue(terrain.terrainTexture);
             _effect.Parameters["texDiffuseMap2"].SetValue(terrain.terrainTexture2);
+            _effect.Parameters["texGrassNormalMap"].SetValue(_grassNormalMap);
+            _effect.Parameters["texGroundNormalMap"].SetValue(_groundNormalMap);
             _effect.Parameters["World"].SetValue(terrain._world);
             _effect.Parameters["View"].SetValue(view);
             _effect.Parameters["Projection"].SetValue(projection);
-            _effect.Parameters["LightIntensity"].SetValue(1.0f);
             _effect.Parameters["Roughness"].SetValue(0.9f);
             _effect.Parameters["K"].SetValue(0.45f);
             _effect.Parameters["F0"].SetValue(new Vector3(0.04f, 0.04f, 0.04f));

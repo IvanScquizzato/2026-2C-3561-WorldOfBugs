@@ -33,10 +33,6 @@ namespace TGC.MonoGame.TP.Renderers
                 _effect.Parameters["Roughness"].SetValue(0.7f);
                 _effect.Parameters["K"].SetValue((0.7f + 1f) * (0.7f + 1f) / 8f);
                 _effect.Parameters["F0"].SetValue(new Vector3(0.04f, 0.04f, 0.04f));
-                _effect.Parameters["LightIntensity"].SetValue(1.0f);
-                Vector3 lightDir = new Vector3(-1, -1, -1);
-                lightDir.Normalize();
-                _effect.Parameters["SunlightDirection"].SetValue(lightDir);
                 Vector3 realCameraPosition = Matrix.Invert(view).Translation;
                 _effect.Parameters["CameraPosition"].SetValue(realCameraPosition);
                 _effect.CurrentTechnique = _effect.Techniques["WithoutNormalMap"];

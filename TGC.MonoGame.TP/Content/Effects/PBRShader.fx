@@ -1,4 +1,5 @@
 #include "PBR.fx"
+#include "ShadowSampling.fx"
 #ifdef OPENGL
 	#define SV_POSITION POSITION
 	#define VS_SHADERMODEL vs_3_0
@@ -97,7 +98,8 @@ float4 NormalMapPS(VertexShaderOutput input) : COLOR
 
     float3 finalNormal = normalize(mul(tangentNormal, TBN));
 
-    float3 hdrColor = BDRF(albedo.xyz, omega0, omegai, finalNormal);
+    float shadow = ShadowVisibility(input.WorldPosition, saturate(dot(finalNormal, omegai)));
+    float3 hdrColor = BDRF(albedo.xyz, omega0, omegai, finalNormal, shadow);
 
     float a = 2.51f, b = 0.03f, c = 2.43f, d = 0.59f, e = 0.14f;
     float3 mappedColor = saturate((hdrColor*(a*hdrColor+b))/(hdrColor*(c*hdrColor+d)+e));
@@ -114,7 +116,8 @@ float4 InterpolatedNormalPS(VertexShaderOutput input) : COLOR{
 
     float3 normal = normalize(input.Normal + float3(0.0001f, 0.0f, 0.0f));
 
-    float3 hdrColor = BDRF(albedo.xyz, omega0, omegai, normal);
+    float shadow = ShadowVisibility(input.WorldPosition, saturate(dot(normal, omegai)));
+    float3 hdrColor = BDRF(albedo.xyz, omega0, omegai, normal, shadow);
 
     float a = 2.51f, b = 0.03f, c = 2.43f, d = 0.59f, e = 0.14f;
     float3 mappedColor = saturate((hdrColor*(a*hdrColor+b))/(hdrColor*(c*hdrColor+d)+e));
