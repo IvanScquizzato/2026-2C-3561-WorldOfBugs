@@ -18,6 +18,7 @@ using BepuUtilities.Memory;
 using TGC.MonoGame.TP.Missile;
 using TGC.MonoGame.TP.Materials;
 
+using System.Diagnostics;
 namespace TGC.MonoGame.TP.ModelsInScene
 {
     /// <summary>
@@ -167,7 +168,7 @@ namespace TGC.MonoGame.TP.ModelsInScene
                             {
                                 texturasExtraidas.Add(null);
                             }
-                            Console.WriteLine(mesh.Name);
+
                             meshPart.Effect = _renderer._effect;
 
                         }
@@ -308,11 +309,11 @@ namespace TGC.MonoGame.TP.ModelsInScene
                 _renderer.Draw(this, view, projection);
                 if (_collider != null && renderColliders)
                 {
-                    _collider.Draw(view, projection);
+                    // _collider.Draw(view, projection);
                 }
                 if (_hitbox != null && renderHitboxes)
                 {
-                    _hitbox.Draw(this, _world, view, projection);
+                    // _hitbox.Draw(this, _world, view, projection);
                 }
                 if (_collider != null && renderForces)
                 {
@@ -367,7 +368,9 @@ namespace TGC.MonoGame.TP.ModelsInScene
             }
             return false;
         }
-        public virtual void CollidedWithMissil(Missil missil) { }
+        public virtual void CollidedWithMissil(Missil missil)
+        {
+        }
 
         public virtual void Destroy()
         {

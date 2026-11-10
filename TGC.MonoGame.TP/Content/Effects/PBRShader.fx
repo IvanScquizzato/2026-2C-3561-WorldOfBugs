@@ -18,6 +18,7 @@
 float4x4 World;
 float4x4 View;
 float4x4 Projection;
+float TrackOffset = 0;
 
 float Time = 0;
 
@@ -70,6 +71,8 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 	// View space to Projection space
     output.Position = mul(viewPosition, Projection);
 	output.TexCoord = input.TexCoord;
+    output.TexCoord.y += TrackOffset;
+
     output.Normal = normalize(mul(input.Normal, (float3x3)World));
     output.WorldPosition = worldPosition.xyz;
     return output;
