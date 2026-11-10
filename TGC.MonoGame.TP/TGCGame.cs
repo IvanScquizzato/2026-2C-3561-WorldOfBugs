@@ -120,14 +120,14 @@ public class TGCGame : Game
     public static SoundEffect ClickSound;
     private SoundEffect _cannonSound;
     private SoundEffectInstance _engineSound;
-    
+
     // cosas para el skybox
     private DayNightCycle _dayNightCycle;
     private Skybox _skybox;
     private TextureCube _stars;
     private ShadowMapRenderer _shadowMapRenderer;
     private bool _showShadowMap;
-    
+
     /// <summary>
     ///     Constructor del juego.
     /// </summary>
@@ -299,11 +299,11 @@ public class TGCGame : Game
         MediaPlayer.IsRepeating = true;
         MediaPlayer.Volume = 0.3f;
         MediaPlayer.Play(Content.Load<Song>(ContentFolderMusic + "determined_pursuit_loop"));
-        
+
         // SkyBox 
         _dayNightCycle = new DayNightCycle
         {
-            TimeOfDay = 6.7f,
+            TimeOfDay = 15.7f,
             DaySpeed = 0f
         };
         _dayNightCycle.Update(0f); // Calcula la posición inicial del sol
@@ -313,7 +313,7 @@ public class TGCGame : Game
 
         _shadowMapRenderer = new ShadowMapRenderer(
             GraphicsDevice, Content.Load<Effect>("Effects/ShadowMapGenerate"));
-        
+
         _stars = new TextureCube(GraphicsDevice, 1, false, SurfaceFormat.Color);
 
         foreach (CubeMapFace face in Enum.GetValues<CubeMapFace>())
@@ -802,7 +802,7 @@ public class TGCGame : Game
 
         _previousKeyboardState = currentKeyboardState;
         _previousMouseState = currentMouseState;
-        
+
         // Hora del dia para el skybox
         _dayNightCycle.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
 
@@ -824,9 +824,9 @@ public class TGCGame : Game
             _shadowMapRenderer.LightViewProjection);
         effect.Parameters["ShadowMapTexture"].SetValue(_shadowMapRenderer.ShadowMap);
         effect.Parameters["ShadowTexelSize"].SetValue(new Vector2(
-            1f / _shadowMapRenderer.ShadowMap.Width,
-            1f / _shadowMapRenderer.ShadowMap.Height));
-        effect.Parameters["ShadowBias"].SetValue(0.0005f);
+          1f / _shadowMapRenderer.ShadowMap.Width,
+          1f / _shadowMapRenderer.ShadowMap.Height));
+        effect.Parameters["ShadowBias"].SetValue(0.002f);
         effect.Parameters["ShadowsEnabled"].SetValue(enabled ? 1f : 0f);
     }
 
@@ -835,97 +835,97 @@ public class TGCGame : Game
     ///     Escribir aqui el codigo referido al renderizado.
     /// </summary>
     protected override void Draw(GameTime gameTime)
-{
-    GraphicsDevice.Clear(Color.LightBlue);
-
-    if (_gameState == GameState.MainMenu)
     {
-        _mainMenu.Draw(_spriteBatch);
-    }
-    else
-    {
-        GraphicsDevice.BlendState = BlendState.Opaque;
-        GraphicsDevice.DepthStencilState = DepthStencilState.Default;
-        GraphicsDevice.RasterizerState = RasterizerState.CullNone;
-
-        // Leer la cámara una sola vez para este frame.
-        Matrix view = _currentCamera.View;
-        Matrix projection = _currentCamera.Projection;
-
-        bool hasSun = _dayNightCycle.SunIntensity > 0.01f;
-        if (hasSun)
-        {
-            _shadowMapRenderer.Render(
-                _tanks[0]._position,
-                _dayNightCycle.SunDirection,
-                _modelosEnEscenario);
-        }
-
-        // Al volver del render target, limpiar de nuevo el backbuffer.
         GraphicsDevice.Clear(Color.LightBlue);
-        GraphicsDevice.BlendState = BlendState.Opaque;
-        GraphicsDevice.DepthStencilState = DepthStencilState.Default;
-        GraphicsDevice.RasterizerState = RasterizerState.CullNone;
 
-        ApplyShadowMap(_PBREffect, hasSun);
-        ApplyShadowMap(_terrainRenderer._effect, hasSun);
-        ApplyShadowMap(_effect, hasSun);
-        ApplySunLighting(_PBREffect);
-        ApplySunLighting(_terrainRenderer._effect);
-        _effect.Parameters["SceneBrightness"].SetValue(
-            MathHelper.Lerp(0.12f, 1f, 1f - _dayNightCycle.NightFactor));
-
-        foreach (var lista in _modelosEnEscenario)
+        if (_gameState == GameState.MainMenu)
         {
-            foreach (var modelo in lista)
-            {
-                modelo.Draw(view, projection);
-            }
-        }
-
-        // El skybox cambia estados gráficos; guardarlos y restaurarlos.
-        var previousDepth = GraphicsDevice.DepthStencilState;
-        var previousRasterizer = GraphicsDevice.RasterizerState;
-        var previousBlend = GraphicsDevice.BlendState;
-
-        _skybox.Draw(view, projection, _dayNightCycle, _stars);
-
-        GraphicsDevice.DepthStencilState = previousDepth;
-        GraphicsDevice.RasterizerState = previousRasterizer;
-        GraphicsDevice.BlendState = previousBlend;
-
-        if (_gameState == GameState.Paused)
-        {
-            _pauseMenu.Draw(_spriteBatch);
-        }
-        else if (_sceneEditor.Enabled)
-        {
-            _sceneEditor.Draw(view, projection);
+            _mainMenu.Draw(_spriteBatch);
         }
         else
         {
-            _hud.Draw(_spriteBatch, _tanks[0], _tanks);
+            GraphicsDevice.BlendState = BlendState.Opaque;
+            GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+            GraphicsDevice.RasterizerState = RasterizerState.CullNone;
+
+            // Leer la cámara una sola vez para este frame.
+            Matrix view = _currentCamera.View;
+            Matrix projection = _currentCamera.Projection;
+
+            bool hasSun = _dayNightCycle.SunIntensity > 0.01f;
+            if (hasSun)
+            {
+                _shadowMapRenderer.Render(
+                    _tanks[0]._position,
+                    _dayNightCycle.SunDirection,
+                    _modelosEnEscenario);
+            }
+
+            // Al volver del render target, limpiar de nuevo el backbuffer.
+            GraphicsDevice.Clear(Color.LightBlue);
+            GraphicsDevice.BlendState = BlendState.Opaque;
+            GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+            GraphicsDevice.RasterizerState = RasterizerState.CullNone;
+
+            ApplyShadowMap(_PBREffect, hasSun);
+            ApplyShadowMap(_terrainRenderer._effect, hasSun);
+            ApplyShadowMap(_effect, hasSun);
+            ApplySunLighting(_PBREffect);
+            ApplySunLighting(_terrainRenderer._effect);
+            _effect.Parameters["SceneBrightness"].SetValue(
+                MathHelper.Lerp(0.12f, 1f, 1f - _dayNightCycle.NightFactor));
+
+            foreach (var lista in _modelosEnEscenario)
+            {
+                foreach (var modelo in lista)
+                {
+                    modelo.Draw(view, projection);
+                }
+            }
+
+            // El skybox cambia estados gráficos; guardarlos y restaurarlos.
+            var previousDepth = GraphicsDevice.DepthStencilState;
+            var previousRasterizer = GraphicsDevice.RasterizerState;
+            var previousBlend = GraphicsDevice.BlendState;
+
+            _skybox.Draw(view, projection, _dayNightCycle, _stars);
+
+            GraphicsDevice.DepthStencilState = previousDepth;
+            GraphicsDevice.RasterizerState = previousRasterizer;
+            GraphicsDevice.BlendState = previousBlend;
+
+            if (_gameState == GameState.Paused)
+            {
+                _pauseMenu.Draw(_spriteBatch);
+            }
+            else if (_sceneEditor.Enabled)
+            {
+                _sceneEditor.Draw(view, projection);
+            }
+            else
+            {
+                _hud.Draw(_spriteBatch, _tanks[0], _tanks);
+            }
+
+            if (_showShadowMap && hasSun)
+            {
+                _spriteBatch.Begin(
+                    SpriteSortMode.Deferred,
+                    BlendState.Opaque,
+                    SamplerState.PointClamp,
+                    DepthStencilState.None,
+                    RasterizerState.CullNone);
+                _spriteBatch.Draw(
+                    _shadowMapRenderer.ShadowMap,
+                    new Rectangle(16, GraphicsDevice.Viewport.Height - 272, 256, 256),
+                    Color.White);
+                _spriteBatch.End();
+            }
+
         }
 
-        if (_showShadowMap && hasSun)
-        {
-            _spriteBatch.Begin(
-                SpriteSortMode.Deferred,
-                BlendState.Opaque,
-                SamplerState.PointClamp,
-                DepthStencilState.None,
-                RasterizerState.CullNone);
-            _spriteBatch.Draw(
-                _shadowMapRenderer.ShadowMap,
-                new Rectangle(16, GraphicsDevice.Viewport.Height - 272, 256, 256),
-                Color.White);
-            _spriteBatch.End();
-        }
-
+        base.Draw(gameTime);
     }
-
-    base.Draw(gameTime);
-}
 
     /// <summary>
     ///     Libero los recursos que se cargaron en el juego.

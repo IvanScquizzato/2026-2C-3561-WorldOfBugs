@@ -32,14 +32,14 @@ public sealed class DayNightCycle
         if (elevation > 0.2f) // Full Day
         {
             SunColor = new Vector3(1.0f, 0.98f, 0.90f);
-            SunIntensity = 1.0f;
+            SunIntensity = 1.5f;
             NightFactor = 0.0f;
         }
         else if (elevation > -0.1f) // Twilight / Sunrise / Sunset
         {
             float t = (elevation - (-0.1f)) / 0.3f;
             SunColor = Vector3.Lerp(new Vector3(0.95f, 0.35f, 0.1f), new Vector3(1.0f, 0.98f, 0.90f), t);
-            SunIntensity = MathHelper.Clamp(t, 0.0f, 1.0f);
+            SunIntensity = MathHelper.Clamp(t, 0.0f, 1.5f);
             NightFactor = 1.0f - t;
         }
         else // Night

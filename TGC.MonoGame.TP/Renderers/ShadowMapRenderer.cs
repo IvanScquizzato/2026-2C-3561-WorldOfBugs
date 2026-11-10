@@ -14,8 +14,8 @@ namespace TGC.MonoGame.TP.Renderers;
 /// </summary>
 public sealed class ShadowMapRenderer : IDisposable
 {
-    private const int MapSize = 2048;
-    private const float ShadowAreaSize = 8000f;
+    private const int MapSize = 4096;
+    private const float ShadowAreaSize = 6000f;
     private const float MaxCasterDistance = 5500f;
 
     private readonly GraphicsDevice _graphicsDevice;
@@ -53,7 +53,7 @@ public sealed class ShadowMapRenderer : IDisposable
         Matrix lightView = Matrix.CreateLookAt(
             focus + sunDirection * 5000f, focus, up);
         Matrix lightProjection = Matrix.CreateOrthographic(
-            ShadowAreaSize, ShadowAreaSize, 1f, 12000f);
+            ShadowAreaSize, ShadowAreaSize, 1f, 8500f);
         LightViewProjection = lightView * lightProjection;
 
         _graphicsDevice.SetRenderTarget(ShadowMap);
