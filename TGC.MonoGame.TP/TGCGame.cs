@@ -127,6 +127,8 @@ public class TGCGame : Game
     private TextureCube _stars;
     private ShadowMapRenderer _shadowMapRenderer;
     private bool _showShadowMap;
+    private float _horaDelDia = 6.7f;
+    private float _velocidadDelTiempoHora = 0;
     
     /// <summary>
     ///     Constructor del juego.
@@ -303,8 +305,8 @@ public class TGCGame : Game
         // SkyBox 
         _dayNightCycle = new DayNightCycle
         {
-            TimeOfDay = 6.7f,
-            DaySpeed = 0f
+            TimeOfDay = _horaDelDia,
+            DaySpeed = _velocidadDelTiempoHora
         };
         _dayNightCycle.Update(0f); // Calcula la posición inicial del sol
 
