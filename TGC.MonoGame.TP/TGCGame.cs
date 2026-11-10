@@ -111,6 +111,9 @@ public class TGCGame : Game
     public static Vector3 gravity = new Vector3(0, -1000f, 0);
     public static Dictionary<CollidableReference, ModelInScene> PhysicsToGameObjects = new Dictionary<CollidableReference, ModelInScene>();
 
+    public static TGCGame Instance { get; private set; }
+    private List<DynamicRock> _dynamicRocks = new List<DynamicRock>();
+
     public static ConcurrentQueue<ImpactData> PendingImpacts { get; } = new();
 
     // sonidos los static los usan los objetos en sus eventos de colision
@@ -151,6 +154,7 @@ public class TGCGame : Game
     /// </summary>
     protected override void Initialize()
     {
+        Instance = this;
         // La logica de inicializacion que no depende del contenido se recomienda poner en este metodo.
 
         // Apago el backface culling.
@@ -169,6 +173,7 @@ public class TGCGame : Game
         _currentCamera = _camera;
         _modelosEnEscenario.Add(_decor);
         _modelosEnEscenario.Add(_missiles);
+        _modelosEnEscenario.Add(_dynamicRocks);
 
         _bufferPool = new BufferPool();
 
@@ -751,6 +756,15 @@ public class TGCGame : Game
                         }
                     }
                 }
+                for (int i = _dynamicRocks.Count - 1; i >= 0; i--)
+                {
+                    var rock = _dynamicRocks[i];
+                    rock.Update(gameTime);
+                    if (rock._isDisabled)
+                    {
+                        _dynamicRocks.RemoveAt(i);
+                    }
+                }
 
 
                 _camera.Update(gameTime);
@@ -829,4 +843,60 @@ public class TGCGame : Game
 
         base.UnloadContent();
     }
+
+    public void SpawnFenceDebris(Vector3 position, Vector3 impactDirection)
+    {
+        Random _rng = new Random();
+        int rockCount = 6; // Cantidad de piedras en las que se fractura la valla
+
+        for (int i = 0; i < rockCount; i++)
+        {
+            // Distribuye las piedras a lo largo de donde estaba la valla
+            float offsetX = (float)(_rng.NextDouble() * 140 - 70);
+            float offsetY = (float)(_rng.NextDouble() * 60 + 20);
+            float offsetZ = (float)(_rng.NextDouble() * 60 - 30);
+            Vector3 rockPos = position + new Vector3(offsetX, offsetY, offsetZ);
+
+            float scale = (float)(_rng.NextDouble() * 0.12 + 0.18); // Escala variada para cada roca
+            float mass = 40f; // Masa individual de cada roca
+
+            DynamicRock rock = new DynamicRock(
+                Content,
+                ContentFolder3D + "RocksMedium/source/Rocks_medium/Rocks_medium",
+                rockPos,
+                Matrix.CreateRotationY((float)(_rng.NextDouble() * MathHelper.TwoPi)),
+                new Vector3(scale),
+                _basicRenderer,
+                mass
+            );
+
+            rock.CreateCollider(_simulation, _bufferPool, _effect, GraphicsDevice);
+            if (rock._collider != null)
+            {
+                PhysicsToGameObjects[rock._collider.GetCollidableReference()] = rock;
+
+                // Impulso lineal hacia afuera (en dirección del impacto + dispersión vertical y lateral)
+                Vector3 randomDir = new Vector3(
+                    (float)(_rng.NextDouble() * 2 - 1),
+                    (float)(_rng.NextDouble() * 1.5 + 0.5), // Salto hacia arriba
+                    (float)(_rng.NextDouble() * 2 - 1)
+                );
+
+                Vector3 totalImpulse = (impactDirection * 0.4f + randomDir * 2500f) * mass;
+                rock._collider.ApplyImpulse(UtilsClass.ToNumericVector(totalImpulse), System.Numerics.Vector3.Zero);
+
+                // Impulso angular para que giren y rueden al salir despedidas
+                Vector3 angularImpulse = new Vector3(
+                    (float)(_rng.NextDouble() * 20 - 10),
+                    (float)(_rng.NextDouble() * 20 - 10),
+                    (float)(_rng.NextDouble() * 20 - 10)
+                ) * mass;
+                rock._collider.ApplyAngularImpulse(UtilsClass.ToNumericVector(angularImpulse));
+            }
+
+            _dynamicRocks.Add(rock);
+        }
+    }
 }
+
+
