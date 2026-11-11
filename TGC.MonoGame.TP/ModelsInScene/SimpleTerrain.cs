@@ -93,7 +93,24 @@ namespace TGC.MonoGame.TP.Terrain
                     var v1 = new Vector3(center.X + (i * _scaleXZ), center.Y + (HeightmapData[i, j] * _scaleY), center.Z + (j * _scaleXZ));
                     var v2 = new Vector3(center.X + (i * _scaleXZ), center.Y + (HeightmapData[i, j + 1] * _scaleY), center.Z + ((j + 1) * _scaleXZ));
                     var v3 = new Vector3(center.X + ((i + 1) * _scaleXZ), center.Y + (HeightmapData[i + 1, j] * _scaleY), center.Z + (j * _scaleXZ));
-                    n[i, j] = Vector3.Normalize(Vector3.Cross(v2 - v1, v3 - v1));
+                    var v4 = new Vector3(center.X + ((i + 1) * _scaleXZ), center.Y + (HeightmapData[i + 1, j + 1] * _scaleY), center.Z + ((j + 1) * _scaleXZ));
+
+                    // Sumar las normales de los dos triángulos a sus vértices.
+                    var firstNormal = Vector3.Cross(v2 - v1, v4 - v1);
+                    var secondNormal = Vector3.Cross(v4 - v1, v3 - v1);
+                    n[i, j] += firstNormal + secondNormal;
+                    n[i, j + 1] += firstNormal;
+                    n[i + 1, j + 1] += firstNormal + secondNormal;
+                    n[i + 1, j] += secondNormal;
+                }
+            }
+
+            // Cada vértice recibe una normal suavizada, incluidos los bordes.
+            for (var i = 0; i < width; i++)
+            {
+                for (var j = 0; j < length; j++)
+                {
+                    n[i, j] = Vector3.Normalize(n[i, j]);
                 }
             }
 

@@ -13,6 +13,12 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin Effects/AtmosphereSkybox.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Effects/AtmosphereSkybox.fx
+
 #begin Effects/BasicShader.fx
 /importer:EffectImporter
 /processor:EffectProcessor
@@ -30,6 +36,12 @@
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
 /build:Effects/PBRShader.fx
+
+#begin Effects/ShadowMapGenerate.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Effects/ShadowMapGenerate.fx
 
 #begin Effects/Terrain.fx
 /importer:EffectImporter
@@ -224,7 +236,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0.fbm/Salix_elaeagnos_HD_Salix__elaeag_dead_wood_Dead_wood_03b_LOD0_Color.png;Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0.fbm/SALIX_~1.PNG
+/build:Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0.fbm/Salix_elaeagnos_HD_Salix__elaeag_dead_wood_Dead_wood_03b_LOD0_Color.png;Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0.fbm/Salix_elaeagnos_HD_Salix__elaeag_dead_wood_Dead_wood_03b_LOD0_Color
 
 #begin Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0.fbx
 /importer:FbxImporter
@@ -1149,6 +1161,17 @@
 /processorParam:TextureFormat=Color
 /build:Textures/Heightmaps/grass.png
 
+#begin Textures/Heightmaps/grass-normal.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyEnabled=False
+/processorParam:GenerateMipmaps=True
+/processorParam:PremultiplyAlpha=False
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/Heightmaps/grass-normal.png
+
 #begin Textures/Heightmaps/ground.jpg
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -1160,6 +1183,17 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Textures/Heightmaps/ground.jpg
+
+#begin Textures/Heightmaps/ground-normal.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyEnabled=False
+/processorParam:GenerateMipmaps=True
+/processorParam:PremultiplyAlpha=False
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/Heightmaps/ground-normal.png
 
 #begin Textures/Heightmaps/heightmap.jpg
 /importer:TextureImporter

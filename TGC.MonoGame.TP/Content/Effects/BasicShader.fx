@@ -13,11 +13,14 @@
 // Reference for HLSL - https://docs.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-reference
 // HLSL Semantics - https://docs.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-semantics
 
+#include "ShadowSampling.fx"
+
 float4x4 World;
 float4x4 View;
 float4x4 Projection;
 
 float3 DiffuseColor;
+float SceneBrightness;
 
 float Time = 0;
 
@@ -44,6 +47,7 @@ struct VertexShaderOutput
 {
 	float4 Position : SV_POSITION;
 	float2 TexCoord : TEXCOORD0;
+    float3 WorldPosition : TEXCOORD1;
 };
 
 struct SolidVertexInput
@@ -66,6 +70,7 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
     float4 viewPosition = mul(worldPosition, View);	
 	// View space to Projection space
     output.Position = mul(viewPosition, Projection);
+    output.WorldPosition = worldPosition.xyz;
     output.TexCoord = input.TexCoord;
     output.TexCoord.y += TrackOffset;
     return output;
@@ -75,7 +80,9 @@ float4 MainPS(VertexShaderOutput input) : COLOR
 {
     float4 textureColor = tex2D(TextureSampler, input.TexCoord);
 	clip(textureColor.a -0.1f);
-	return textureColor;
+    float shadow = ShadowVisibility(input.WorldPosition, 1.0f);
+    float brightness = lerp(0.20f, 1.0f, shadow);
+	return float4(textureColor.rgb * SceneBrightness * brightness, textureColor.a);
 }
 SolidVertexOutput SolidVS(in SolidVertexInput input)
 {

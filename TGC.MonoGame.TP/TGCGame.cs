@@ -99,7 +99,7 @@ public class TGCGame : Game
     private List<SimpleTerrain> _terrains = new List<SimpleTerrain>();
 
     private List<Tank> _tanks = new List<Tank>();
-    private List<EnemyTank> _enemyTanks = new ();
+    private List<EnemyTank> _enemyTanks = new();
     private List<Tree> _trees = new List<Tree>();
     private List<Plant> _plants = new List<Plant>();
     private List<ModelInScene> _decor = new List<ModelInScene>();
@@ -125,6 +125,16 @@ public class TGCGame : Game
     public static SoundEffect ClickSound;
     private SoundEffect _cannonSound;
     private SoundEffectInstance _engineSound;
+
+    // cosas para el skybox
+    private DayNightCycle _dayNightCycle;
+    private Skybox _skybox;
+    private TextureCube _stars;
+    private ShadowMapRenderer _shadowMapRenderer;
+    private bool _showShadowMap;
+    private float _horaDelDia = 6.7f;
+    private float _velocidadDelTiempoHora = 0.1f;
+
     /// <summary>
     ///     Constructor del juego.
     /// </summary>
@@ -207,8 +217,10 @@ public class TGCGame : Game
         TankRenderer tankRenderer = new TankRenderer(GraphicsDevice, _PBREffect, _debugEffect, _effect);
         //Cargo terreno
         var terrainEffect = Content.Load<Effect>(ContentFolderEffects + "Terrain");
-
-        _terrainRenderer = new TerrainRenderer(GraphicsDevice, terrainEffect);
+        var terrainGrassNormal = Content.Load<Texture2D>(ContentFolderTextures + "Heightmaps/grass-normal");
+        var terrainGroundNormal = Content.Load<Texture2D>(ContentFolderTextures + "Heightmaps/ground-normal");
+        _terrainRenderer = new TerrainRenderer(GraphicsDevice, terrainEffect,
+            terrainGrassNormal, terrainGroundNormal);
         // heights
         var terrainHeigthmap = Content.Load<Texture2D>(ContentFolderTextures + "Heightmaps/heightmap");
 
@@ -243,7 +255,7 @@ public class TGCGame : Game
         }
         //_enemyTanks.Add(new EnemyTank(_tanks[2]));
         //_enemyTanks.Add(new EnemyTank(_tanks[3]));
-        _camera2 = new ThirdPersonCamera(_tanks[0], _terrains[0],1000f, 0.005f, GraphicsDevice.Viewport.AspectRatio, 500f, 400f, 1f, 20000f, GraphicsDevice);
+        _camera2 = new ThirdPersonCamera(_tanks[0], _terrains[0], 1000f, 0.005f, GraphicsDevice.Viewport.AspectRatio, 500f, 400f, 1f, 20000f, GraphicsDevice);
         _currentCamera = _camera2;
 
         // El JSON es la fuente de verdad del escenario estático.
@@ -295,9 +307,9 @@ public class TGCGame : Game
         _pixel = new Texture2D(GraphicsDevice, 1, 1);
         _pixel.SetData(new[] { Color.White });
 
-        
+
         _menuFont = Content.Load<SpriteFont>("MenuFont");
-        _hud = new HUD.HUD(_pixel, _tanks[0],_menuFont);
+        _hud = new HUD.HUD(_pixel, _tanks[0], _menuFont);
         _mainMenu = new HUD.MainMenu(_pixel, _menuFont);
         _pauseMenu = new HUD.PauseMenu(_pixel, _menuFont);
 
@@ -314,19 +326,38 @@ public class TGCGame : Game
         MediaPlayer.Volume = 0.3f;
         MediaPlayer.Play(Content.Load<Song>(ContentFolderMusic + "determined_pursuit_loop"));
 
+        // SkyBox 
+        _dayNightCycle = new DayNightCycle
+        {
+            TimeOfDay = _horaDelDia,
+            DaySpeed = _velocidadDelTiempoHora
+        };
+        _dayNightCycle.Update(0f); // Calcula la posición inicial del sol
+
+        var skyEffect = Content.Load<Effect>("Effects/AtmosphereSkybox");
+        _skybox = new Skybox(GraphicsDevice, skyEffect);
+
+        _shadowMapRenderer = new ShadowMapRenderer(
+            GraphicsDevice, Content.Load<Effect>("Effects/ShadowMapGenerate"));
+
+        _stars = new TextureCube(GraphicsDevice, 1, false, SurfaceFormat.Color);
+
+        foreach (CubeMapFace face in Enum.GetValues<CubeMapFace>())
+            _stars.SetData(face, new[] { Color.Black });
+
         base.LoadContent();
 
     }
 
     private void FireEnemyMissile(Tank tank)
     {
-    
+
         Vector3 direction =
             tank.GetCannonDirection();
 
         Vector3 position =
             tank.GetCannonMuzzlePosition();
-  
+
         Matrix rotation =
             tank.GetCannonRotation();
 
@@ -341,7 +372,7 @@ public class TGCGame : Game
         );
 
         _missiles.Add(missile);
-       
+
         _cannonSound.Play();
         missile.CreateHitbox(_effect, GraphicsDevice);
         missile.CreateCollider(
@@ -638,6 +669,12 @@ public class TGCGame : Game
         KeyboardState currentKeyboardState = Keyboard.GetState();
         MouseState currentMouseState = Mouse.GetState();
 
+        if (currentKeyboardState.IsKeyDown(Keys.F8) &&
+            _previousKeyboardState.IsKeyUp(Keys.F8))
+        {
+            _showShadowMap = !_showShadowMap;
+        }
+
         bool escapePresionado =
             currentKeyboardState.IsKeyDown(Keys.Escape) &&
             _previousKeyboardState.IsKeyUp(Keys.Escape);
@@ -739,7 +776,7 @@ public class TGCGame : Game
                 }
                 _enemyTanks.RemoveAll(e => e.Tank._isDisabled);
                 _tanks[0].Update(gameTime);
-                
+
 
 
                 _simulation.Timestep(1 / 60f);
@@ -772,7 +809,7 @@ public class TGCGame : Game
                 foreach (var enemyAI in _enemyTanks)
                 {
                     enemyAI.Update(_tanks[0], gameTime);
-                    
+
                 }
 
                 if (_tanks[0].ShouldFireMissile(gameTime, out Vector3 direction, out Vector3 position, out Matrix rotation))
@@ -820,11 +857,11 @@ public class TGCGame : Game
                     {
                         foreach (ModelInScene model in lista)
                         {
-                           
+
                             if (model.ShouldCollideWithMissile(missil))
                             {
 
-                                
+
 
                                 model.CollidedWithMissil(missil);
                                 missil.CollidedWithObject(model);
@@ -858,7 +895,31 @@ public class TGCGame : Game
         _previousKeyboardState = currentKeyboardState;
         _previousMouseState = currentMouseState;
 
+        // Hora del dia para el skybox
+        _dayNightCycle.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+
         base.Update(gameTime);
+    }
+
+    private void ApplySunLighting(Effect effect)
+    {
+        effect.Parameters["SunlightDirection"].SetValue(-_dayNightCycle.SunDirection);
+        effect.Parameters["SunlightColor"].SetValue(_dayNightCycle.SunColor);
+        effect.Parameters["LightIntensity"].SetValue(_dayNightCycle.SunIntensity);
+        effect.Parameters["AmbientIntensity"].SetValue(
+            MathHelper.Lerp(0.06f, 0.2f, 1.5f - _dayNightCycle.NightFactor));
+    }
+
+    private void ApplyShadowMap(Effect effect, bool enabled)
+    {
+        effect.Parameters["LightViewProjection"].SetValue(
+            _shadowMapRenderer.LightViewProjection);
+        effect.Parameters["ShadowMapTexture"].SetValue(_shadowMapRenderer.ShadowMap);
+        effect.Parameters["ShadowTexelSize"].SetValue(new Vector2(
+          1f / _shadowMapRenderer.ShadowMap.Width,
+          1f / _shadowMapRenderer.ShadowMap.Height));
+        effect.Parameters["ShadowBias"].SetValue(0.002f);
+        effect.Parameters["ShadowsEnabled"].SetValue(enabled ? 1f : 0f);
     }
 
     /// <summary>
@@ -875,19 +936,55 @@ public class TGCGame : Game
         }
         else
         {
-            // El escenario sigue visible debajo del menú de pausa.
             GraphicsDevice.BlendState = BlendState.Opaque;
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
             GraphicsDevice.RasterizerState = RasterizerState.CullNone;
+
+            // Leer la cámara una sola vez para este frame.
+            Matrix view = _currentCamera.View;
+            Matrix projection = _currentCamera.Projection;
+
+            bool hasSun = _dayNightCycle.SunIntensity > 0.01f;
+            if (hasSun)
+            {
+                _shadowMapRenderer.Render(
+                    _tanks[0]._position,
+                    _dayNightCycle.SunDirection,
+                    _modelosEnEscenario);
+            }
+
+            // Al volver del render target, limpiar de nuevo el backbuffer.
+            GraphicsDevice.Clear(Color.LightBlue);
+            GraphicsDevice.BlendState = BlendState.Opaque;
+            GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+            GraphicsDevice.RasterizerState = RasterizerState.CullNone;
+
+            ApplyShadowMap(_PBREffect, hasSun);
+            ApplyShadowMap(_terrainRenderer._effect, hasSun);
+            ApplyShadowMap(_effect, hasSun);
+            ApplySunLighting(_PBREffect);
+            ApplySunLighting(_terrainRenderer._effect);
+            _effect.Parameters["SceneBrightness"].SetValue(
+                MathHelper.Lerp(0.12f, 1f, 1f - _dayNightCycle.NightFactor));
 
             foreach (var lista in _modelosEnEscenario)
             {
                 foreach (var modelo in lista)
                 {
-
-                    modelo.Draw(_currentCamera.View, _currentCamera.Projection);
+                    modelo.Draw(view, projection);
                 }
             }
+
+            // El skybox cambia estados gráficos; guardarlos y restaurarlos.
+            var previousDepth = GraphicsDevice.DepthStencilState;
+            var previousRasterizer = GraphicsDevice.RasterizerState;
+            var previousBlend = GraphicsDevice.BlendState;
+
+            _skybox.Draw(view, projection, _dayNightCycle, _stars);
+
+            GraphicsDevice.DepthStencilState = previousDepth;
+            GraphicsDevice.RasterizerState = previousRasterizer;
+            GraphicsDevice.BlendState = previousBlend;
 
             if (_gameState == GameState.Paused)
             {
@@ -895,12 +992,28 @@ public class TGCGame : Game
             }
             else if (_sceneEditor.Enabled)
             {
-                _sceneEditor.Draw(_currentCamera.View, _currentCamera.Projection);
+                _sceneEditor.Draw(view, projection);
             }
             else
             {
                 _hud.Draw(_spriteBatch, _tanks[0], _tanks);
             }
+
+            if (_showShadowMap && hasSun)
+            {
+                _spriteBatch.Begin(
+                    SpriteSortMode.Deferred,
+                    BlendState.Opaque,
+                    SamplerState.PointClamp,
+                    DepthStencilState.None,
+                    RasterizerState.CullNone);
+                _spriteBatch.Draw(
+                    _shadowMapRenderer.ShadowMap,
+                    new Rectangle(16, GraphicsDevice.Viewport.Height - 272, 256, 256),
+                    Color.White);
+                _spriteBatch.End();
+            }
+
         }
 
         base.Draw(gameTime);
@@ -913,6 +1026,9 @@ public class TGCGame : Game
     {
         // Libero los recursos.
         _sceneEditor?.Dispose();
+        _skybox?.Dispose();
+        _stars?.Dispose();
+        _shadowMapRenderer?.Dispose();
         _pixel?.Dispose();
         _spriteBatch?.Dispose();
         Content.Unload();

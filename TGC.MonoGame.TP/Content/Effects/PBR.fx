@@ -4,10 +4,12 @@ float K;
 float3 F0;
 
 float3 CameraPosition;
-float3 SunlightDirection = float3(-1, -1, -1);
+float3 SunlightDirection;
+float3 SunlightColor;
 float LightIntensity;
+float AmbientIntensity;
 
-float3 BDRF(float3 albedo, float3 omega0, float3 omegai, float3 normal)
+float3 BDRF(float3 albedo, float3 omega0, float3 omegai, float3 normal, float shadowVisibility)
 {
     float3 H = normalize(omega0 + omegai + float3(0.0001f, 0.0f, 0.0f));
 
@@ -39,7 +41,7 @@ float3 BDRF(float3 albedo, float3 omega0, float3 omegai, float3 normal)
     float3 CookTorrance = (NormalDistribution * Fresnel * Geometry) / denominator;
     
     float3 DiffuseComponent = (Kd * albedo.xyz / PI); 
-    float3 AmbientLight = albedo.xyz * 0.6f; 
+    float3 AmbientLight = albedo.xyz * AmbientIntensity;
 
-    return (DiffuseComponent + CookTorrance) * NdotL * LightIntensity + AmbientLight;
+    return (DiffuseComponent + CookTorrance) * NdotL * LightIntensity * SunlightColor * shadowVisibility + AmbientLight;
 }
