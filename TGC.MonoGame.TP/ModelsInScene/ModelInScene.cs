@@ -31,11 +31,16 @@ namespace TGC.MonoGame.TP.ModelsInScene
         public bool renderColliders { get; set; } = false;
         public bool renderHitboxes { get; set; } = false;
         public bool renderForces { get; set; } = false;
-        public Vector3 _position
+        public Vector3 Position
         {
-            get;
-            set;
+            get { return _position; }
+            set
+            {
+                _position = value;
+                _recalculateWorldMatrix = true;
+            }
         }
+        private Vector3 _position = Vector3.Zero;
         public float strength = float.MaxValue;
         public bool _isDisabled = false;
         public Vector3 _velocity
@@ -52,8 +57,26 @@ namespace TGC.MonoGame.TP.ModelsInScene
                 return _collider.GetAngularVelocity();
             }
         }
-        public Vector3 _scale { get; set; }
-        public Matrix _rotation { get; set; }
+        public Vector3 Scale
+        {
+            get { return _scale; }
+            set
+            {
+                _scale = value;
+                _recalculateWorldMatrix = true;
+            }
+        }
+        private Vector3 _scale = Vector3.One;
+        public Matrix Rotation
+        {
+            get { return _rotation; }
+            set
+            {
+                _rotation = value;
+                _recalculateWorldMatrix = true;
+            }
+        }
+        private Matrix _rotation { get; set; }
         public float _angularDrag { get; set; }
         public Vector3 _forward
         {
@@ -75,19 +98,28 @@ namespace TGC.MonoGame.TP.ModelsInScene
         public float Width
         {
             get { return _widthLocal * _scale.X; }
-            set { _widthLocal = value; }
+            set
+            {
+                _widthLocal = value;
+            }
         }
         public float _heightLocal { get; set; }
         public float Height
         {
             get { return _heightLocal * _scale.Y; }
-            set { _heightLocal = value; }
+            set
+            {
+                _heightLocal = value;
+            }
         }
         public float _depthLocal { get; set; }
         public float Depth
         {
             get { return _depthLocal * _scale.Z; }
-            set { _depthLocal = value; }
+            set
+            {
+                _depthLocal = value;
+            }
         }
         public float _mass { get; set; }
 
@@ -100,9 +132,19 @@ namespace TGC.MonoGame.TP.ModelsInScene
             get;
             set;
         }
+        private Matrix _previousWorldMatrix = Matrix.Identity;
+        private bool _recalculateWorldMatrix = true;
         public Matrix _world
         {
-            get { return Matrix.CreateScale(_scale) * _rotation * Matrix.CreateTranslation(_position); }
+            get
+            {
+                if (_recalculateWorldMatrix)
+                {
+                    _previousWorldMatrix = Matrix.CreateScale(Scale) * Rotation * Matrix.CreateTranslation(Position);
+                    _recalculateWorldMatrix = false;
+                }
+                return _previousWorldMatrix;
+            }
         }
         public Collider _collider = null;
 
@@ -258,9 +300,9 @@ namespace TGC.MonoGame.TP.ModelsInScene
             Matrix world = _collider.GetWorldMatrixNotScaled();
             world.Decompose(out Vector3 scale, out Quaternion rotation, out Vector3 translation);
 
-            _rotation = Matrix.CreateFromQuaternion(rotation);
+            Rotation = Matrix.CreateFromQuaternion(rotation);
 
-            _position = translation + Correction();
+            Position = translation + Correction();
         }
         public void agregarFuerzaAngularAAplicar(Vector3 angularImpulse, float seconds)
         {
@@ -283,7 +325,7 @@ namespace TGC.MonoGame.TP.ModelsInScene
 
                 Vector3 direction = Vector3.Normalize(force._vector);
 
-                Vector3 worldStartPoint = _position + force._applicationPoint;
+                Vector3 worldStartPoint = Position + force._applicationPoint;
                 Vector3 worldEndPoint = worldStartPoint + (direction * visualScale);
 
                 DebugForces.Add(new DebugArrow
@@ -361,7 +403,7 @@ namespace TGC.MonoGame.TP.ModelsInScene
         {
             if (_hitbox != null)
             {
-                if (ContainsPoint(missil._position))
+                if (ContainsPoint(missil.Position))
                 {
                     return true;
                 }
@@ -383,6 +425,17 @@ namespace TGC.MonoGame.TP.ModelsInScene
             {
                 _hitbox.Remove();
             }
+        }
+        public BoundingBox GetAABB()
+        {
+            Vector3 localExtension = new Vector3(_widthLocal, _heightLocal, _depthLocal) * 0.5f;
+            Vector3 midpointWorld = Vector3.Transform(_midpoint, _world);
+            Vector3 worldExtention = new Vector3(
+                    localExtension.X * MathF.Abs(_world.M11) + localExtension.Y * MathF.Abs(_world.M21) + localExtension.Z * MathF.Abs(_world.M31),
+                    localExtension.X * MathF.Abs(_world.M12) + localExtension.Y * MathF.Abs(_world.M22) + localExtension.Z * MathF.Abs(_world.M32),
+                    localExtension.X * MathF.Abs(_world.M13) + localExtension.Y * MathF.Abs(_world.M23) + localExtension.Z * MathF.Abs(_world.M33)
+                );
+            return new BoundingBox(midpointWorld - worldExtention, midpointWorld + worldExtention);
         }
 
     }

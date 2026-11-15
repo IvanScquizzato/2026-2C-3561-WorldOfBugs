@@ -76,7 +76,7 @@ namespace TGC.MonoGame.TP.Tanks
         public float maxHealth = 100f;
         public bool IsColliding { get; set; }
         public bool esEnemigo { get; set; }
-        public float CooldownProgress => 1f - MathHelper.Clamp(currentCoolDownSecs / coolDownSecs,0f,1f);
+        public float CooldownProgress => 1f - MathHelper.Clamp(currentCoolDownSecs / coolDownSecs, 0f, 1f);
 
         //valor para transmitir la velocidad de movimiento de la oruga
         public float LeftTrackOffset;
@@ -171,9 +171,9 @@ namespace TGC.MonoGame.TP.Tanks
                 alturaMaxTorreta
             );
 
-            
+
         }
-        
+
         public void Update(GameTime gameTime)
         {
             IsColliding = false;
@@ -182,7 +182,7 @@ namespace TGC.MonoGame.TP.Tanks
             float turnInput = 0f;
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            currentCoolDownSecs -= currentCoolDownSecs <= 0? 0: deltaTime;
+            currentCoolDownSecs -= currentCoolDownSecs <= 0 ? 0 : deltaTime;
 
             if (deltaTime <= 0.0001f)
                 return;
@@ -382,7 +382,7 @@ namespace TGC.MonoGame.TP.Tanks
 
         public override Vector3 Correction()
         {
-            return Vector3.Transform(_collider._centerOfMass * 0.1f, Matrix.CreateScale(_scale) * _rotation);
+            return Vector3.Transform(_collider._centerOfMass * 0.1f, Matrix.CreateScale(Scale) * Rotation);
         }
         public override void CreateCollider(Simulation simulation, BufferPool bufferPool, Effect effect, GraphicsDevice graphicsDevice)
         {
@@ -395,7 +395,7 @@ namespace TGC.MonoGame.TP.Tanks
             return
                 Matrix.CreateRotationX(CannonPitch) *
                 Matrix.CreateRotationY(TurretYaw) *
-                _rotation;
+                Rotation;
         }
 
         public Vector3 GetCannonDirection()
@@ -426,7 +426,7 @@ namespace TGC.MonoGame.TP.Tanks
             float lateralOffset = -5.7f;
 
             return
-                _position +
+                Position +
                 up * verticalOffset +
                 direction * forwardOffset +
                 right * lateralOffset;
@@ -435,7 +435,7 @@ namespace TGC.MonoGame.TP.Tanks
         {
             // golpe metalico al chocar fuerte contra algo que no sea el piso
             // la pausa evita que se repita porque este metodo se llama en cada frame mientras dura el contacto
-            
+
             float velocidadDelGolpe = impactImpulse * InverseMass();
             if (model is not SimpleTerrain && velocidadDelGolpe > minCrashSoundSpeed &&
                 Environment.TickCount64 - lastCrashSoundTicks > crashSoundCoolDownMs)
@@ -455,7 +455,7 @@ namespace TGC.MonoGame.TP.Tanks
                 Vector3 cambioDeVelocidad = -normal * breakImpulse * this.InverseMass();
                 _collider.ApplyImpulse(UtilsClass.ToNumericVector(cambioDeVelocidad), UtilsClass.ToNumericVector(contactPointOffset));
                 health -= 10f;
-              
+
             }
         }
 
@@ -492,17 +492,17 @@ namespace TGC.MonoGame.TP.Tanks
         }
         public override void CollidedWithMissil(Missil missil)
         {
-            Vector3 missilLocal = Vector3.Transform(missil._position, Matrix.Invert(_world));
-            
+            Vector3 missilLocal = Vector3.Transform(missil.Position, Matrix.Invert(_world));
+
             health -= 10f;
-            
+
 
             if (health <= 0)
             {
                 health = 0;
                 _isDisabled = true;
             }
-            
+
 
             float maxDistanceToCylinder = missil.Width * 7f;
             float maxDistanceAlongAxis = missil.Depth * 15f;
@@ -628,7 +628,7 @@ namespace TGC.MonoGame.TP.Tanks
             RightTrackOffset -= rightSpeed * trackFactor * deltaTime;
         }
 
-        public void Drive(float forwardInput,float turnInput,float elapsedSeconds)
+        public void Drive(float forwardInput, float turnInput, float elapsedSeconds)
         {
             bool estaDoblando = turnInput != 0;
             bool estaAcelerando = forwardInput != 0;
@@ -636,15 +636,15 @@ namespace TGC.MonoGame.TP.Tanks
             Vector3 leftTrackGlobalPos =
                 Vector3.Transform(
                     new Vector3(_widthLocal * 0.385f, 0, 0),
-                    Matrix.CreateScale(_scale) * _rotation);
+                    Matrix.CreateScale(Scale) * Rotation);
 
             Vector3 rightTrackGlobalPos =
                 Vector3.Transform(
                     new Vector3(-_widthLocal * 0.385f, 0, 0),
-                    Matrix.CreateScale(_scale) * _rotation);
+                    Matrix.CreateScale(Scale) * Rotation);
 
 
-           
+
             float currentForwardSpeed =
                 Vector3.Dot(_velocity, _forward);
 

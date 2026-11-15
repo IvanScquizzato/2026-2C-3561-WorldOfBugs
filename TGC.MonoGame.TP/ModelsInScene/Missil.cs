@@ -54,7 +54,7 @@ namespace TGC.MonoGame.TP.Missile
             Matrix modelCorrection =
                 Matrix.CreateRotationX(-MathHelper.PiOver2);
 
-            _rotation =
+            Rotation =
                 modelCorrection *
                 rotation;
         }
@@ -64,7 +64,7 @@ namespace TGC.MonoGame.TP.Missile
             float deltaTime =
                 (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            _position +=
+            Position +=
                 Direction *
                 Speed *
                 deltaTime;

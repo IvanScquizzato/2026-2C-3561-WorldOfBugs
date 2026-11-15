@@ -24,15 +24,16 @@ public class EnemyTank
         _tank = tank;
     }
 
-    public void Update(Tank player,GameTime gameTime){
+    public void Update(Tank player, GameTime gameTime)
+    {
 
 
-     
+
         _tank.IsColliding = false;
-        Vector3 direction = player._position - _tank._position;
+        Vector3 direction = player.Position - _tank.Position;
 
         float distance = direction.Length();
-        
+
         direction.Y = 0;
 
         if (direction != Vector3.Zero)
@@ -41,45 +42,45 @@ public class EnemyTank
         }
 
         //vector al jugador
-        float targetYaw =(float)Math.Atan2(direction.X,direction.Z);
+        float targetYaw = (float)Math.Atan2(direction.X, direction.Z);
 
         //vector donde apunta la torreta
-        float hullYaw =(float)Math.Atan2(_tank._forward.X,_tank._forward.Z);
+        float hullYaw = (float)Math.Atan2(_tank._forward.X, _tank._forward.Z);
 
         //calculo la distancia hasta llegar a la direccion deseada
         float turretYaw = targetYaw - hullYaw;
 
         //lo normalizo para que este entre 180 y -180
-        turretYaw = MathF.Atan2(MathF.Sin(turretYaw),MathF.Cos(turretYaw));
+        turretYaw = MathF.Atan2(MathF.Sin(turretYaw), MathF.Cos(turretYaw));
 
         //le pido a la torreta que se vaya moviendo con la diferencia, asi se mueve mas fluido
-        _tank.SetTurretRotation(turretYaw,0);
+        _tank.SetTurretRotation(turretYaw, 0);
 
-        float deltaTime =(float)gameTime.ElapsedGameTime.TotalSeconds;
-        
+        float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
         //recargo el cooldown
         _currentCooldown -= deltaTime;
 
-        
-        Vector3 cannonDir =_tank.GetCannonDirection();
 
-        
-        
-        float aimError =Vector3.Dot(cannonDir,direction);
+        Vector3 cannonDir = _tank.GetCannonDirection();
+
+
+
+        float aimError = Vector3.Dot(cannonDir, direction);
 
         //calculo hacia donde esta mirando el cuerpo del enemigo
-        float currentYaw =(float)Math.Atan2(-_tank._forward.X,-_tank._forward.Z);
+        float currentYaw = (float)Math.Atan2(-_tank._forward.X, -_tank._forward.Z);
 
         //calculo el error entre donde apunta el enemigo y donde se encuentra el jugador
-        float error =MathF.Atan2(MathF.Sin(targetYaw - currentYaw),MathF.Cos(targetYaw - currentYaw));
+        float error = MathF.Atan2(MathF.Sin(targetYaw - currentYaw), MathF.Cos(targetYaw - currentYaw));
 
         //lo paso a una variable que va de -1 a 1
         float turnInput = MathHelper.Clamp(error * 2f, -1f, 1f);
         //distancia 
-        
+
         if (distance > 6000f)
         {
-            
+
             Patrol(deltaTime);
         }
         else
@@ -94,7 +95,8 @@ public class EnemyTank
             {
                 // se aleja del jugador
                 _tank.Drive(-speed, turnInput, deltaTime);
-            }else
+            }
+            else
             {
                 _tank.Drive(0, 0, deltaTime);
             }
@@ -102,7 +104,7 @@ public class EnemyTank
         if (_tank.IsColliding)
         {
             _avoidTime = 1.5f;
-            if(_avoidTime > 0)
+            if (_avoidTime > 0)
             {
                 _avoidTime -= deltaTime;
                 _tank.Drive(-1f, 1f, deltaTime);
@@ -110,23 +112,23 @@ public class EnemyTank
             }
         }
 
-        if (distance < 4000f && aimError > presicion  && _currentCooldown <= 0f)
+        if (distance < 4000f && aimError > presicion && _currentCooldown <= 0f)
         {
-           //dispara
+            //dispara
             FireMissile?.Invoke(_tank);
-           _currentCooldown = _shootCooldown;
+            _currentCooldown = _shootCooldown;
         }
     }
 
     private void GeneratePatrolPoint()
     {
-        float x = _tank._position.X +
+        float x = _tank.Position.X +
                   _random.Next(-5000, 5000);
 
-        float z = _tank._position.Z +
+        float z = _tank.Position.Z +
                   _random.Next(-5000, 5000);
 
-        _patrolTarget = new Vector3(x,_tank._position.Y,z);
+        _patrolTarget = new Vector3(x, _tank.Position.Y, z);
 
         _hasPatrolTarget = true;
     }
@@ -138,7 +140,7 @@ public class EnemyTank
             GeneratePatrolPoint();
         }
 
-        Vector3 direction = _patrolTarget - _tank._position;
+        Vector3 direction = _patrolTarget - _tank.Position;
 
         direction.Y = 0;
 
@@ -158,15 +160,15 @@ public class EnemyTank
 
         direction.Normalize();
 
-        float targetYaw =(float)Math.Atan2(direction.X,direction.Z);
+        float targetYaw = (float)Math.Atan2(direction.X, direction.Z);
 
-        float currentYaw =(float)Math.Atan2(-_tank._forward.X,-_tank._forward.Z);
+        float currentYaw = (float)Math.Atan2(-_tank._forward.X, -_tank._forward.Z);
 
-        float error =MathF.Atan2(MathF.Sin(targetYaw - currentYaw),MathF.Cos(targetYaw - currentYaw));
+        float error = MathF.Atan2(MathF.Sin(targetYaw - currentYaw), MathF.Cos(targetYaw - currentYaw));
 
-        float turnInput =MathHelper.Clamp(error * 2f,-1f,1f);
+        float turnInput = MathHelper.Clamp(error * 2f, -1f, 1f);
 
-        _tank.Drive(0.5f,turnInput,deltaTime);
+        _tank.Drive(0.5f, turnInput, deltaTime);
     }
 
 }

@@ -56,7 +56,7 @@ namespace TGC.MonoGame.TP.RuinHouse
         }
         public override void CreateCollider(Simulation simulation, BufferPool bufferPool, Effect effect, GraphicsDevice graphicsDevice)
         {
-            var center = new NumericVector3(_position.X, _position.Y + Height / 2f, _position.Z + 100f);
+            var center = new NumericVector3(Position.X, Position.Y + Height / 2f, Position.Z + 100f);
             this._collider = new StaticBoxCollider(Width - 1000, Height, Depth - 1200, center, simulation, bufferPool, effect, graphicsDevice);
         }
         protected override void cargarModelo(ContentManager Content, string modelPath)

@@ -58,7 +58,7 @@ namespace TGC.MonoGame.TP.Car
         }
         public override void CreateCollider(Simulation simulation, BufferPool bufferPool, Effect effect, GraphicsDevice graphicsDevice)
         {
-            var center = new NumericVector3(_position.X, _position.Y + Height / 2f, _position.Z - 50);
+            var center = new NumericVector3(Position.X, Position.Y + Height / 2f, Position.Z - 50);
             this._collider = new StaticBoxCollider(Width, Height, Depth, center, simulation, bufferPool, effect, graphicsDevice);
         }
         protected override void cargarModelo(ContentManager Content, string modelPath)

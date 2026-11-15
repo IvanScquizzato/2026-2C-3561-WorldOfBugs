@@ -131,15 +131,15 @@ namespace TGC.MonoGame.TP.Editor
 
         public static SceneObject Capture(string id, ModelInScene model)
         {
-            Quaternion rotation = Quaternion.CreateFromRotationMatrix(model._rotation);
+            Quaternion rotation = Quaternion.CreateFromRotationMatrix(model.Rotation);
             return new SceneObject
             {
                 Id = id,
                 Type = model.GetType().Name,
                 Model = model._modelPath,
-                Position = new[] { model._position.X, model._position.Y, model._position.Z },
+                Position = new[] { model.Position.X, model.Position.Y, model.Position.Z },
                 Rotation = new[] { rotation.X, rotation.Y, rotation.Z, rotation.W },
-                Scale = new[] { model._scale.X, model._scale.Y, model._scale.Z }
+                Scale = new[] { model.Scale.X, model.Scale.Y, model.Scale.Z }
             };
         }
 

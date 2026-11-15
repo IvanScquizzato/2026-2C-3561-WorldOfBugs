@@ -48,7 +48,7 @@ namespace TGC.MonoGame.TP.Debri
         }
         public override void CreateCollider(Simulation simulation, BufferPool bufferPool, Effect effect, GraphicsDevice graphicsDevice)
         {
-            var center = new NumericVector3(_position.X, _position.Y - 165f, _position.Z);
+            var center = new NumericVector3(Position.X, Position.Y - 165f, Position.Z);
             this._collider = new StaticSphereCollider(350f, center, simulation, bufferPool, effect, graphicsDevice);
         }
     }

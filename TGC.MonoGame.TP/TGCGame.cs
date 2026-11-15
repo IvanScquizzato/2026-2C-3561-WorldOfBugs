@@ -577,10 +577,10 @@ public class TGCGame : Game
     private static void AplicarTransformacionAnterior(ModelInScene modelo,
         SceneRepository.LegacyTransform data)
     {
-        modelo._position = new Vector3(data.Position[0], data.Position[1], data.Position[2]);
-        modelo._rotation = SceneRepository.LegacyRotation(data);
+        modelo.Position = new Vector3(data.Position[0], data.Position[1], data.Position[2]);
+        modelo.Rotation = SceneRepository.LegacyRotation(data);
         if (data.Scale.HasValue && data.Scale.Value > 0f)
-            modelo._scale = new Vector3(data.Scale.Value);
+            modelo.Scale = new Vector3(data.Scale.Value);
     }
 
     // Único lugar donde se conecta un ModelInScene con el editor.
@@ -591,18 +591,18 @@ public class TGCGame : Game
 
         _sceneEditor.Register(
             id: id,
-            getPosition: () => modelo._position,
-            setPosition: posicion => { modelo._position = posicion; _editorModificados.Add(modelo); },
-            getRotation: () => modelo._rotation,
-            setRotation: rotacion => { modelo._rotation = rotacion; _editorModificados.Add(modelo); },
-            getScale: () => modelo._scale.X,
-            setScale: escala => { modelo._scale = new Vector3(escala); _editorModificados.Add(modelo); },
+            getPosition: () => modelo.Position,
+            setPosition: posicion => { modelo.Position = posicion; _editorModificados.Add(modelo); },
+            getRotation: () => modelo.Rotation,
+            setRotation: rotacion => { modelo.Rotation = rotacion; _editorModificados.Add(modelo); },
+            getScale: () => modelo.Scale.X,
+            setScale: escala => { modelo.Scale = new Vector3(escala); _editorModificados.Add(modelo); },
             pickRadius: radio,
             getBounds: () =>
             {
                 float r = Math.Max(10f, Math.Max(modelo.Width, Math.Max(modelo.Height, modelo.Depth)) * 0.5f);
                 Vector3 extent = new Vector3(r);
-                return new BoundingBox(modelo._position - extent, modelo._position + extent);
+                return new BoundingBox(modelo.Position - extent, modelo.Position + extent);
             },
             model: modelo
         );
@@ -934,7 +934,7 @@ public class TGCGame : Game
             if (hasSun)
             {
                 _shadowMapRenderer.Render(
-                    _tanks[0]._position,
+                    _tanks[0].Position,
                     _dayNightCycle.SunDirection,
                     _modelosEnEscenario);
             }

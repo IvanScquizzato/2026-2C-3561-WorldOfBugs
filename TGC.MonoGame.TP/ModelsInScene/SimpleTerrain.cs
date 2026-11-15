@@ -238,13 +238,13 @@ namespace TGC.MonoGame.TP.Terrain
         public override bool ShouldCollideWithMissile(Missil missil)
         {
             float terrainHeight = Height(
-            missil._position.X,
-            missil._position.Z
+            missil.Position.X,
+            missil.Position.Z
             );
 
             const float groundTolerance = 5f;
 
-            if (missil._position.Y <= terrainHeight + groundTolerance)
+            if (missil.Position.Y <= terrainHeight + groundTolerance)
             {
                 return true;
             }

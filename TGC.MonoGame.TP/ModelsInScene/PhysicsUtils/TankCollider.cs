@@ -56,7 +56,7 @@ namespace TGC.MonoGame.TP.Colliders
             var compoundIndex = _simulation.Shapes.Add(compoundShape);
 
             // 7. Compensar la posición inicial
-            var basePosition = new NumericVector3(_tank._position.X, _tank._position.Y, _tank._position.Z);
+            var basePosition = new NumericVector3(_tank.Position.X, _tank.Position.Y, _tank.Position.Z);
             var bodyPose = new RigidPose(basePosition + centerOfMass);
 
             // 8. Crear el cuerpo dinámico

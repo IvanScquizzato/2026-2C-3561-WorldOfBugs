@@ -46,11 +46,11 @@ namespace TGC.MonoGame.TP.TankRaycasts
         }
         public Vector3 PositionGlobalRelativeToCenter(Tank tank)
         {
-            return Vector3.Transform(_positionLocal, Matrix.CreateScale(tank._scale) * tank._rotation);
+            return Vector3.Transform(_positionLocal, Matrix.CreateScale(tank.Scale) * tank.Rotation);
         }
         public Vector3 DirectionGlobal(Tank tank)
         {
-            return Vector3.Normalize(Vector3.Transform(_directionLocal, Matrix.CreateScale(tank._scale) * tank._rotation));
+            return Vector3.Normalize(Vector3.Transform(_directionLocal, Matrix.CreateScale(tank.Scale) * tank.Rotation));
         }
         public Force CalculateSuspensionForce(Tank tank)
         {

@@ -24,6 +24,10 @@ namespace TGC.MonoGame.TP.Renderers
 
         public void Draw(ModelInScene modelInScene, Matrix view, Matrix projection)
         {
+            if (!new BoundingFrustum(view * projection).Intersects(modelInScene.GetAABB()))
+            {
+                return;
+            }
             _effect.Parameters["View"].SetValue(view);
             _effect.Parameters["Projection"].SetValue(projection);
             _effect.Parameters["Roughness"].SetValue(0.7f);

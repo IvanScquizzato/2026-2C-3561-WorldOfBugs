@@ -78,7 +78,7 @@ public sealed class ShadowMapRenderer : IDisposable
                     }
 
                     if (model._model != null &&
-                        Vector3.DistanceSquared(model._position, focus) <=
+                        Vector3.DistanceSquared(model.Position, focus) <=
                         MaxCasterDistance * MaxCasterDistance)
                     {
                         DrawModel(model);

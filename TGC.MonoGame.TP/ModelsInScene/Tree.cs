@@ -79,12 +79,12 @@ namespace TGC.MonoGame.TP.Trees
         }
         public override void CreateCollider(Simulation simulation, BufferPool _bufferPool, Effect effect, GraphicsDevice graphicsDevice)
         {
-            var center = new NumericVector3(this._position.X, this._position.Y + this.Height / 2f, this._position.Z);
+            var center = new NumericVector3(this.Position.X, this.Position.Y + this.Height / 2f, this.Position.Z);
             this._collider = new StaticBoxCollider(20f, Height, 20f, center, simulation, _bufferPool, effect, graphicsDevice);
         }
         public override void CollidedWith(ModelInScene model, Vector3 contactPointOffset, Vector3 thisPos, float impactImpulse, float destructiveImpactImpulse, Vector3 normal)
         {
-            Debug.Write("Choque con impulso " + destructiveImpactImpulse);
+            //Debug.Write("Choque con impulso " + destructiveImpactImpulse);
             if (destructiveImpactImpulse > strength)
             {
                 Destroy();

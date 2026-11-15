@@ -29,6 +29,11 @@ namespace TGC.MonoGame.TP.Renderers
         {
             if (modelInScene is Tank tank)
             {
+                if (modelInScene.GetAABB().Contains(new BoundingFrustum(view * projection)) == ContainmentType.Disjoint)
+                {
+                    Debug.WriteLine("TankRenderer: Tank is outside the frustum, skipping draw.");
+                    return;
+                }
                 _effect.Parameters["View"].SetValue(view);
                 _effect.Parameters["Projection"].SetValue(projection);
                 _effect.Parameters["Roughness"].SetValue(0.7f);

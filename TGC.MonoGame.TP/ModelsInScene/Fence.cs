@@ -57,7 +57,7 @@ namespace TGC.MonoGame.TP.Fences
         }
         public override void CreateCollider(Simulation simulation, BufferPool bufferPool, Effect effect, GraphicsDevice graphicsDevice)
         {
-            var center = new NumericVector(_position.X, _position.Y + Height / 2f, _position.Z);
+            var center = new NumericVector(Position.X, Position.Y + Height / 2f, Position.Z);
             this._collider = new StaticBoxCollider(Width, Height, Depth - 100f, center, simulation, bufferPool, effect, graphicsDevice);
         }
     }

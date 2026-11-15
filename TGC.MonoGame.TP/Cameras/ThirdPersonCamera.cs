@@ -29,7 +29,7 @@ namespace TGC.MonoGame.TP.Cameras
         public readonly float distanceToModel;
         private float _turn = -MathHelper.PiOver2;
         private float _pitch = MathHelper.PiOver4;
-        public float _cameraYaw =  MathHelper.Pi * 2;
+        public float _cameraYaw = MathHelper.Pi * 2;
         public float _cameraPitch = 0f;
         private float sensibilidadX = 0.004f;
         private float sensibilidadY = 0.005f;
@@ -53,7 +53,7 @@ namespace TGC.MonoGame.TP.Cameras
         /// <param name="angle">The angle of movement.</param>
         /// <param name="nearPlaneDistance">Distance to the near view plane.</param>
         /// <param name="farPlaneDistance">Distance to the far view plane.</param>
-        public ThirdPersonCamera(ModelInScene modelThatFollows, SimpleTerrain terrain,float distanceToModel, float sensitivity, float aspectRatio, float speed, float angle, float nearPlaneDistance,
+        public ThirdPersonCamera(ModelInScene modelThatFollows, SimpleTerrain terrain, float distanceToModel, float sensitivity, float aspectRatio, float speed, float angle, float nearPlaneDistance,
             float farPlaneDistance, GraphicsDevice graphicsDevice)
             : base(aspectRatio, nearPlaneDistance, farPlaneDistance)
         {
@@ -102,18 +102,18 @@ namespace TGC.MonoGame.TP.Cameras
             Mouse.SetPosition(centerX, centerY);
 
 
-            _cameraYaw -= deltaX * sensibilidadX ;
+            _cameraYaw -= deltaX * sensibilidadX;
             _cameraPitch -= deltaY * sensibilidadY;
 
             //limites camara verticalmente
-            _cameraPitch = MathHelper.Clamp(_cameraPitch,alturaMinCamara,alturaMaxCamara);
-            
+            _cameraPitch = MathHelper.Clamp(_cameraPitch, alturaMinCamara, alturaMaxCamara);
+
             Tank tank = (Tank)modelThatFollows;
-            float hullYaw =(float)Math.Atan2(tank._forward.X,tank._forward.Z);
-            tank.SetTurretRotation(_cameraYaw - hullYaw -MathHelper.Pi, -_cameraPitch);
-            
+            float hullYaw = (float)Math.Atan2(tank._forward.X, tank._forward.Z);
+            tank.SetTurretRotation(_cameraYaw - hullYaw - MathHelper.Pi, -_cameraPitch);
+
             //con esto ajusto la distancia al tanque
-            Vector3 offsetBase = new Vector3(0,distanceToModel * 0.35f,distanceToModel);
+            Vector3 offsetBase = new Vector3(0, distanceToModel * 0.35f, distanceToModel);
 
             Matrix rotation = Matrix.CreateRotationX(_cameraPitch) * Matrix.CreateRotationY(_cameraYaw);
 
@@ -121,12 +121,12 @@ namespace TGC.MonoGame.TP.Cameras
 
             Vector3 lookDirection = Vector3.Transform(Vector3.Forward, rotation);
 
-            Vector3 cameraPosition = modelThatFollows._position + Position;
+            Vector3 cameraPosition = modelThatFollows.Position + Position;
 
             //obtengo la altura del terreno donde tengo la camara
-            float terrainHeight =_terrain.Height(cameraPosition.X,cameraPosition.Z);
+            float terrainHeight = _terrain.Height(cameraPosition.X, cameraPosition.Z);
 
-            
+
             //lo comparo con la altura de la camara
             if (cameraPosition.Y <
                 terrainHeight + minDistanceFromGround)
@@ -135,7 +135,7 @@ namespace TGC.MonoGame.TP.Cameras
                     terrainHeight + minDistanceFromGround;
             }
 
-            View = Matrix.CreateLookAt(cameraPosition,cameraPosition + lookDirection,Vector3.Up);
+            View = Matrix.CreateLookAt(cameraPosition, cameraPosition + lookDirection, Vector3.Up);
         }
 
 
