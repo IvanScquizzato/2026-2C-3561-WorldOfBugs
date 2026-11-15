@@ -82,7 +82,7 @@ namespace TGC.MonoGame.TP.Fences
             if (_isDisabled) return;
             Destroy();
             TGCGame.ExplosionSound?.Play();
-            TGCGame.Instance?.SpawnFenceDebris(_position, impactDirection);
+            TGCGame.Instance?.SpawnFenceDebris(Position, impactDirection);
         }
         public override void Destroy()
         {

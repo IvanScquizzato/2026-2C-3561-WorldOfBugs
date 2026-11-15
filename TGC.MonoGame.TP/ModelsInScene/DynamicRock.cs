@@ -43,7 +43,7 @@ namespace TGC.MonoGame.TP.ModelsInScene
             float h = MathF.Max(Height * 0.6f, 15f);
             float d = MathF.Max(Depth * 0.6f, 15f);
 
-            var pos = new NumericVector3(_position.X, _position.Y, _position.Z);
+            var pos = new NumericVector3(Position.X, Position.Y, Position.Z);
             _collider = new DynamicBoxCollider(w, h, d, _mass, pos, simulation, bufferPool, effect, graphicsDevice);
         }
 
@@ -51,7 +51,7 @@ namespace TGC.MonoGame.TP.ModelsInScene
         {
             if (_isDisabled) return;
 
-            // Sincroniza la posición y rotación del modelo con la simulación física de Bepu
+            // Sincroniza la posiciï¿½n y rotaciï¿½n del modelo con la simulaciï¿½n fï¿½sica de Bepu
             updateBodyPosition();
 
             _lifetime += (float)gameTime.ElapsedGameTime.TotalSeconds;
