@@ -79,7 +79,7 @@ namespace TGC.MonoGame.TP.Monument
 
         public override void CreateCollider(Simulation simulation, BufferPool bufferPool, Effect effect, GraphicsDevice graphicsDevice)
         {
-            var center = new NumericVector(this.Position.X, this.Position.Y + this.Height / 2f, this.Position.Z);
+            var center = new NumericVector(this.Position.X, this.Position.Y, this.Position.Z);
             this._collider = new StaticBoxCollider(Width - 90f, Height, Depth - 90f, center, simulation, bufferPool, effect, graphicsDevice);
         }
     }

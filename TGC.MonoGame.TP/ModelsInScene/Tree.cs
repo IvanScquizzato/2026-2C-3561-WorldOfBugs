@@ -51,7 +51,7 @@ namespace TGC.MonoGame.TP.Trees
             )
         {
 
-            strength = 6000000f;
+            strength = 5000000f;
         }
         public override void CreateHitbox(Effect effect, GraphicsDevice graphicsDevice)
         {

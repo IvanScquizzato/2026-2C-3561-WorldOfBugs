@@ -37,15 +37,15 @@ namespace TGC.MonoGame.TP.HUD
             spriteBatch.Draw(_pixel, new Rectangle(centerX, centerY + 10, 2, 10), Color.Red);
             DrawCircle(spriteBatch, _pixel, new Vector2(centerX, centerY), 1, Color.Red);
             DrawCircle(spriteBatch, _pixel, new Vector2(centerX, centerY), 20, Color.Red);
-            //barra de vida
+            //barra de vida 
             spriteBatch.Draw(_pixel, new Rectangle(15, 15, 210, 30), Color.Black);
             spriteBatch.Draw(_pixel, new Rectangle(20, 20, 200, 20), Color.DarkRed);
             spriteBatch.Draw(_pixel, new Rectangle(20, 20, (int)((vidaActual / vidaMaxima) * 200f), 20), Color.Red);
             spriteBatch.DrawString(
-    _font,
-    $"{vidaActual}/{vidaMaxima}",
-    new Vector2(20, 45),
-    Color.White);
+                _font,
+                $"{vidaActual}/{vidaMaxima}",
+                new Vector2(20, 45),
+                Color.White);
             //minimap 
             spriteBatch.Draw(_pixel, new Rectangle(spriteBatch.GraphicsDevice.Viewport.Width - 220, 20, mapSize, mapSize), Color.Black * 0.5f);
             //calculo el tamanio del mapa para dibujar una version a escala en el minimap 

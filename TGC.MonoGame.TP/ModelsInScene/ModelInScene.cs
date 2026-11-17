@@ -351,11 +351,11 @@ namespace TGC.MonoGame.TP.ModelsInScene
                 _renderer.Draw(this, view, projection);
                 if (_collider != null && renderColliders)
                 {
-                    // _collider.Draw(view, projection);
+                    _collider.Draw(view, projection);
                 }
                 if (_hitbox != null && renderHitboxes)
                 {
-                    // _hitbox.Draw(this, _world, view, projection);
+                    _hitbox.Draw(this, _world, view, projection);
                 }
                 if (_collider != null && renderForces)
                 {

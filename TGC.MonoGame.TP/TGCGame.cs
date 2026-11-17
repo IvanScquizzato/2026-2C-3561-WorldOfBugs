@@ -169,9 +169,7 @@ public class TGCGame : Game
         Instance = this;
         // La logica de inicializacion que no depende del contenido se recomienda poner en este metodo.
 
-        // Apago el backface culling.
-        // Esto se hace por un problema en el diseno del modelo del logo de la materia.
-        // Una vez que empiecen su juego, esto no es mas necesario y lo pueden sacar.
+
         var rasterizerState = new RasterizerState();
         rasterizerState.CullMode = CullMode.None;
         GraphicsDevice.RasterizerState = rasterizerState;
@@ -878,7 +876,8 @@ public class TGCGame : Game
                         _dynamicRocks.RemoveAt(i);
                     }
                 }
-
+                // Hora del dia para el skybox
+                _dayNightCycle.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
 
                 _camera.Update(gameTime);
                 _camera2.Update(gameTime);
@@ -895,8 +894,7 @@ public class TGCGame : Game
         _previousKeyboardState = currentKeyboardState;
         _previousMouseState = currentMouseState;
 
-        // Hora del dia para el skybox
-        _dayNightCycle.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+
 
         base.Update(gameTime);
     }
