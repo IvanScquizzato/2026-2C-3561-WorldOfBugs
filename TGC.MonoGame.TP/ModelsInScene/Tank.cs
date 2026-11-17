@@ -506,7 +506,7 @@ namespace TGC.MonoGame.TP.Tanks
 
             float maxDistanceToCylinder = missil.Width * 7f;
             float maxDistanceAlongAxis = missil.Depth * 15f;
-            float deformationDepth = missil.Depth * 1f;
+            float deformationDepth = missil.Depth * 5f;
             Vector3 missilDirectionNormalized = Vector3.Normalize(Vector3.TransformNormal(missil.Direction, Matrix.Invert(_world)));
             List<ModelMeshPart> modelMeshParts = verticesPorMeshPart.Keys.ToList();
 
@@ -529,6 +529,7 @@ namespace TGC.MonoGame.TP.Tanks
 
                     int[] indices = _indexBuffers[modelMeshPart];
                     bool[] fueModificado = new bool[vertexs.Length];
+                    bool[] normalReiniciada = new bool[vertexs.Length];
                     bool[] trianguloModificado = new bool[indices.Length / 3];
                     for (int i = 0; i < indices.Length; i++)
                     {
@@ -576,9 +577,9 @@ namespace TGC.MonoGame.TP.Tanks
                                 Vector3 arista2 = vertexs[i2].Position - vertexs[i1].Position;
                                 Vector3 normalAlTriangulo = Vector3.Cross(arista1, arista2);
 
-                                if (fueModificado[i1]) { vertexs[i1].Normal = Vector3.Zero; fueModificado[i1] = false; }
-                                if (fueModificado[i2]) { vertexs[i2].Normal = Vector3.Zero; fueModificado[i2] = false; }
-                                if (fueModificado[i3]) { vertexs[i3].Normal = Vector3.Zero; fueModificado[i3] = false; }
+                                if (!normalReiniciada[i1]) { vertexs[i1].Normal = Vector3.Zero; normalReiniciada[i1] = true; }
+                                if (!normalReiniciada[i2]) { vertexs[i2].Normal = Vector3.Zero; normalReiniciada[i2] = true; }
+                                if (!normalReiniciada[i3]) { vertexs[i3].Normal = Vector3.Zero; normalReiniciada[i3] = true; }
 
                                 vertexs[i1].Normal += normalAlTriangulo;
                                 vertexs[i2].Normal += normalAlTriangulo;

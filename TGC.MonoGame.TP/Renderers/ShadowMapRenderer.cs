@@ -14,7 +14,7 @@ namespace TGC.MonoGame.TP.Renderers;
 /// </summary>
 public sealed class ShadowMapRenderer : IDisposable
 {
-    private const int MapSize = 4096;
+    private const int MapSize = 2048;
     private const float ShadowAreaSize = 6000f;
     private const float MaxCasterDistance = 5500f;
 
