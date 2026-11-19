@@ -67,7 +67,7 @@ namespace TGC.MonoGame.TP.HUD
     
             spriteBatch.Begin();
 
-            spriteBatch.Draw(_pixel,new Rectangle(0,0,spriteBatch.GraphicsDevice.Viewport.Width,spriteBatch.GraphicsDevice.Viewport.Height),Color.Black * 0.2f);
+           // spriteBatch.Draw(_pixel,new Rectangle(0,0,spriteBatch.GraphicsDevice.Viewport.Width,spriteBatch.GraphicsDevice.Viewport.Height),Color.Black * 0.2f);
 
             spriteBatch.Draw(_pixel, new Rectangle(centerX - 205, centerY - 55, 410, 90), Color.Black);
             spriteBatch.Draw(_pixel, new Rectangle(centerX - 200, centerY - 50, 400, 80), _selectedOption == 0 ? Color.Green : Color.Gray);

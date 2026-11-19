@@ -29,7 +29,7 @@ namespace TGC.MonoGame.TP.HUD
         {
             spriteBatch.Begin();
             // Draw a semi-transparent background
-            spriteBatch.Draw(_pixel, new Rectangle(0, 0, spriteBatch.GraphicsDevice.Viewport.Width, spriteBatch.GraphicsDevice.Viewport.Height), Color.Black * 0.5f);
+            //spriteBatch.Draw(_pixel, new Rectangle(0, 0, spriteBatch.GraphicsDevice.Viewport.Width, spriteBatch.GraphicsDevice.Viewport.Height), Color.Black * 0.5f);
 
             // Draw the victory message
             string victoryMessage = "Ganaste!";

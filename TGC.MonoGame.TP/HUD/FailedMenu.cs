@@ -31,13 +31,13 @@ namespace TGC.MonoGame.TP.HUD
         {
             spriteBatch.Begin();
             // Draw a semi-transparent background
-            spriteBatch.Draw(_pixel, new Rectangle(0, 0, spriteBatch.GraphicsDevice.Viewport.Width, spriteBatch.GraphicsDevice.Viewport.Height), Color.Black * 0.5f);
+            spriteBatch.Draw(_pixel, new Rectangle(0, 0, spriteBatch.GraphicsDevice.Viewport.Width, spriteBatch.GraphicsDevice.Viewport.Height), Color.Red * 0.3f);
 
             // Draw the defeat message
             string defeatMessage = "Perdiste!";
             Vector2 messageSize = _font.MeasureString(defeatMessage);
             Vector2 messagePosition = new Vector2((spriteBatch.GraphicsDevice.Viewport.Width - messageSize.X) / 2, (spriteBatch.GraphicsDevice.Viewport.Height - messageSize.Y) / 2 - 50);
-            spriteBatch.DrawString(_font, defeatMessage, messagePosition, Color.White);
+            spriteBatch.DrawString(_font, defeatMessage, messagePosition, Color.Black);
 
             
             int centerX = spriteBatch.GraphicsDevice.Viewport.Width / 2;

@@ -148,6 +148,9 @@ public class TGCGame : Game
     private Texture2D _terrainGrass;
     private Texture2D _terrainGround;
     
+
+
+    private float _menuRotation = 0f;
     /// <summary>
     ///     Constructor del juego.
     /// </summary>
@@ -224,9 +227,9 @@ public class TGCGame : Game
         _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(0, altura_tanque + 300, -600), Matrix.Identity, new Vector3(0.5f), tankRenderer, 11000f));
         _tanks[0].esEnemigo = false;
         // tanques enemigos, por ahora quietos
-        _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(1500, _terrains[0].Height(1500, -600) + 300, -600), Matrix.Identity, new Vector3(0.5f), tankRenderer, 11000f));
-        _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(-1500, _terrains[0].Height(-1500, -600) + 300, -600), Matrix.Identity, new Vector3(0.5f), tankRenderer, 11000f));
-        _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(0, _terrains[0].Height(0, 1000) + 300, -600), Matrix.Identity, new Vector3(0.5f), tankRenderer, 11000f));
+        _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(1500, _terrains[0].Height(1500, -600) + 30, -600), Matrix.Identity, new Vector3(0.5f), tankRenderer, 11000f));
+        _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(1000, _terrains[0].Height(1000, -600) + 30, -600), Matrix.Identity, new Vector3(0.5f), tankRenderer, 11000f));
+        _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(0, _terrains[0].Height(0, 1000) + 30, 100), Matrix.Identity, new Vector3(0.5f), tankRenderer, 11000f));
 
         _enemyTanks.Clear();
         _enemyTanks.Add(new EnemyTank(_tanks[1]));
@@ -265,6 +268,7 @@ public class TGCGame : Game
                 modelo.CreateHitbox(_debugEffect, GraphicsDevice);
             }
         }
+        
     }
     private void DestroyWorld()
     {
@@ -366,21 +370,7 @@ public class TGCGame : Game
             LoadRequested = RecargarEscena
         };
         
-        SceneRepository.SceneFile scene = _sceneRepository.Load();
-        if (scene.Initialized)
-        {
-            CargarObjetosEscena(scene);
-        }
-        else
-        {
-            // Primera ejecución: conservar el escenario original, migrar el viejo
-            // scene.json si existe y dejar toda la escena serializada en Scenes/scene.json.
-            CrearEscenaInicial();
-            RegistrarEscenaInicial();
-            MigrarEscenaAnterior();
-            GuardarEscena();
-        }
-
+       
         CreateWorld();    
 
         
@@ -767,6 +757,7 @@ public class TGCGame : Game
         switch (_gameState)
         {
             case GameState.MainMenu:
+            _menuRotation += (float)gameTime.ElapsedGameTime.TotalSeconds * 0.1f;
                 IsMouseVisible = true;
                 _mainMenu.Update();
 
@@ -973,10 +964,10 @@ public class TGCGame : Game
                     }
                 }
                 // Hora del dia para el skybox
-                _dayNightCycle.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
-
-                _camera.Update(gameTime);
+              
                 _camera2.Update(gameTime);
+                _camera.Update(gameTime);
+               
 
                 break;
             case GameState.Win:
@@ -987,10 +978,12 @@ public class TGCGame : Game
 
                 if (_victoryMenu.BackToMenu)
                 {
+                    _victoryMenu.BackToMenu = false;
                     RestartGame();
                     _gameState = GameState.MainMenu;
                 }else if (_victoryMenu.RestartGame)
                 {
+                     _defeatMenu.RestartGame = false;
                     RestartGame();
                     _gameState = GameState.Playing;
                 }
@@ -1004,17 +997,20 @@ public class TGCGame : Game
 
             if (_defeatMenu.RestartGame)
             {
+                 _defeatMenu.RestartGame = false;
                   RestartGame();
                 _gameState = GameState.Playing;
             }else if (_defeatMenu.BackToMenu)
             {
+                 _defeatMenu.BackToMenu = false;
                 RestartGame();
                 _gameState = GameState.MainMenu;
             }
 
     break;
         }
-
+         
+          _dayNightCycle.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
         // el motor no suena en los menus ni en el editor
         if (_gameState != GameState.Playing || _sceneEditor.Enabled)
         {
@@ -1056,10 +1052,38 @@ public class TGCGame : Game
     /// </summary>
     protected override void Draw(GameTime gameTime)
     {
-        GraphicsDevice.Clear(Color.LightBlue);
+        //GraphicsDevice.Clear(Color.LightBlue);
 
+        Matrix view = _currentCamera.View;
+        Matrix projection = _currentCamera.Projection;
+        
         if (_gameState == GameState.MainMenu)
         {
+             Vector3 target = _tanks[0].Position;
+
+    Vector3 cameraPosition =
+        target +
+        new Vector3(
+            MathF.Cos(_menuRotation) * 2500f,
+            1200f,
+            MathF.Sin(_menuRotation) * 2500f
+        );
+
+    Matrix menuView =
+        Matrix.CreateLookAt(
+            cameraPosition,
+            target,
+            Vector3.Up
+        );
+
+    Matrix menuProjection =
+        Matrix.CreatePerspectiveFieldOfView(
+            MathHelper.PiOver4,
+            GraphicsDevice.Viewport.AspectRatio,
+            1f,
+            20000f
+        );
+            DrawWorld(menuView, menuProjection );
             _mainMenu.Draw(_spriteBatch);
         }else if (_gameState == GameState.Win)
         {
@@ -1071,13 +1095,36 @@ public class TGCGame : Game
         }
         else
         {
+            DrawWorld(view, projection);
+            
+
+            if (_gameState == GameState.Paused)
+            {
+                _pauseMenu.Draw(_spriteBatch);
+            }
+            else if (_sceneEditor.Enabled)
+            {
+                _sceneEditor.Draw(view, projection);
+            }
+            else
+            {
+                _hud.Draw(_spriteBatch, _tanks[0], _tanks);
+            }
+
+            
+
+        }
+
+        base.Draw(gameTime);
+    }
+    private void DrawWorld(Matrix view, Matrix projection)
+    {
             GraphicsDevice.BlendState = BlendState.Opaque;
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
             GraphicsDevice.RasterizerState = RasterizerState.CullNone;
 
             // Leer la cámara una sola vez para este frame.
-            Matrix view = _currentCamera.View;
-            Matrix projection = _currentCamera.Projection;
+           
 
             bool hasSun = _dayNightCycle.SunIntensity > 0.01f;
             if (hasSun)
@@ -1099,8 +1146,7 @@ public class TGCGame : Game
             ApplyShadowMap(_effect, hasSun);
             ApplySunLighting(_PBREffect);
             ApplySunLighting(_terrainRenderer._effect);
-            _effect.Parameters["SceneBrightness"].SetValue(
-                MathHelper.Lerp(0.12f, 1f, 1f - _dayNightCycle.NightFactor));
+            _effect.Parameters["SceneBrightness"].SetValue(MathHelper.Lerp(0.12f, 1f, 1f - _dayNightCycle.NightFactor));
 
             foreach (var lista in _modelosEnEscenario)
             {
@@ -1120,20 +1166,6 @@ public class TGCGame : Game
             GraphicsDevice.DepthStencilState = previousDepth;
             GraphicsDevice.RasterizerState = previousRasterizer;
             GraphicsDevice.BlendState = previousBlend;
-
-            if (_gameState == GameState.Paused)
-            {
-                _pauseMenu.Draw(_spriteBatch);
-            }
-            else if (_sceneEditor.Enabled)
-            {
-                _sceneEditor.Draw(view, projection);
-            }
-            else
-            {
-                _hud.Draw(_spriteBatch, _tanks[0], _tanks);
-            }
-
             if (_showShadowMap && hasSun)
             {
                 _spriteBatch.Begin(
@@ -1148,11 +1180,8 @@ public class TGCGame : Game
                     Color.White);
                 _spriteBatch.End();
             }
+}
 
-        }
-
-        base.Draw(gameTime);
-    }
 
     /// <summary>
     ///     Libero los recursos que se cargaron en el juego.
