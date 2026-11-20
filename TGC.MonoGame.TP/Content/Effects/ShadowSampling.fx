@@ -1,23 +1,47 @@
 // Shared by model, terrain and basic shaders in the camera pass.
-float4x4 LightViewProjection;
-float2 ShadowTexelSize;
+float4x4 CloseLightViewProjection;
+float4x4 FarLightViewProjection;
+float2 ShadowCloseTexelSize;
+float2 ShadowFarTexelSize;
+float CloseShadowAreaSize;
 float ShadowBias;
 float ShadowsEnabled;
+float3 LightDirection;
+float3 TankPosition;
+static bool IsCloseShadow;
 
-texture ShadowMapTexture;
-sampler2D ShadowSampler = sampler_state
+texture CloseShadowMapTexture;
+sampler2D CloseShadowSampler = sampler_state
 {
-    Texture = <ShadowMapTexture>;
+    Texture = <CloseShadowMapTexture>;
     MinFilter = Point;
     MagFilter = Point;
     MipFilter = Point;
     AddressU = Clamp;
     AddressV = Clamp;
 };
+texture FarShadowMapTexture;
 
+sampler2D FarShadowSampler = sampler_state
+{
+    Texture = <FarShadowMapTexture>;
+    MinFilter = Point;
+    MagFilter = Point;
+    MipFilter = Point;
+    AddressU = Clamp;
+    AddressV = Clamp;
+};
+float4 SampleShadowMap(float2 uv)
+{
+
+    if(IsCloseShadow)
+        return tex2D(CloseShadowSampler, uv);
+    else
+        return tex2D(FarShadowSampler, uv);
+}
 float StoredShadowDepth(float2 uv)
 {
-    float4 packed = tex2D(ShadowSampler, uv);
+    float4 packed = SampleShadowMap(uv);
     return packed.r + packed.a / 255.0f;
 }
 
@@ -30,7 +54,12 @@ float ShadowVisibility(float3 worldPosition, float normalDotLight)
 {
     if (ShadowsEnabled < 0.5f)
         return 1.0f;
-
+    float4 clipPos = mul(float4(worldPosition, 1.0f), CloseLightViewProjection);
+    float3 ndc = clipPos.xyz / clipPos.w;
+    IsCloseShadow = all(abs(ndc.xy) <= 1.0f) && (ndc.z >= 0.0f && ndc.z <= 1.0f);
+    float4x4 LightViewProjection = IsCloseShadow ? CloseLightViewProjection : FarLightViewProjection;
+    float ShadowTexelSize = IsCloseShadow ? ShadowCloseTexelSize : ShadowFarTexelSize;
+    
     float4 lightClip = mul(float4(worldPosition, 1.0f), LightViewProjection);
     float3 lightNdc = lightClip.xyz / lightClip.w;
     float2 uv = float2(

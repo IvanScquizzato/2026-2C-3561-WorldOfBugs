@@ -138,6 +138,9 @@ public class TGCGame : Game
     private bool _showShadowMap;
     private float _horaDelDia = 6.7f;
     private float _velocidadDelTiempoHora = 0.1f;
+    private double _lastShadowMapTime = 0.0;
+    private float _farShadowAreaSize = 6000f;
+    private float _closeShadowAreaSize = 1300f;
 
     private Effect _terrainEffect;
     private Texture2D _terrainGrassNormal;
@@ -413,7 +416,7 @@ public class TGCGame : Game
         _skybox = new Skybox(GraphicsDevice, skyEffect);
 
         _shadowMapRenderer = new ShadowMapRenderer(
-            GraphicsDevice, Content.Load<Effect>("Effects/ShadowMapGenerate"));
+            GraphicsDevice, Content.Load<Effect>("Effects/ShadowMapGenerate"), _farShadowAreaSize, _closeShadowAreaSize);
 
         _stars = new TextureCube(GraphicsDevice, 1, false, SurfaceFormat.Color);
 
@@ -1036,13 +1039,23 @@ public class TGCGame : Game
 
     private void ApplyShadowMap(Effect effect, bool enabled)
     {
-        effect.Parameters["LightViewProjection"].SetValue(
-            _shadowMapRenderer.LightViewProjection);
-        effect.Parameters["ShadowMapTexture"].SetValue(_shadowMapRenderer.ShadowMap);
-        effect.Parameters["ShadowTexelSize"].SetValue(new Vector2(
-          1f / _shadowMapRenderer.ShadowMap.Width,
-          1f / _shadowMapRenderer.ShadowMap.Height));
-        effect.Parameters["ShadowBias"].SetValue(0.002f);
+        effect.Parameters["CloseLightViewProjection"].SetValue(
+            _shadowMapRenderer.CloseLightViewProjection);
+        effect.Parameters["FarLightViewProjection"].SetValue(
+            _shadowMapRenderer.FarLightViewProjection);
+        effect.Parameters["CloseShadowMapTexture"].SetValue(_shadowMapRenderer.CloseShadowMap);
+        effect.Parameters["FarShadowMapTexture"]?.SetValue(_shadowMapRenderer.FarShadowMap);
+        effect.Parameters["ShadowCloseTexelSize"].SetValue(new Vector2(
+          1f / _shadowMapRenderer.CloseShadowMap.Width,
+          1f / _shadowMapRenderer.CloseShadowMap.Height));
+        effect.Parameters["ShadowFarTexelSize"].SetValue(new Vector2(
+          1f / _shadowMapRenderer.FarShadowMap.Width,
+          1f / _shadowMapRenderer.FarShadowMap.Height));
+        effect.Parameters["CloseShadowAreaSize"]?.SetValue(_closeShadowAreaSize);
+        effect.Parameters["FarShadowAreaSize"]?.SetValue(_farShadowAreaSize);
+        effect.Parameters["LightDirection"]?.SetValue(-_dayNightCycle.SunDirection);
+        effect.Parameters["TankPosition"]?.SetValue(_tanks[0].Position);
+        effect.Parameters["ShadowBias"].SetValue(0.003f);
         effect.Parameters["ShadowsEnabled"].SetValue(enabled ? 1f : 0f);
     }
 
@@ -1124,15 +1137,18 @@ public class TGCGame : Game
             GraphicsDevice.RasterizerState = RasterizerState.CullNone;
 
             // Leer la cámara una sola vez para este frame.
-           
-
+            Matrix view = _currentCamera.View;
+            Matrix projection = _currentCamera.Projection;
             bool hasSun = _dayNightCycle.SunIntensity > 0.01f;
-            if (hasSun)
+            _lastShadowMapTime += gameTime.ElapsedGameTime.TotalSeconds;
+            if (hasSun && _lastShadowMapTime > 1.0 / 30.0)
             {
                 _shadowMapRenderer.Render(
                     _tanks[0].Position,
                     _dayNightCycle.SunDirection,
-                    _modelosEnEscenario);
+                    _modelosEnEscenario,
+                    _currentCamera);
+                _lastShadowMapTime = 0d;
             }
 
             // Al volver del render target, limpiar de nuevo el backbuffer.
@@ -1175,9 +1191,13 @@ public class TGCGame : Game
                     DepthStencilState.None,
                     RasterizerState.CullNone);
                 _spriteBatch.Draw(
-                    _shadowMapRenderer.ShadowMap,
+                    _shadowMapRenderer.CloseShadowMap,
                     new Rectangle(16, GraphicsDevice.Viewport.Height - 272, 256, 256),
                     Color.White);
+                _spriteBatch.Draw(
+                _shadowMapRenderer.FarShadowMap,
+                new Rectangle(GraphicsDevice.Viewport.Height - 16, GraphicsDevice.Viewport.Height - 272, 256, 256),
+                Color.White);
                 _spriteBatch.End();
             }
 }

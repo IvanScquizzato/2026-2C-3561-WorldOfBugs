@@ -700,6 +700,25 @@
 /processorParam:TextureFormat=Color
 /build:Models/Rocks/textures/stone_fence_old_low_rock_Normal.png
 
+#begin Models/RocksMedium/source/Rocks_medium/Rocks_medium low poly.fbx
+/importer:FbxImporter
+/processor:ModelProcessor
+/processorParam:ColorKeyColor=0,0,0,0
+/processorParam:ColorKeyEnabled=True
+/processorParam:DefaultEffect=BasicEffect
+/processorParam:GenerateMipmaps=True
+/processorParam:GenerateTangentFrames=False
+/processorParam:PremultiplyTextureAlpha=True
+/processorParam:PremultiplyVertexColors=True
+/processorParam:ResizeTexturesToPowerOfTwo=False
+/processorParam:RotationX=0
+/processorParam:RotationY=0
+/processorParam:RotationZ=0
+/processorParam:Scale=1
+/processorParam:SwapWindingOrder=False
+/processorParam:TextureFormat=Compressed
+/build:Models/RocksMedium/source/Rocks_medium/Rocks_medium low poly.fbx
+
 #begin Models/RocksMedium/source/Rocks_medium/Rocks_medium_diffuse.jpg
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -754,6 +773,25 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Models/RocksMedium/source/Rocks_medium/Rocks/Rocks/Rocks1_diffuse.jpg
+
+#begin Models/Tanks/Panzer/Panzer old.fbx
+/importer:FbxImporter
+/processor:ModelProcessor
+/processorParam:ColorKeyColor=0,0,0,0
+/processorParam:ColorKeyEnabled=True
+/processorParam:DefaultEffect=BasicEffect
+/processorParam:GenerateMipmaps=True
+/processorParam:GenerateTangentFrames=False
+/processorParam:PremultiplyTextureAlpha=True
+/processorParam:PremultiplyVertexColors=True
+/processorParam:ResizeTexturesToPowerOfTwo=False
+/processorParam:RotationX=0
+/processorParam:RotationY=0
+/processorParam:RotationZ=0
+/processorParam:Scale=1
+/processorParam:SwapWindingOrder=False
+/processorParam:TextureFormat=Compressed
+/build:Models/Tanks/Panzer/Panzer old.fbx
 
 #begin Models/Tanks/Panzer/Panzer.fbx
 /importer:FbxImporter
@@ -1016,6 +1054,25 @@
 /processorParam:TextureFormat=Color
 /build:Models/Tree/DB2X2_L01.png
 
+#begin Models/Tree/Tree low poly.fbx
+/importer:FbxImporter
+/processor:ModelProcessor
+/processorParam:ColorKeyColor=0,0,0,0
+/processorParam:ColorKeyEnabled=True
+/processorParam:DefaultEffect=BasicEffect
+/processorParam:GenerateMipmaps=True
+/processorParam:GenerateTangentFrames=False
+/processorParam:PremultiplyTextureAlpha=True
+/processorParam:PremultiplyVertexColors=True
+/processorParam:ResizeTexturesToPowerOfTwo=False
+/processorParam:RotationX=0
+/processorParam:RotationY=0
+/processorParam:RotationZ=0
+/processorParam:Scale=1
+/processorParam:SwapWindingOrder=False
+/processorParam:TextureFormat=Compressed
+/build:Models/Tree/Tree low poly.fbx
+
 #begin Models/Tree/Tree.fbm/bark_0021.jpg
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -1149,6 +1206,18 @@
 /processorParam:TextureFormat=Color
 /build:Textures/Heightmaps/colormap.jpg
 
+#begin Textures/Heightmaps/grass-normal.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=False
+/processorParam:GenerateMipmaps=True
+/processorParam:PremultiplyAlpha=False
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/Heightmaps/grass-normal.png
+
 #begin Textures/Heightmaps/grass.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -1161,16 +1230,17 @@
 /processorParam:TextureFormat=Color
 /build:Textures/Heightmaps/grass.png
 
-#begin Textures/Heightmaps/grass-normal.png
+#begin Textures/Heightmaps/ground-normal.png
 /importer:TextureImporter
 /processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
 /processorParam:ColorKeyEnabled=False
 /processorParam:GenerateMipmaps=True
 /processorParam:PremultiplyAlpha=False
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Textures/Heightmaps/grass-normal.png
+/build:Textures/Heightmaps/ground-normal.png
 
 #begin Textures/Heightmaps/ground.jpg
 /importer:TextureImporter
@@ -1183,17 +1253,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Textures/Heightmaps/ground.jpg
-
-#begin Textures/Heightmaps/ground-normal.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyEnabled=False
-/processorParam:GenerateMipmaps=True
-/processorParam:PremultiplyAlpha=False
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Textures/Heightmaps/ground-normal.png
 
 #begin Textures/Heightmaps/heightmap.jpg
 /importer:TextureImporter

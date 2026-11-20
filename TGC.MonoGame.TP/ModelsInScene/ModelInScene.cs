@@ -142,14 +142,30 @@ namespace TGC.MonoGame.TP.ModelsInScene
                 {
                     _previousWorldMatrix = Matrix.CreateScale(Scale) * Rotation * Matrix.CreateTranslation(Position);
                     _recalculateWorldMatrix = false;
+                    _recalculateAABB = true;
                 }
                 return _previousWorldMatrix;
             }
         }
+        private bool _recalculateAABB = true;
+        private BoundingBox _aabb;
+        public BoundingBox AABB
+        {
+            get
+            {
+                if (_recalculateAABB || _recalculateWorldMatrix)
+                {
+                    _aabb = GetAABB();
+                }
+
+                return _aabb;
+            }
+            set { _aabb = value; }
+        }
         public Collider _collider = null;
 
         public Hitbox _hitbox { get; protected set; } = null;
-
+        public bool IsAlphaCutout { get; set; } = false;
         public List<DebugArrow> DebugForces = new List<DebugArrow>();
         public abstract Dictionary<Texture, Texture> _normalMapsOfTexture { get; }
         public virtual Dictionary<string, string> _namesNormalMapsOfNameTexture { get; set; } = new Dictionary<string, string>();
@@ -426,7 +442,7 @@ namespace TGC.MonoGame.TP.ModelsInScene
                 _hitbox.Remove();
             }
         }
-        public BoundingBox GetAABB()
+        private BoundingBox GetAABB()
         {
             Vector3 localExtension = new Vector3(_widthLocal, _heightLocal, _depthLocal) * 0.5f;
             Vector3 midpointWorld = Vector3.Transform(_midpoint, _world);
@@ -436,6 +452,14 @@ namespace TGC.MonoGame.TP.ModelsInScene
                     localExtension.X * MathF.Abs(_world.M13) + localExtension.Y * MathF.Abs(_world.M23) + localExtension.Z * MathF.Abs(_world.M33)
                 );
             return new BoundingBox(midpointWorld - worldExtention, midpointWorld + worldExtention);
+        }
+        public virtual Model GetModelForShadowMap(float distance)
+        {
+            return _model;
+        }
+        public virtual Model GetModelForRendering(float distance)
+        {
+            return _model;
         }
 
     }

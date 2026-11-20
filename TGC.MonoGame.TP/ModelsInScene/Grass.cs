@@ -30,6 +30,8 @@ namespace TGC.MonoGame.TP.Ground
         public Grass(ContentManager Content, String modelPath, Vector3 position, Matrix rotation, Vector3 scale, IModelInSceneRenderer renderer)
             : base(Content, modelPath, position, rotation, scale, renderer, 1f)
         {
+            IsAlphaCutout = true;
+
         }
     }
 }

@@ -29,7 +29,7 @@ namespace TGC.MonoGame.TP.Renderers
         {
             if (modelInScene is Tank tank)
             {
-                if (modelInScene.GetAABB().Contains(new BoundingFrustum(view * projection)) == ContainmentType.Disjoint)
+                if (modelInScene.AABB.Contains(new BoundingFrustum(view * projection)) == ContainmentType.Disjoint)
                 {
                     Debug.WriteLine("TankRenderer: Tank is outside the frustum, skipping draw.");
                     return;

@@ -23,6 +23,7 @@ namespace TGC.MonoGame.TP.Bush
         public DeadBush(ContentManager Content, String modelPath, Vector3 position, Matrix rotation, Vector3 scale, IModelInSceneRenderer renderer)
             : base(Content, modelPath, position, rotation, scale, renderer, 1f)
         {
+            IsAlphaCutout = true;
         }
     }
 }

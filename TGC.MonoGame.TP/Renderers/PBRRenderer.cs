@@ -24,7 +24,7 @@ namespace TGC.MonoGame.TP.Renderers
 
         public void Draw(ModelInScene modelInScene, Matrix view, Matrix projection)
         {
-            if (!new BoundingFrustum(view * projection).Intersects(modelInScene.GetAABB()))
+            if (!new BoundingFrustum(view * projection).Intersects(modelInScene.AABB))
             {
                 return;
             }
@@ -36,11 +36,13 @@ namespace TGC.MonoGame.TP.Renderers
             Vector3 realCameraPosition = Matrix.Invert(view).Translation;
             _effect.Parameters["CameraPosition"].SetValue(realCameraPosition);
 
+            Model model = modelInScene.GetModelForRendering((realCameraPosition - modelInScene.Position).Length());
 
-            var modelMeshesBaseTransforms = new Matrix[modelInScene._model.Bones.Count];
-            modelInScene._model.CopyAbsoluteBoneTransformsTo(modelMeshesBaseTransforms);
+
+            var modelMeshesBaseTransforms = new Matrix[model.Bones.Count];
+            model.CopyAbsoluteBoneTransformsTo(modelMeshesBaseTransforms);
             var index = 0;
-            foreach (var mesh in modelInScene._model.Meshes)
+            foreach (var mesh in model.Meshes)
             {
                 var relativeTransform = modelMeshesBaseTransforms[mesh.ParentBone.Index];
 

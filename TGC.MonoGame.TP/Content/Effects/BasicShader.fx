@@ -23,6 +23,7 @@ float3 DiffuseColor;
 float SceneBrightness;
 
 float Time = 0;
+float3 CameraPosition;
 
 float TrackOffset = 0;
 
