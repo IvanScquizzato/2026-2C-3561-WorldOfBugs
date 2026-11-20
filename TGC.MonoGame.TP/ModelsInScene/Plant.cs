@@ -11,6 +11,7 @@ namespace TGC.MonoGame.TP.Plants
 {
     public class Plant : ModelInScene
     {
+
         private static readonly Dictionary<Texture, Texture> _normalMaps =
         new Dictionary<Texture, Texture>();
 
@@ -28,6 +29,7 @@ namespace TGC.MonoGame.TP.Plants
         public Plant(ContentManager Content, String modelPath, Vector3 position, Matrix rotation, Vector3 scale, IModelInSceneRenderer renderer, float linearDrag, float angularDrag, float mass)
             : base(Content, modelPath, position, rotation, scale, renderer, mass)
         {
+            IsAlphaCutout = true;
         }
     }
 }

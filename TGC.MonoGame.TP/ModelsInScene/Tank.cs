@@ -89,7 +89,7 @@ namespace TGC.MonoGame.TP.Tanks
         private float maxDeformation;
         public Dictionary<ModelMeshPart, DynamicVertexBuffer> _dynamicVertexBuffers = new Dictionary<ModelMeshPart, DynamicVertexBuffer>();
         public Dictionary<ModelMeshPart, int[]> _indexBuffers = new Dictionary<ModelMeshPart, int[]>();
-
+        public Model ModeloLowPoly { get; set; } = null;
         public Tank(
             ContentManager Content,
             String modelPath,
@@ -775,6 +775,11 @@ namespace TGC.MonoGame.TP.Tanks
                     _indexBuffers[meshPart] = indices;
                     verticesPorMeshPart[meshPart] = (vertexs, mesh);
                 }
+            }
+            Console.WriteLine($"El tanque tiene {verticesPorMeshPart.Sum(kvp => kvp.Value.Item1.Length)} vertices y {verticesPorMeshPart.Sum(kvp => kvp.Value.Item2.MeshParts.Sum(mp => mp.PrimitiveCount))} triangulos");
+            if (ModeloLowPoly == null)
+            {
+                ModeloLowPoly = Content.Load<Model>("Models/Tanks/Panzer/Panzer old");
             }
 
         }

@@ -24,7 +24,7 @@ namespace TGC.MonoGame.TP.Renderers
 
         public void Draw(ModelInScene modelInScene, Matrix view, Matrix projection)
         {
-            if (!new BoundingFrustum(view * projection).Intersects(modelInScene.GetAABB()))
+            if (!new BoundingFrustum(view * projection).Intersects(modelInScene.AABB))
             {
                 return;
             }
