@@ -63,6 +63,9 @@ namespace TGC.MonoGame.TP.Cameras
             this.modelThatFollows = modelThatFollows;
             BuildView(Position, speed, angle);
             _terrain = terrain;
+            FieldOfView = DefaultFieldOfViewDegrees;
+            NearPlane = nearPlaneDistance;
+            FarPlane = farPlaneDistance;
         }
 
         /// <summary>

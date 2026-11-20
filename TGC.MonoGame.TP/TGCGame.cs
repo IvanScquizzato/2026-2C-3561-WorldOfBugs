@@ -136,7 +136,7 @@ public class TGCGame : Game
     private float _velocidadDelTiempoHora = 0.1f;
     private double _lastShadowMapTime = 0.0;
     private float _farShadowAreaSize = 6000f;
-    private float _closeShadowAreaSize = 800f;
+    private float _closeShadowAreaSize = 1300f;
 
     /// <summary>
     ///     Constructor del juego.
@@ -929,7 +929,7 @@ public class TGCGame : Game
         effect.Parameters["FarShadowAreaSize"]?.SetValue(_farShadowAreaSize);
         effect.Parameters["LightDirection"]?.SetValue(-_dayNightCycle.SunDirection);
         effect.Parameters["TankPosition"]?.SetValue(_tanks[0].Position);
-        effect.Parameters["ShadowBias"].SetValue(0.002f);
+        effect.Parameters["ShadowBias"].SetValue(0.003f);
         effect.Parameters["ShadowsEnabled"].SetValue(enabled ? 1f : 0f);
     }
 
@@ -961,7 +961,8 @@ public class TGCGame : Game
                 _shadowMapRenderer.Render(
                     _tanks[0].Position,
                     _dayNightCycle.SunDirection,
-                    _modelosEnEscenario);
+                    _modelosEnEscenario,
+                    _currentCamera);
                 _lastShadowMapTime = 0d;
             }
 

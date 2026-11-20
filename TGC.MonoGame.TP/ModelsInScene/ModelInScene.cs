@@ -453,6 +453,14 @@ namespace TGC.MonoGame.TP.ModelsInScene
                 );
             return new BoundingBox(midpointWorld - worldExtention, midpointWorld + worldExtention);
         }
+        public virtual Model GetModelForShadowMap(float distance)
+        {
+            return _model;
+        }
+        public virtual Model GetModelForRendering(float distance)
+        {
+            return _model;
+        }
 
     }
 

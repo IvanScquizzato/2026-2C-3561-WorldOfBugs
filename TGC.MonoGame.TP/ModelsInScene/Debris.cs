@@ -20,6 +20,8 @@ namespace TGC.MonoGame.TP.Debri
 
         public override Dictionary<Texture, Texture> _normalMapsOfTexture
         => _normalMaps;
+        public Model ModeloLowPoly { get; set; } = null;
+
         public Debris(ContentManager Content, String modelPath, Vector3 position, Matrix rotation, Vector3 scale, IModelInSceneRenderer renderer)
             : base(Content, modelPath, position, rotation, scale, renderer, 1f)
         {
@@ -51,5 +53,18 @@ namespace TGC.MonoGame.TP.Debri
             var center = new NumericVector3(Position.X, Position.Y - 165f, Position.Z);
             this._collider = new StaticSphereCollider(350f, center, simulation, bufferPool, effect, graphicsDevice);
         }
+        protected override void cargarModelo(ContentManager Content, string modelPath)
+        {
+            base.cargarModelo(Content, modelPath);
+            if (ModeloLowPoly == null)
+            {
+                ModeloLowPoly = Content.Load<Model>("Models/RocksMedium/source/Rocks_medium/Rocks_medium low poly");
+            }
+        }
+        public override Model GetModelForShadowMap(float distance)
+        {
+            return ModeloLowPoly;
+        }
+
     }
 }

@@ -783,6 +783,10 @@ namespace TGC.MonoGame.TP.Tanks
             }
 
         }
+        public override Model GetModelForShadowMap(float distance)
+        {
+            return ModeloLowPoly;
+        }
     }
 }
 

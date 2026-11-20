@@ -32,6 +32,8 @@ namespace TGC.MonoGame.TP.Trees
             { "Models\\Tree\\Tree.fbm\\DB2X2_L01_0", Leaves},
             {"Models\\Tree\\bark_0021_0", Wood }
         };
+        public Model ModeloLowPoly { get; set; } = null;
+
         public Tree(
             ContentManager content,
             string modelPath,
@@ -106,8 +108,29 @@ namespace TGC.MonoGame.TP.Trees
         protected override void cargarModelo(ContentManager content, string modelPath)
         {
             base.cargarModelo(content, modelPath);
+            if (ModeloLowPoly == null)
+            {
+                ModeloLowPoly = content.Load<Model>("Models/Tree/Tree low poly");
+
+            }
         }
 
-
+        public override Model GetModelForShadowMap(float distance)
+        {
+            if (distance > 1000f)
+            {
+                return ModeloLowPoly;
+            }
+            return ModeloLowPoly;
+        }
+        public override Model GetModelForRendering(float distance)
+        {
+            if (distance > 6000f)
+            {
+                return ModeloLowPoly;
+            }
+            return _model;
+        }
     }
+
 }

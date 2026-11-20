@@ -6,6 +6,9 @@ using TGC.MonoGame.TP.ModelsInScene;
 using TGC.MonoGame.TP.Tanks;
 using TGC.MonoGame.TP.Terrain;
 using System.Diagnostics;
+using BepuPhysics.Trees;
+using TGC.MonoGame.TP.Cameras;
+using System.IO.Pipes;
 namespace TGC.MonoGame.TP.Renderers;
 
 /// <summary>
@@ -32,6 +35,7 @@ public sealed class ShadowMapRenderer : IDisposable
     public int LastDrawCalls { get; private set; }
     public int LastTriangles { get; private set; }
     public double LastCpuMs { get; private set; }
+    private ShadowCasterHull _shadowCasterHull = new ShadowCasterHull();
     public ShadowMapRenderer(GraphicsDevice graphicsDevice, Effect effect, float farShadowAreaSize, float closeShadowAreaSize)
     {
         _graphicsDevice = graphicsDevice ?? throw new ArgumentNullException(nameof(graphicsDevice));
@@ -55,7 +59,8 @@ public sealed class ShadowMapRenderer : IDisposable
     public void Render(
         Vector3 focus,
         Vector3 directionToSun,
-        IEnumerable<IEnumerable<ModelInScene>> sceneGroups)
+        IEnumerable<IEnumerable<ModelInScene>> sceneGroups,
+        Camera camera)
     {
         LastDrawCalls = 0;
         LastTriangles = 0;
@@ -80,11 +85,20 @@ public sealed class ShadowMapRenderer : IDisposable
         BoundingFrustum closeLightFrustum = new BoundingFrustum(CloseLightViewProjection);
         BoundingFrustum farLightFrustum = new BoundingFrustum(FarLightViewProjection);
         Stopwatch stopwatch = Stopwatch.StartNew();
+        _shadowCasterHull.Build(
+            camera.View,
+            camera.FieldOfView,
+            _graphicsDevice.Viewport.AspectRatio,
+            camera.NearPlane,
+            camera.FarPlane,
+            directionToSun,
+            MathF.Sqrt(MaxCasterDistanceSq)
+        );
         try
         {
-            RenderCascade(CloseShadowMap, CloseLightViewProjection, closeLightFrustum, focus, sceneGroups);
+            RenderCascade(CloseShadowMap, CloseLightViewProjection, closeLightFrustum, focus, sceneGroups, directionToSun);
 
-            RenderCascade(FarShadowMap, FarLightViewProjection, farLightFrustum, focus, sceneGroups);
+            RenderCascade(FarShadowMap, FarLightViewProjection, farLightFrustum, focus, sceneGroups, directionToSun);
         }
         finally
         {
@@ -100,13 +114,14 @@ public sealed class ShadowMapRenderer : IDisposable
         Matrix lightViewProjection,
         BoundingFrustum frustum,
         Vector3 focus,
-        IEnumerable<IEnumerable<ModelInScene>> sceneGroups)
+        IEnumerable<IEnumerable<ModelInScene>> sceneGroups,
+        Vector3 directionToSun)
     {
         _graphicsDevice.SetRenderTarget(target);
         _graphicsDevice.Clear(Color.White);
         _graphicsDevice.BlendState = BlendState.Opaque;
         _graphicsDevice.DepthStencilState = DepthStencilState.Default;
-        _graphicsDevice.RasterizerState = RasterizerState.CullCounterClockwise;
+        _graphicsDevice.RasterizerState = RasterizerState.CullNone;
 
         foreach (IEnumerable<ModelInScene> group in sceneGroups)
         {
@@ -126,7 +141,15 @@ public sealed class ShadowMapRenderer : IDisposable
                     continue;
 
 
-                DrawModel(model, lightViewProjection);
+                if (!_shadowCasterHull.Intersects(model.AABB))
+                {
+                    continue;
+                }
+
+
+                DrawModel(model, lightViewProjection, focus, directionToSun);
+
+
             }
             //Console.WriteLine($"d");
         }
@@ -145,21 +168,26 @@ public sealed class ShadowMapRenderer : IDisposable
         LastTriangles += terrain.vbTerrain.VertexCount / 3;
     }
 
-    private void DrawModel(ModelInScene model, Matrix LightViewProjection)
+    private void DrawModel(ModelInScene model, Matrix LightViewProjection, Vector3 focus, Vector3 directionToSun)
     {
-        Matrix[] bones = new Matrix[model._model.Bones.Count];
-        model._model.CopyAbsoluteBoneTransformsTo(bones);
+        float distanceForShadowMap = Vector3.Cross(focus - model.Position, directionToSun).Length() / directionToSun.Length();
+        Model modelo = model.GetModelForShadowMap(distanceForShadowMap);
+
+
+        Matrix[] bones = new Matrix[modelo.Bones.Count];
+        modelo.CopyAbsoluteBoneTransformsTo(bones);
         List<Texture2D> textures = model.GetTextures();
         int textureIndex = 0;
 
-        foreach (ModelMesh mesh in model._model.Meshes)
+        foreach (ModelMesh mesh in modelo.Meshes)
         {
+
+
             Matrix bone = bones[mesh.ParentBone.Index];
             Matrix world = GetMeshWorld(model, mesh, bone);
             _effect.Parameters["WorldLightViewProjection"].SetValue(
                 world * LightViewProjection);
 
-            int index = 0;
             foreach (ModelMeshPart part in mesh.MeshParts)
             {
 
@@ -173,28 +201,16 @@ public sealed class ShadowMapRenderer : IDisposable
                     _effect.Parameters["ModelTexture"].SetValue(texture);
 
                 _effect.CurrentTechnique.Passes[0].Apply();
-                if (model is Tank tank)
-                {
-                    ModelMeshPart lowPolyPart = tank.ModeloLowPoly.Meshes[mesh.Name].MeshParts[index];
-                    _graphicsDevice.SetVertexBuffer(lowPolyPart.VertexBuffer);
-                    _graphicsDevice.Indices = lowPolyPart.IndexBuffer;
-                    _graphicsDevice.DrawIndexedPrimitives(
-                        PrimitiveType.TriangleList, lowPolyPart.VertexOffset,
-                        lowPolyPart.StartIndex, lowPolyPart.PrimitiveCount);
-                    //Console.WriteLine($"La parte low poly tiene {lowPolyPart.PrimitiveCount} triangulos y la parte high poly tiene {part.PrimitiveCount} triangulos");
-                }
-                else
-                {
-                    _graphicsDevice.SetVertexBuffer(part.VertexBuffer);
-                    _graphicsDevice.Indices = part.IndexBuffer;
-                    _graphicsDevice.DrawIndexedPrimitives(
-                        PrimitiveType.TriangleList, part.VertexOffset,
-                        part.StartIndex, part.PrimitiveCount);
-                }
+
+                _graphicsDevice.SetVertexBuffer(part.VertexBuffer);
+                _graphicsDevice.Indices = part.IndexBuffer;
+                _graphicsDevice.DrawIndexedPrimitives(
+                    PrimitiveType.TriangleList, part.VertexOffset,
+                    part.StartIndex, part.PrimitiveCount);
+
                 LastDrawCalls++;
                 LastTriangles += part.PrimitiveCount;
                 textureIndex++;
-                index++;
 
             }
         }

@@ -49,6 +49,8 @@ namespace TGC.MonoGame.TP.Cameras
             : base(aspectRatio, nearPlaneDistance, farPlaneDistance)
         {
             BuildView(position, speed, angle);
+            NearPlane = nearPlaneDistance;
+            FarPlane = farPlaneDistance;
         }
 
         /// <summary>
@@ -74,6 +76,7 @@ namespace TGC.MonoGame.TP.Cameras
             Speed = speed;
             Angle = angle;
             View = Matrix.CreateLookAt(Position, Position + FrontDirection, DefaultWorldUpVector);
+            FieldOfView = DefaultFieldOfViewDegrees;
         }
 
         /// <inheritdoc />
