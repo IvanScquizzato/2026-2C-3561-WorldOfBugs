@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Media;
+using TGC.MonoGame.TP.HUD;
 using TGC.MonoGame.TP.Bush;
 
 using TGC.MonoGame.TP.Cameras;
@@ -85,6 +86,9 @@ public class TGCGame : Game
     private GameState _gameState = GameState.MainMenu;
     private HUD.MainMenu _mainMenu;
     private HUD.PauseMenu _pauseMenu;
+
+    private HUD.VictoryMenu _victoryMenu;
+    private HUD.DefeatMenu _defeatMenu;
     private SpriteFont _menuFont;
 
     private Effect _effect;
@@ -138,6 +142,18 @@ public class TGCGame : Game
     private float _farShadowAreaSize = 6000f;
     private float _closeShadowAreaSize = 1300f;
 
+    private Effect _terrainEffect;
+    private Texture2D _terrainGrassNormal;
+    private Texture2D _terrainGroundNormal;
+
+    private Texture2D _terrainHeightmap;
+    private Texture2D _terrainColorMap;
+    private Texture2D _terrainGrass;
+    private Texture2D _terrainGround;
+    
+
+
+    private float _menuRotation = 0f;
     /// <summary>
     ///     Constructor del juego.
     /// </summary>
@@ -160,7 +176,11 @@ public class TGCGame : Game
     {
         MainMenu,
         Playing,
-        Paused
+        Paused,
+
+        Win,
+
+        Fail
     }
 
     /// <summary>
@@ -198,50 +218,21 @@ public class TGCGame : Game
     ///     Escribir aqui el codigo de inicializacion: cargar modelos, texturas, estructuras de optimizacion, el procesamiento
     ///     que podemos pre calcular para nuestro juego.
     /// </summary>
-    protected override void LoadContent()
+    /// 
+    ///
+    protected void CreateWorld()
     {
-        // hitbox debug
-        _debugEffect = Content.Load<Effect>(
-            ContentFolderEffects + "DebugShader"
-        );
-        // Aca es donde deberiamos cargar todos los contenido necesarios antes de iniciar el juego.
-        _spriteBatch = new SpriteBatch(GraphicsDevice);
-
-        // Cargo un efecto basico propio declarado en el Content pipeline.
-        // En el juego no pueden usar BasicEffect de MG, deben usar siempre efectos propios.
-        _effect = Content.Load<Effect>(ContentFolderEffects + "BasicShader");
-        _basicRenderer = new BasicRenderer(GraphicsDevice, _effect, _debugEffect);
-
-        _PBREffect = Content.Load<Effect>(ContentFolderEffects + "PBRShader");
-        _PBRRenderer = new PBRRenderer(GraphicsDevice, _PBREffect, _debugEffect);
-
-        TankRenderer tankRenderer = new TankRenderer(GraphicsDevice, _PBREffect, _debugEffect, _effect);
-        //Cargo terreno
-        var terrainEffect = Content.Load<Effect>(ContentFolderEffects + "Terrain");
-        var terrainGrassNormal = Content.Load<Texture2D>(ContentFolderTextures + "Heightmaps/grass-normal");
-        var terrainGroundNormal = Content.Load<Texture2D>(ContentFolderTextures + "Heightmaps/ground-normal");
-        _terrainRenderer = new TerrainRenderer(GraphicsDevice, terrainEffect,
-            terrainGrassNormal, terrainGroundNormal);
-        // heights
-        var terrainHeigthmap = Content.Load<Texture2D>(ContentFolderTextures + "Heightmaps/heightmap");
-
-        // basic color
-        var terrainColorMap = Content.Load<Texture2D>(ContentFolderTextures + "Heightmaps/colormap");
-
-        // blend texture 1
-        var terrainGrass = Content.Load<Texture2D>(ContentFolderTextures + "Heightmaps/grass");
-
-        // blend texture 2
-        var terrainGround = Content.Load<Texture2D>(ContentFolderTextures + "Heightmaps/ground");
-        _terrains.Add(new SimpleTerrain(Content, terrainHeigthmap, terrainColorMap, terrainGrass, terrainGround, _terrainRenderer));
+       
+         _terrains.Add(new SimpleTerrain(Content, _terrainHeightmap, _terrainColorMap, _terrainGrass, _terrainGround, _terrainRenderer));
         //Cargo tanque
+        TankRenderer tankRenderer = new TankRenderer(GraphicsDevice, _PBREffect, _debugEffect, _effect);
         float altura_tanque = _terrains[0].Height(0, -300) + 30;
         _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(0, altura_tanque + 300, -600), Matrix.Identity, new Vector3(0.5f), tankRenderer, 11000f));
         _tanks[0].esEnemigo = false;
         // tanques enemigos, por ahora quietos
-        _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(1500, _terrains[0].Height(1500, -600) + 300, -600), Matrix.Identity, new Vector3(0.5f), tankRenderer, 11000f));
-        _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(-1500, _terrains[0].Height(-1500, -600) + 300, -600), Matrix.Identity, new Vector3(0.5f), tankRenderer, 11000f));
-        _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(0, _terrains[0].Height(0, 1000) + 300, -600), Matrix.Identity, new Vector3(0.5f), tankRenderer, 11000f));
+        _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(1500, _terrains[0].Height(1500, -600) + 30, -600), Matrix.Identity, new Vector3(0.5f), tankRenderer, 11000f));
+        _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(1000, _terrains[0].Height(1000, -600) + 30, -600), Matrix.Identity, new Vector3(0.5f), tankRenderer, 11000f));
+        _tanks.Add(new Tank(Content, ContentFolder3D + "Tanks/Panzer/Panzer", new Vector3(0, _terrains[0].Height(0, 1000) + 30, 100), Matrix.Identity, new Vector3(0.5f), tankRenderer, 11000f));
 
         _enemyTanks.Clear();
         _enemyTanks.Add(new EnemyTank(_tanks[1]));
@@ -254,35 +245,16 @@ public class TGCGame : Game
 
             _enemyTanks.Add(enemyAI);
         }
+
+        CreateScene();
         //_enemyTanks.Add(new EnemyTank(_tanks[2]));
         //_enemyTanks.Add(new EnemyTank(_tanks[3]));
         _camera2 = new ThirdPersonCamera(_tanks[0], _terrains[0], 1000f, 0.005f, GraphicsDevice.Viewport.AspectRatio, 500f, 400f, 1f, 20000f, GraphicsDevice);
         _currentCamera = _camera2;
 
-        // El JSON es la fuente de verdad del escenario estático.
-        _sceneRepository = new SceneRepository();
-        _sceneEditor = new SceneEditor(GraphicsDevice)
-        {
-            DuplicateFactory = CrearCopiaEditor,
-            SaveRequested = GuardarEscena,
-            LoadRequested = RecargarEscena
-        };
+        
 
-        SceneRepository.SceneFile scene = _sceneRepository.Load();
-        if (scene.Initialized)
-        {
-            CargarObjetosEscena(scene);
-        }
-        else
-        {
-            // Primera ejecución: conservar el escenario original, migrar el viejo
-            // scene.json si existe y dejar toda la escena serializada en Scenes/scene.json.
-            CrearEscenaInicial();
-            RegistrarEscenaInicial();
-            MigrarEscenaAnterior();
-            GuardarEscena();
-        }
-
+        
         _simulation = Simulation.Create(_bufferPool, new NarrowPhaseCallbacks(new SpringSettings(30, 1), 1.5f, 0.5f),
         new PoseIntegratorCallbacks(UtilsClass.ToNumericVector(gravity)), new SolveDescription(8, 1));
 
@@ -299,9 +271,112 @@ public class TGCGame : Game
                 modelo.CreateHitbox(_debugEffect, GraphicsDevice);
             }
         }
+        
+    }
+    private void DestroyWorld()
+    {
+        foreach(var tank in _tanks)
+        {
+            tank.Destroy();
+        }
+
+        foreach(var missile in _missiles)
+        {
+            missile.Destroy();
+        }
+
+        foreach(var rock in _dynamicRocks)
+        {
+            rock.Destroy();
+        }
+        foreach (var lista in _modelosEnEscenario)
+        {
+            foreach (var modelo in lista)
+            {
+                if (modelo._collider != null)
+                {
+                    modelo._collider.Remove();
+                    modelo._collider = null;
+                }
+            }
+        }
+        _tanks.Clear();
+        _enemyTanks.Clear();
+        _missiles.Clear();
+        _dynamicRocks.Clear();
+        _terrains.Clear();
+        _trees.Clear();
+        _plants.Clear();
+        _decor.Clear();
+        
+        PhysicsToGameObjects.Clear();
+        _objetosEditor.Clear();
+        _editorModificados.Clear();
+
+    } 
+    private void CreateScene()
+    {
+     
+    SceneRepository.SceneFile scene = _sceneRepository.Load();
+
+    if (scene.Initialized)
+    {
+        CargarObjetosEscena(scene);
+    }
+    else
+    {
+        CrearEscenaInicial();
+        RegistrarEscenaInicial();
+        MigrarEscenaAnterior();
+        GuardarEscena();
+    }
+}
+    protected override void LoadContent()
+    {
 
 
+        // hitbox debug
+        _debugEffect = Content.Load<Effect>(
+            ContentFolderEffects + "DebugShader"
+        );
+        // Aca es donde deberiamos cargar todos los contenido necesarios antes de iniciar el juego.
+        _spriteBatch = new SpriteBatch(GraphicsDevice);
+          _terrainEffect = Content.Load<Effect>(ContentFolderEffects + "Terrain");
+         _terrainGrassNormal = Content.Load<Texture2D>(ContentFolderTextures + "Heightmaps/grass-normal");
+        _terrainGroundNormal = Content.Load<Texture2D>(ContentFolderTextures + "Heightmaps/ground-normal");
+        _terrainRenderer = new TerrainRenderer(GraphicsDevice, _terrainEffect,
+            _terrainGrassNormal, _terrainGroundNormal);
+        // heights
+         _terrainHeightmap = Content.Load<Texture2D>(ContentFolderTextures + "Heightmaps/heightmap");
 
+        // basic color
+        _terrainColorMap = Content.Load<Texture2D>(ContentFolderTextures + "Heightmaps/colormap");
+
+        // blend texture 1
+        _terrainGrass = Content.Load<Texture2D>(ContentFolderTextures + "Heightmaps/grass");
+
+        // blend texture 2
+        _terrainGround = Content.Load<Texture2D>(ContentFolderTextures + "Heightmaps/ground");
+        // Cargo un efecto basico propio declarado en el Content pipeline.
+        // En el juego no pueden usar BasicEffect de MG, deben usar siempre efectos propios.
+        _effect = Content.Load<Effect>(ContentFolderEffects + "BasicShader");
+        _basicRenderer = new BasicRenderer(GraphicsDevice, _effect, _debugEffect);
+
+        _PBREffect = Content.Load<Effect>(ContentFolderEffects + "PBRShader");
+        _PBRRenderer = new PBRRenderer(GraphicsDevice, _PBREffect, _debugEffect);
+
+        _sceneRepository = new SceneRepository();
+        _sceneEditor = new SceneEditor(GraphicsDevice)
+        {
+            DuplicateFactory = CrearCopiaEditor,
+            SaveRequested = GuardarEscena,
+            LoadRequested = RecargarEscena
+        };
+        
+       
+        CreateWorld();    
+
+        
         _editorModificados.Clear(); // Los colliders iniciales ya tienen las transformaciones cargadas.
 
         // Interfaz: se carga después de inicializar el escenario y los tanques.
@@ -314,6 +389,8 @@ public class TGCGame : Game
         _mainMenu = new HUD.MainMenu(_pixel, _menuFont);
         _pauseMenu = new HUD.PauseMenu(_pixel, _menuFont);
 
+        _victoryMenu = new VictoryMenu(_pixel, _menuFont);
+        _defeatMenu = new DefeatMenu(_pixel, _menuFont);
         // sonidos y musica cargados igual que en los samples de la catedra
         _cannonSound = Content.Load<SoundEffect>(ContentFolderSounds + "cannon_fire");
         ExplosionSound = Content.Load<SoundEffect>(ContentFolderSounds + "mechanical_explosion");
@@ -683,6 +760,7 @@ public class TGCGame : Game
         switch (_gameState)
         {
             case GameState.MainMenu:
+            _menuRotation += (float)gameTime.ElapsedGameTime.TotalSeconds * 0.1f;
                 IsMouseVisible = true;
                 _mainMenu.Update();
 
@@ -740,6 +818,15 @@ public class TGCGame : Game
 
                 IsMouseVisible = false;
 
+                if(_enemyTanks.Count == 0)
+                {
+                    _gameState = GameState.Win;
+                    break;
+                }else if(_tanks[0]._isDisabled)
+                {
+                    _gameState = GameState.Fail;
+                    break;
+                }
                 if (escapePresionado)
                 {
                     _pauseMenu.StartMenu = false;
@@ -880,14 +967,53 @@ public class TGCGame : Game
                     }
                 }
                 // Hora del dia para el skybox
-                _dayNightCycle.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
-
-                _camera.Update(gameTime);
+              
                 _camera2.Update(gameTime);
+                _camera.Update(gameTime);
+               
 
                 break;
-        }
+            case GameState.Win:
 
+                IsMouseVisible = true;
+
+                _victoryMenu.Update(gameTime);
+
+                if (_victoryMenu.BackToMenu)
+                {
+                    _victoryMenu.BackToMenu = false;
+                    RestartGame();
+                    _gameState = GameState.MainMenu;
+                }else if (_victoryMenu.RestartGame)
+                {
+                     _defeatMenu.RestartGame = false;
+                    RestartGame();
+                    _gameState = GameState.Playing;
+                }
+
+                break;
+            case GameState.Fail:
+
+            IsMouseVisible = true;
+
+            _defeatMenu.Update(gameTime);
+
+            if (_defeatMenu.RestartGame)
+            {
+                 _defeatMenu.RestartGame = false;
+                  RestartGame();
+                _gameState = GameState.Playing;
+            }else if (_defeatMenu.BackToMenu)
+            {
+                 _defeatMenu.BackToMenu = false;
+                RestartGame();
+                _gameState = GameState.MainMenu;
+            }
+
+    break;
+        }
+         
+          _dayNightCycle.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
         // el motor no suena en los menus ni en el editor
         if (_gameState != GameState.Playing || _sceneEditor.Enabled)
         {
@@ -939,14 +1065,73 @@ public class TGCGame : Game
     /// </summary>
     protected override void Draw(GameTime gameTime)
     {
-        GraphicsDevice.Clear(Color.LightBlue);
+        //GraphicsDevice.Clear(Color.LightBlue);
 
+        Matrix view = _currentCamera.View;
+        Matrix projection = _currentCamera.Projection;
+        
         if (_gameState == GameState.MainMenu)
         {
+             Vector3 target = _tanks[0].Position;
+
+    Vector3 cameraPosition =
+        target +
+        new Vector3(
+            MathF.Cos(_menuRotation) * 2500f,
+            1200f,
+            MathF.Sin(_menuRotation) * 2500f
+        );
+
+    Matrix menuView =
+        Matrix.CreateLookAt(
+            cameraPosition,
+            target,
+            Vector3.Up
+        );
+
+    Matrix menuProjection =
+        Matrix.CreatePerspectiveFieldOfView(
+            MathHelper.PiOver4,
+            GraphicsDevice.Viewport.AspectRatio,
+            1f,
+            20000f
+        );
+            DrawWorld(menuView, menuProjection );
             _mainMenu.Draw(_spriteBatch);
+        }else if (_gameState == GameState.Win)
+        {
+            _victoryMenu.Draw(_spriteBatch);
+        }
+        else if (_gameState == GameState.Fail)
+        {
+            _defeatMenu.Draw(_spriteBatch);
         }
         else
         {
+            DrawWorld(view, projection);
+            
+
+            if (_gameState == GameState.Paused)
+            {
+                _pauseMenu.Draw(_spriteBatch);
+            }
+            else if (_sceneEditor.Enabled)
+            {
+                _sceneEditor.Draw(view, projection);
+            }
+            else
+            {
+                _hud.Draw(_spriteBatch, _tanks[0], _tanks);
+            }
+
+            
+
+        }
+
+        base.Draw(gameTime);
+    }
+    private void DrawWorld(Matrix view, Matrix projection)
+    {
             GraphicsDevice.BlendState = BlendState.Opaque;
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
             GraphicsDevice.RasterizerState = RasterizerState.CullNone;
@@ -977,8 +1162,7 @@ public class TGCGame : Game
             ApplyShadowMap(_effect, hasSun);
             ApplySunLighting(_PBREffect);
             ApplySunLighting(_terrainRenderer._effect);
-            _effect.Parameters["SceneBrightness"].SetValue(
-                MathHelper.Lerp(0.12f, 1f, 1f - _dayNightCycle.NightFactor));
+            _effect.Parameters["SceneBrightness"].SetValue(MathHelper.Lerp(0.12f, 1f, 1f - _dayNightCycle.NightFactor));
 
             foreach (var lista in _modelosEnEscenario)
             {
@@ -998,20 +1182,6 @@ public class TGCGame : Game
             GraphicsDevice.DepthStencilState = previousDepth;
             GraphicsDevice.RasterizerState = previousRasterizer;
             GraphicsDevice.BlendState = previousBlend;
-
-            if (_gameState == GameState.Paused)
-            {
-                _pauseMenu.Draw(_spriteBatch);
-            }
-            else if (_sceneEditor.Enabled)
-            {
-                _sceneEditor.Draw(view, projection);
-            }
-            else
-            {
-                _hud.Draw(_spriteBatch, _tanks[0], _tanks);
-            }
-
             if (_showShadowMap && hasSun)
             {
                 _spriteBatch.Begin(
@@ -1030,11 +1200,8 @@ public class TGCGame : Game
                 Color.White);
                 _spriteBatch.End();
             }
+}
 
-        }
-
-        base.Draw(gameTime);
-    }
 
     /// <summary>
     ///     Libero los recursos que se cargaron en el juego.
@@ -1052,7 +1219,12 @@ public class TGCGame : Game
 
         base.UnloadContent();
     }
+    private void RestartGame()
+    {
+        DestroyWorld();
 
+        CreateWorld();
+    }
     public void SpawnFenceDebris(Vector3 position, Vector3 impactDirection)
     {
         Random _rng = new Random();

@@ -55,7 +55,6 @@ namespace TGC.MonoGame.TP.Tanks
         public float _maxSpeed { get; set; } = 500f;
         public float _engineThrust { get; set; } = 7000000f;
 
-        private MouseState _previousMouseState;
         public float TurretYaw { get; set; } = 0f;
         public float CannonPitch { get; set; } = 0f;
         public float _lateralFriction { get; set; } = 40f;
