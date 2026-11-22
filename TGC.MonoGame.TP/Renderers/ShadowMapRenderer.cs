@@ -202,11 +202,21 @@ public sealed class ShadowMapRenderer : IDisposable
 
                 _effect.CurrentTechnique.Passes[0].Apply();
 
-                _graphicsDevice.SetVertexBuffer(part.VertexBuffer);
-                _graphicsDevice.Indices = part.IndexBuffer;
-                _graphicsDevice.DrawIndexedPrimitives(
-                    PrimitiveType.TriangleList, part.VertexOffset,
-                    part.StartIndex, part.PrimitiveCount);
+
+                if (model is Tank tank)
+                {
+                    _graphicsDevice.SetVertexBuffer(tank._dynamicVertexBuffers[part]);
+                    _graphicsDevice.Indices = part.IndexBuffer;
+                    _graphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, part.StartIndex, part.PrimitiveCount);
+                }
+                else
+                {
+                    _graphicsDevice.SetVertexBuffer(part.VertexBuffer);
+                    _graphicsDevice.Indices = part.IndexBuffer;
+                    _graphicsDevice.DrawIndexedPrimitives(
+                        PrimitiveType.TriangleList, part.VertexOffset,
+                        part.StartIndex, part.PrimitiveCount);
+                }
 
                 LastDrawCalls++;
                 LastTriangles += part.PrimitiveCount;
