@@ -22,7 +22,7 @@ namespace TGC.MonoGame.TP.HUD
             _font = font;
         }
 
-        public void Draw(SpriteBatch spriteBatch, Tank player, List<Tank> tanks)
+        public void Draw(SpriteBatch spriteBatch, Tank player, List<Tank> tanks , float fps)
         {
             float vidaActual = player.health;
             float vidaMaxima = player.maxHealth;
@@ -118,7 +118,7 @@ namespace TGC.MonoGame.TP.HUD
             {
                 spriteBatch.DrawString(_font, "Presione 'X' para disparar", new Vector2(20, 150), Color.GreenYellow);
             }
-
+            spriteBatch.DrawString(_font,$"FPS: {(int)fps}",new Vector2(20, 400),Color.White);
             spriteBatch.End();
             // esto protege al terreno de no renderizase mal
             spriteBatch.GraphicsDevice.BlendState = BlendState.Opaque;
