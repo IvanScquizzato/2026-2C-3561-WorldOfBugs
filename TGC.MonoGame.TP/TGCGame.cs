@@ -259,7 +259,7 @@ public class TGCGame : Game
         _simulation = Simulation.Create(_bufferPool, new NarrowPhaseCallbacks(new SpringSettings(30, 1), 1.5f, 0.5f),
         new PoseIntegratorCallbacks(UtilsClass.ToNumericVector(gravity)), new SolveDescription(8, 1));
 
-       
+
         foreach (var lista in _modelosEnEscenario)
         {
             foreach (var modelo in lista)
@@ -267,13 +267,13 @@ public class TGCGame : Game
                 modelo.CreateCollider(_simulation, _bufferPool, _effect, GraphicsDevice);
                 if (modelo._collider != null)
                 {
-                    
+
                     PhysicsToGameObjects[modelo._collider.GetCollidableReference()] = modelo;
                 }
                 modelo.CreateHitbox(_debugEffect, GraphicsDevice);
             }
         }
-       
+
 
     }
     private void DestroyWorld()
@@ -1133,7 +1133,7 @@ public class TGCGame : Game
             else
             {
                 float fps = 1f / (float)gameTime.ElapsedGameTime.TotalSeconds;
-                _hud.Draw(_spriteBatch, _tanks[0], _tanks ,fps);
+                _hud.Draw(_spriteBatch, _tanks[0], _tanks, fps);
             }
 
 
@@ -1151,9 +1151,9 @@ public class TGCGame : Game
 
         // Leer la cámara una sola vez para este frame.
 
-        bool hasSun = _dayNightCycle.SunIntensity > 0.01f ;
+        bool hasSun = _dayNightCycle.SunIntensity > 0.01f;
         _lastShadowMapTime += gameTime.ElapsedGameTime.TotalSeconds;
-        
+
         if (hasSun && _lastShadowMapTime > 1.0 / 30.0 && _gameState != GameState.MainMenu)
         {
             _shadowMapRenderer.Render(
@@ -1163,11 +1163,11 @@ public class TGCGame : Game
                 _currentCamera);
             _lastShadowMapTime = 0d;
         }
-        if(_gameState != GameState.MainMenu)
+        if (_gameState != GameState.MainMenu)
         {
-             _sillouetteRenderer.Render(_tanks.GetRange(1, _tanks.Count - 1), view, projection);     
+            _sillouetteRenderer.Render(_tanks.GetRange(1, _tanks.Count - 1), view, projection);
         }
-       
+
 
         // Al volver del render target, limpiar de nuevo el backbuffer.
         GraphicsDevice.Clear(Color.LightBlue);
@@ -1184,26 +1184,26 @@ public class TGCGame : Game
         Vector3 cameraPosition = Matrix.Invert(view).Translation;
         const float maxDrawDistance = 5000f;
         float maxDrawDistanceSquared = maxDrawDistance * maxDrawDistance;
-          foreach (var lista in _modelosEnEscenario)
+        foreach (var lista in _modelosEnEscenario)
         {
             foreach (var modelo in lista)
             {
                 if (modelo._isDisabled)
-            continue;
+                    continue;
+                /*
+                if (modelo is not SimpleTerrain &&Vector3.DistanceSquared(modelo.Position, cameraPosition)> maxDrawDistanceSquared)
+                {
+                    continue;
+                }
+                if (modelo is Grass && Vector3.DistanceSquared(modelo.Position, cameraPosition) > 2000f * 2000f)
+                {
+                    continue;
+                }*/
+                modelo.Draw(view, projection);
+            }
+        }
 
-        if (modelo is not SimpleTerrain &&Vector3.DistanceSquared(modelo.Position, cameraPosition)> maxDrawDistanceSquared)
-        {
-            continue;
-        }
-        if (modelo is Grass && Vector3.DistanceSquared(modelo.Position, cameraPosition) > 2000f * 2000f)
-        {
-            continue;
-        }
-            modelo.Draw(view, projection);
-            }  
-        }
-        
-        
+
         // El skybox cambia estados gráficos; guardarlos y restaurarlos.
         var previousDepth = GraphicsDevice.DepthStencilState;
         var previousRasterizer = GraphicsDevice.RasterizerState;
@@ -1214,11 +1214,11 @@ public class TGCGame : Game
         GraphicsDevice.DepthStencilState = previousDepth;
         GraphicsDevice.RasterizerState = previousRasterizer;
         GraphicsDevice.BlendState = previousBlend;
-        if(_gameState != GameState.MainMenu)
+        if (_gameState != GameState.MainMenu)
         {
-            _sillouetteRenderer.Show(_spriteBatch);    
+            _sillouetteRenderer.Show(_spriteBatch);
         }
-        
+
 
         if (_showShadowMap && hasSun && _gameState != GameState.MainMenu)
         {
