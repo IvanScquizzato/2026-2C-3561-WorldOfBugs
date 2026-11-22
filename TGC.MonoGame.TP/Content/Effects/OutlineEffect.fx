@@ -49,7 +49,7 @@ SpriteVertexOutput SpriteVS(SpriteVertexInput input)
 
 float4 OutlinePS(SpriteVertexOutput input) : COLOR
 {
-    /*float2 uv = input.TexCoord;
+    float2 uv = input.TexCoord;
 
     float center = tex2D(TextureSampler, uv).a;
 
@@ -82,12 +82,8 @@ float4 OutlinePS(SpriteVertexOutput input) : COLOR
 
     clip(isEdge ? 1 : -1);
 
-    return float4(1, 1, 1, 1);*/
-    float alpha = tex2D(TextureSampler, input.TexCoord).a;
+    return float4(1, 1, 1, 1);
 
-    clip(alpha - 0.5f);
-
-    return float4(1, 0, 0, 1);
 }
 technique SillouetteDrawing
 {

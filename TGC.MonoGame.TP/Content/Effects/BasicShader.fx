@@ -109,12 +109,11 @@ SolidVertexOutput SolidVS(in SolidVertexInput input)
 // El Pixel Shader ya no recibe TexCoord
 float4 SolidColorPS(SolidVertexOutput input) : COLOR
 {
-    float4 textureColor = tex2D(TextureSampler, input.TexCoord);
+	float4 textureColor = tex2D(TextureSampler, input.TexCoord);
 
     clip(textureColor.a - 0.1f);
-	
-	return float4(DiffuseColor, 1.0f);
-}
+
+    return float4(DiffuseColor, 1.0f);}
 float4 SillouettePS(SolidVertexOutput input) : COLOR{
 	float3 N = normalize(input.WorldNormal);
 

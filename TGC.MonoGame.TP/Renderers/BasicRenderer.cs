@@ -43,8 +43,8 @@ namespace TGC.MonoGame.TP.Renderers
             var previousStencil = _graphicsDevice.DepthStencilState;
             if (modelInScene.ShouldOcclude)
             {
-                //_graphicsDevice.DepthStencilState = _occluderState;
-                _graphicsDevice.DepthStencilState = DepthStencilState.Default;
+                _graphicsDevice.DepthStencilState = _occluderState;
+                //_graphicsDevice.DepthStencilState = DepthStencilState.Default;
 
             }
             else

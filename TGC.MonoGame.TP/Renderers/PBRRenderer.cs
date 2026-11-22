@@ -47,10 +47,10 @@ namespace TGC.MonoGame.TP.Renderers
             }
             if (modelInScene.ShouldOcclude && _loggedModels.Add(modelInScene))
             {
-                Debug.WriteLine(
-                    $"STENCIL WRITER: {modelInScene.GetType().Name} | " +
-                    $"{modelInScene._modelPath}"
-                );
+                //Debug.WriteLine(
+                //  $"STENCIL WRITER: {modelInScene.GetType().Name} | " +
+                //$"{modelInScene._modelPath}"
+                //);
             }
 
             if (modelInScene.ShouldOcclude)
