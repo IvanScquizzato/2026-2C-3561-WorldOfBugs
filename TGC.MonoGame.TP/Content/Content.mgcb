@@ -1260,18 +1260,6 @@
 /processorParam:TextureFormat=Color
 /build:Textures/Heightmaps/ground.jpg
 
-#begin Textures/Heightmaps/heightmap.jpg
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=True
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Textures/Heightmaps/heightmap.jpg
-
 #begin Textures/Heightmaps/terrain-texture-3.jpg
 /importer:TextureImporter
 /processor:TextureProcessor
