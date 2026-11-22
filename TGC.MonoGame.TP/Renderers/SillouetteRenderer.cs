@@ -72,6 +72,7 @@ class SillouetteRenderer
 
                 Matrix[] bones = new Matrix[modelo.Bones.Count];
                 modelo.CopyAbsoluteBoneTransformsTo(bones);
+                int index = 0;
 
                 foreach (ModelMesh mesh in modelo.Meshes)
                 {
@@ -83,16 +84,30 @@ class SillouetteRenderer
                     );
                     _effect.Parameters["View"].SetValue(view);
                     _effect.Parameters["Projection"].SetValue(projection);
-
                     foreach (ModelMeshPart part in mesh.MeshParts)
                     {
+                        if (model.GetTextures()[index] != null)
+                        {
+                            _effect.Parameters["ModelTexture"].SetValue(
+                                model.GetTextures()[index]
+                            );
+                        }
                         _effect.CurrentTechnique.Passes[0].Apply();
-
-                        _graphicsDevice.SetVertexBuffer(part.VertexBuffer);
-                        _graphicsDevice.Indices = part.IndexBuffer;
-                        _graphicsDevice.DrawIndexedPrimitives(
-                            PrimitiveType.TriangleList, part.VertexOffset,
-                            part.StartIndex, part.PrimitiveCount);
+                        if (model is Tank tank)
+                        {
+                            _graphicsDevice.SetVertexBuffer(tank._dynamicVertexBuffers[part]);
+                            _graphicsDevice.Indices = part.IndexBuffer;
+                            _graphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, part.StartIndex, part.PrimitiveCount);
+                        }
+                        else
+                        {
+                            _graphicsDevice.SetVertexBuffer(part.VertexBuffer);
+                            _graphicsDevice.Indices = part.IndexBuffer;
+                            _graphicsDevice.DrawIndexedPrimitives(
+                                PrimitiveType.TriangleList, part.VertexOffset,
+                                part.StartIndex, part.PrimitiveCount);
+                        }
+                        index++;
                     }
                 }
             }

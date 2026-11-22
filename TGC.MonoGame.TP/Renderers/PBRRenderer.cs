@@ -15,7 +15,7 @@ namespace TGC.MonoGame.TP.Renderers
         public Effect _effect { get; set; }
         public Effect _hitBoxEffect { get; set; }
         private DepthStencilState occluderState;
-
+        private HashSet<ModelInScene> _loggedModels = new();
         public PBRRenderer(GraphicsDevice graphicsDevice, Effect effect, Effect hitboxEffect)
         {
             _graphicsDevice = graphicsDevice;
@@ -26,7 +26,7 @@ namespace TGC.MonoGame.TP.Renderers
                 {
                     DepthBufferEnable = true,
                     DepthBufferWriteEnable = true,
-                    DepthBufferFunction = CompareFunction.LessEqual,
+                    DepthBufferFunction = CompareFunction.Less,
 
                     StencilEnable = true,
                     StencilFunction = CompareFunction.Always,
@@ -40,13 +40,24 @@ namespace TGC.MonoGame.TP.Renderers
 
         public void Draw(ModelInScene modelInScene, Matrix view, Matrix projection)
         {
+
             if (!new BoundingFrustum(view * projection).Intersects(modelInScene.AABB))
             {
                 return;
             }
+            if (modelInScene.ShouldOcclude && _loggedModels.Add(modelInScene))
+            {
+                Debug.WriteLine(
+                    $"STENCIL WRITER: {modelInScene.GetType().Name} | " +
+                    $"{modelInScene._modelPath}"
+                );
+            }
+
             if (modelInScene.ShouldOcclude)
             {
                 _graphicsDevice.DepthStencilState = occluderState;
+                //_graphicsDevice.DepthStencilState = DepthStencilState.Default;
+
             }
             else
             {
@@ -60,7 +71,7 @@ namespace TGC.MonoGame.TP.Renderers
             _effect.Parameters["F0"].SetValue(new Vector3(0.04f, 0.04f, 0.04f));
             Vector3 realCameraPosition = Matrix.Invert(view).Translation;
             _effect.Parameters["CameraPosition"].SetValue(realCameraPosition);
-
+            _effect.Parameters["TrackOffset"].SetValue(0f);
             Model model = modelInScene.GetModelForRendering((realCameraPosition - modelInScene.Position).Length());
 
 

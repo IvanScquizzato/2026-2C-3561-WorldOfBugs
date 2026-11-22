@@ -25,7 +25,7 @@ namespace TGC.MonoGame.TP.Renderers
                 {
                     DepthBufferEnable = true,
                     DepthBufferWriteEnable = true,
-                    DepthBufferFunction = CompareFunction.LessEqual,
+                    DepthBufferFunction = CompareFunction.Less,
 
                     StencilEnable = true,
                     StencilFunction = CompareFunction.Always,
@@ -41,7 +41,17 @@ namespace TGC.MonoGame.TP.Renderers
         public void Draw(ModelInScene modelInScene, Matrix view, Matrix projection)
         {
             var previousStencil = _graphicsDevice.DepthStencilState;
-            _graphicsDevice.DepthStencilState = _occluderState;
+            if (modelInScene.ShouldOcclude)
+            {
+                //_graphicsDevice.DepthStencilState = _occluderState;
+                _graphicsDevice.DepthStencilState = DepthStencilState.Default;
+
+            }
+            else
+            {
+                _graphicsDevice.DepthStencilState = DepthStencilState.Default;
+
+            }
             _effect.Parameters["View"].SetValue(view);
             _effect.Parameters["Projection"].SetValue(projection);
             _effect.CurrentTechnique = _effect.Techniques["BasicColorDrawing"];

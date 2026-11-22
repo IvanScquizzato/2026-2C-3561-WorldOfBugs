@@ -27,7 +27,7 @@ namespace TGC.MonoGame.TP.Renderers
                 {
                     DepthBufferEnable = true,
                     DepthBufferWriteEnable = true,
-                    DepthBufferFunction = CompareFunction.LessEqual,
+                    DepthBufferFunction = CompareFunction.Less,
 
                     StencilEnable = true,
                     StencilFunction = CompareFunction.Always,
@@ -79,6 +79,8 @@ namespace TGC.MonoGame.TP.Renderers
             if (terrain.ShouldOcclude)
             {
                 _graphicsDevice.DepthStencilState = occluderState;
+                //_graphicsDevice.DepthStencilState = DepthStencilState.Default;
+
             }
             else
             {
