@@ -13,6 +13,7 @@ namespace TGC.MonoGame.TP.Renderers
         public Effect _effect { get; set; }
         private readonly Texture2D _grassNormalMap;
         private readonly Texture2D _groundNormalMap;
+        private DepthStencilState occluderState;
 
         public TerrainRenderer(GraphicsDevice graphicsDevice, Effect effect,
             Texture2D grassNormalMap, Texture2D groundNormalMap)
@@ -21,6 +22,21 @@ namespace TGC.MonoGame.TP.Renderers
             _effect = effect;
             _grassNormalMap = grassNormalMap;
             _groundNormalMap = groundNormalMap;
+            occluderState =
+                new DepthStencilState
+                {
+                    DepthBufferEnable = true,
+                    DepthBufferWriteEnable = true,
+                    DepthBufferFunction = CompareFunction.LessEqual,
+
+                    StencilEnable = true,
+                    StencilFunction = CompareFunction.Always,
+                    StencilPass = StencilOperation.Replace,
+                    StencilFail = StencilOperation.Keep,
+                    StencilDepthBufferFail = StencilOperation.Keep,
+
+                    ReferenceStencil = 2
+                };
         }
 
         public void Draw(SimpleTerrain terrain, Matrix view, Matrix projection)
@@ -29,7 +45,7 @@ namespace TGC.MonoGame.TP.Renderers
             var graphicsDevice = _effect.GraphicsDevice;
 
 
-            graphicsDevice.DepthStencilState = DepthStencilState.Default;
+
             graphicsDevice.BlendState = BlendState.Opaque;
 
             _effect.Parameters["texColorMap"].SetValue(terrain.colorMapTexture);
@@ -49,17 +65,40 @@ namespace TGC.MonoGame.TP.Renderers
             Matrix normalMatrix = Matrix.Transpose(Matrix.Invert(terrain._world));
 
             _effect.Parameters["WorldInverseTranspose"].SetValue(normalMatrix);
-            graphicsDevice.SetVertexBuffer(terrain.vbTerrain);
 
+            graphicsDevice.SetVertexBuffer(terrain.vbTerrain);
+            int flatTriangleCount = terrain.flatTriangleVertexCount / 3;
+
+            int tiltedTriangleCount =
+                (terrain.vbTerrain.VertexCount - terrain.flatTriangleVertexCount) / 3;
+
+            _graphicsDevice.DepthStencilState = DepthStencilState.Default;
+
+            CallGraphics(graphicsDevice, 0, flatTriangleCount);
+
+            if (terrain.ShouldOcclude)
+            {
+                _graphicsDevice.DepthStencilState = occluderState;
+            }
+            else
+            {
+                _graphicsDevice.DepthStencilState = DepthStencilState.Default;
+            }
+            CallGraphics(graphicsDevice, terrain.flatTriangleVertexCount, tiltedTriangleCount);
+
+            _graphicsDevice.DepthStencilState = DepthStencilState.Default;
+
+        }
+        private void CallGraphics(GraphicsDevice graphicsDevice, int offset, int triangleCount)
+        {
             // Render con shader
             foreach (var pass in _effect.CurrentTechnique.Passes)
             {
                 graphicsDevice.SamplerStates[0] = SamplerState.LinearWrap;
-                graphicsDevice.DepthStencilState = DepthStencilState.Default;
                 graphicsDevice.BlendState = BlendState.Opaque;
                 graphicsDevice.SamplerStates[0] = SamplerState.LinearWrap;
                 pass.Apply();
-                graphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, terrain.vbTerrain.VertexCount / 3);
+                graphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, offset, triangleCount);
             }
         }
     }

@@ -24,7 +24,8 @@ float SceneBrightness;
 
 float Time = 0;
 float3 CameraPosition;
-
+float3 CameraDirection;
+float4x4 WorldInverseTranspose;
 float TrackOffset = 0;
 
 texture ModelTexture;
@@ -54,11 +55,15 @@ struct VertexShaderOutput
 struct SolidVertexInput
 {
     float4 Position : POSITION0; 
+	float3 Normal : NORMAL;
+
 };
 
 struct SolidVertexOutput
 {
     float4 Position : SV_POSITION;
+    float3 WorldNormal : TEXCOORD1;
+	float3 WorldPosition : TEXCOORD2;
 };
 
 VertexShaderOutput MainVS(in VertexShaderInput input)
@@ -91,6 +96,10 @@ SolidVertexOutput SolidVS(in SolidVertexInput input)
     float4 worldPosition = mul(input.Position, World);
     float4 viewPosition = mul(worldPosition, View); 
     output.Position = mul(viewPosition, Projection);
+	output.WorldPosition = output.Position.xyz;
+	output.WorldNormal = normalize(
+        mul(input.Normal, (float3x3)WorldInverseTranspose)
+    );	
     return output;
 }
 
@@ -98,6 +107,18 @@ SolidVertexOutput SolidVS(in SolidVertexInput input)
 float4 SolidColorPS(SolidVertexOutput input) : COLOR
 {
     return float4(DiffuseColor, 1.0f);
+}
+float4 SillouettePS(SolidVertexOutput input) : COLOR{
+	float3 N = normalize(input.WorldNormal);
+
+    float3 V = normalize(CameraPosition - input.WorldPosition);
+
+    float facing = abs(dot(N, V));
+
+    //clip(0.18f - facing);
+
+    return float4(1, 1, 1, 1);
+	
 }
 technique BasicColorDrawing
 {
@@ -111,5 +132,11 @@ technique SolidColorDrawing{
 	pass P0{
 		VertexShader = compile VS_SHADERMODEL SolidVS();
 		PixelShader = compile PS_SHADERMODEL SolidColorPS();
+	}
+};
+technique SillouetteDrawing{
+	pass P0{
+		VertexShader = compile VS_SHADERMODEL SolidVS();
+		PixelShader = compile PS_SHADERMODEL SillouettePS();
 	}
 };

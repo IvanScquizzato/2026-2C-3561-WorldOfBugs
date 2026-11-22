@@ -31,6 +31,7 @@ namespace TGC.MonoGame.TP.Ground
             : base(Content, modelPath, position, rotation, scale, renderer, 1f)
         {
             IsAlphaCutout = true;
+            ShouldOcclude = false;
 
         }
     }

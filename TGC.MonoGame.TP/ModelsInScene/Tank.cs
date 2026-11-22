@@ -297,7 +297,7 @@ namespace TGC.MonoGame.TP.Tanks
 
             float massPerWheel = _mass / raycastCount;
 
-            suspension = massPerWheel * gravityMagnitude / (0.1f * desiredHeight);
+            suspension = massPerWheel * gravityMagnitude / (0.05f * desiredHeight);
             cushioning = cushioningDamping * 2f * MathF.Sqrt(suspension * massPerWheel);
         }
         private void LoadRaycastPoints(Simulation simulation)

@@ -14,6 +14,7 @@ using TGC.MonoGame.TP.Colliders;
 using NumericVector3 = System.Numerics.Vector3;
 using TGC.MonoGame.TP.Missile;
 using System;
+using System.Linq;
 
 namespace TGC.MonoGame.TP.Terrain
 {
@@ -29,6 +30,8 @@ namespace TGC.MonoGame.TP.Terrain
         public readonly Texture2D terrainTexture2;
 
         public VertexBuffer vbTerrain;
+        public int flatTriangleVertexCount = 0;
+        private VertexPositionNormalTexture[] vertices;
         public List<Triangle> triangles { get; set; } = new List<Triangle>();
         public TerrainRenderer _terrainRenderer { get; set; }
 
@@ -51,6 +54,7 @@ namespace TGC.MonoGame.TP.Terrain
             colorMapTexture = colorMap;
             terrainTexture = diffuseMap;
             terrainTexture2 = diffuseMap2;
+            SortFlatAndTiltled();
         }
 
         public int[,] HeightmapData { get; private set; }
@@ -141,6 +145,7 @@ namespace TGC.MonoGame.TP.Terrain
             vbTerrain = new VertexBuffer(this._terrainRenderer._graphicsDevice, VertexPositionNormalTexture.VertexDeclaration, totalVertices, BufferUsage.WriteOnly);
             vbTerrain.SetData(data);
             LoadTriangles(data);
+            vertices = data;
         }
         private void LoadTriangles(VertexPositionNormalTexture[] data)
         {
@@ -249,6 +254,42 @@ namespace TGC.MonoGame.TP.Terrain
                 return true;
             }
             return false;
+        }
+        private void SortFlatAndTiltled()
+        {
+            var flatTriangles = new List<VertexPositionNormalTexture>();
+            var tiltedTriangles = new List<VertexPositionNormalTexture>();
+
+            for (int i = 2; i < vertices.Length; i += 3)
+            {
+                Vector3 normal = Vector3.Normalize(
+                    Vector3.Cross(vertices[i - 1].Position - vertices[i - 2].Position, vertices[i].Position - vertices[i - 2].Position)
+                );
+
+                float inclination = MathF.Acos(
+                    MathHelper.Clamp(
+                        Vector3.Dot(normal, Vector3.Up),
+                        -1f,
+                        1f
+                    )
+                );
+
+
+                if (inclination > MathHelper.ToRadians(25f))
+                {
+                    tiltedTriangles.Add(vertices[i - 2]);
+                    tiltedTriangles.Add(vertices[i - 1]);
+                    tiltedTriangles.Add(vertices[i]);
+                }
+                else
+                {
+                    flatTriangles.Add(vertices[i - 2]);
+                    flatTriangles.Add(vertices[i - 1]);
+                    flatTriangles.Add(vertices[i]);
+                }
+            }
+            flatTriangleVertexCount = flatTriangles.Count();
+            vbTerrain.SetData(flatTriangles.Concat(tiltedTriangles).ToArray());
         }
     }
 

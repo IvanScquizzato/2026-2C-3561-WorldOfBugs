@@ -13,16 +13,35 @@ namespace TGC.MonoGame.TP.Renderers
         public GraphicsDevice _graphicsDevice { get; set; }
         public Effect _effect { get; set; }
         public Effect _hitBoxEffect { get; set; }
+        private DepthStencilState _occluderState;
 
         public BasicRenderer(GraphicsDevice graphicsDevice, Effect effect, Effect hitboxEffect)
         {
             _graphicsDevice = graphicsDevice;
             _effect = effect;
             _hitBoxEffect = hitboxEffect;
+            _occluderState =
+                new DepthStencilState
+                {
+                    DepthBufferEnable = true,
+                    DepthBufferWriteEnable = true,
+                    DepthBufferFunction = CompareFunction.LessEqual,
+
+                    StencilEnable = true,
+                    StencilFunction = CompareFunction.Always,
+
+                    StencilPass = StencilOperation.Replace,
+                    StencilFail = StencilOperation.Keep,
+                    StencilDepthBufferFail = StencilOperation.Keep,
+
+                    ReferenceStencil = 2
+                };
         }
 
         public void Draw(ModelInScene modelInScene, Matrix view, Matrix projection)
         {
+            var previousStencil = _graphicsDevice.DepthStencilState;
+            _graphicsDevice.DepthStencilState = _occluderState;
             _effect.Parameters["View"].SetValue(view);
             _effect.Parameters["Projection"].SetValue(projection);
             _effect.CurrentTechnique = _effect.Techniques["BasicColorDrawing"];
@@ -38,7 +57,7 @@ namespace TGC.MonoGame.TP.Renderers
 
                 _effect.Parameters["World"].SetValue(world);
                 foreach (var meshPart in mesh.MeshParts)
-                { 
+                {
                     if (modelInScene.GetTextures()[index] != null)
                     {
                         _effect.Parameters["ModelTexture"].SetValue(modelInScene.GetTextures()[index]);
@@ -50,6 +69,7 @@ namespace TGC.MonoGame.TP.Renderers
                     index++;
                 }
             }
+            _graphicsDevice.DepthStencilState = previousStencil;
         }
     }
 }

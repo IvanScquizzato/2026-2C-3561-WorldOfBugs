@@ -14,12 +14,28 @@ namespace TGC.MonoGame.TP.Renderers
         public GraphicsDevice _graphicsDevice { get; set; }
         public Effect _effect { get; set; }
         public Effect _hitBoxEffect { get; set; }
+        private DepthStencilState occluderState;
 
         public PBRRenderer(GraphicsDevice graphicsDevice, Effect effect, Effect hitboxEffect)
         {
             _graphicsDevice = graphicsDevice;
             _effect = effect;
             _hitBoxEffect = hitboxEffect;
+            occluderState =
+                new DepthStencilState
+                {
+                    DepthBufferEnable = true,
+                    DepthBufferWriteEnable = true,
+                    DepthBufferFunction = CompareFunction.LessEqual,
+
+                    StencilEnable = true,
+                    StencilFunction = CompareFunction.Always,
+                    StencilPass = StencilOperation.Replace,
+                    StencilFail = StencilOperation.Keep,
+                    StencilDepthBufferFail = StencilOperation.Keep,
+
+                    ReferenceStencil = 2
+                };
         }
 
         public void Draw(ModelInScene modelInScene, Matrix view, Matrix projection)
@@ -28,6 +44,15 @@ namespace TGC.MonoGame.TP.Renderers
             {
                 return;
             }
+            if (modelInScene.ShouldOcclude)
+            {
+                _graphicsDevice.DepthStencilState = occluderState;
+            }
+            else
+            {
+                _graphicsDevice.DepthStencilState = DepthStencilState.Default;
+            }
+
             _effect.Parameters["View"].SetValue(view);
             _effect.Parameters["Projection"].SetValue(projection);
             _effect.Parameters["Roughness"].SetValue(0.7f);
@@ -78,6 +103,8 @@ namespace TGC.MonoGame.TP.Renderers
                     index++;
                 }
             }
+            _graphicsDevice.DepthStencilState = DepthStencilState.Default;
+
         }
     }
 }

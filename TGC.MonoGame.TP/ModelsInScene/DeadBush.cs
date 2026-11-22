@@ -24,6 +24,8 @@ namespace TGC.MonoGame.TP.Bush
             : base(Content, modelPath, position, rotation, scale, renderer, 1f)
         {
             IsAlphaCutout = true;
+            ShouldOcclude = false;
+
         }
     }
 }

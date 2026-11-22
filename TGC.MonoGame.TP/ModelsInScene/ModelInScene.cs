@@ -175,6 +175,7 @@ namespace TGC.MonoGame.TP.ModelsInScene
         protected static readonly IMaterial Wood = new Wood();
         protected static readonly IMaterial Metal = new Metal();
         protected static readonly IMaterial Rock = new Rock();
+        public bool ShouldOcclude = true;
         public ModelInScene(ContentManager Content, String modelPath, Vector3 position, Matrix rotation, Vector3 scale, IModelInSceneRenderer renderer, float mass)
         {
             _content = Content;
