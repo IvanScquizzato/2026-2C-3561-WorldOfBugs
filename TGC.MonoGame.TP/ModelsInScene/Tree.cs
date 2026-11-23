@@ -53,6 +53,7 @@ namespace TGC.MonoGame.TP.Trees
             )
         {
             IsAlphaCutout = true;
+            ShouldOcclude = true;
             strength = 5000000f;
         }
         public override void CreateHitbox(Effect effect, GraphicsDevice graphicsDevice)

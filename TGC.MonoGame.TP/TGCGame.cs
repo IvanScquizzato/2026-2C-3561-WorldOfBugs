@@ -139,8 +139,8 @@ public class TGCGame : Game
     private float _horaDelDia = 6.7f;
     private float _velocidadDelTiempoHora = 0.1f;
     private double _lastShadowMapTime = 0.0;
-    private float _farShadowAreaSize = 6000f;
-    private float _closeShadowAreaSize = 1300f;
+    private float _farShadowAreaSize = 9000f;
+    private float _closeShadowAreaSize = 1500f;
 
     private Effect _terrainEffect;
     private Texture2D _terrainGrassNormal;

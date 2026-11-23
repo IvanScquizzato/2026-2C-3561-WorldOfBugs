@@ -16,7 +16,7 @@ class SillouetteRenderer
     private readonly GraphicsDevice _graphicsDevice;
     private readonly Effect _effect;
     private DepthStencilState _compositeState;
-    public RenderTarget2D WhiteTarget { get; }
+    public RenderTarget2D WhiteTarget { get; private set; }
     private Effect _outlineEffect;
     public SillouetteRenderer(GraphicsDevice graphicsDevice, Effect solidEffect, Effect outlineEffect)
     {
@@ -24,7 +24,8 @@ class SillouetteRenderer
         _effect = solidEffect ?? throw new ArgumentNullException(nameof(solidEffect));
         _outlineEffect = outlineEffect;
         WhiteTarget = new RenderTarget2D(
-            graphicsDevice, graphicsDevice.Viewport.Width, graphicsDevice.Viewport.Height, false,
+            graphicsDevice, _graphicsDevice.PresentationParameters.BackBufferWidth,
+           _graphicsDevice.PresentationParameters.BackBufferHeight, false,
             SurfaceFormat.Color, DepthFormat.Depth24Stencil8, 0,
             RenderTargetUsage.DiscardContents);
 
@@ -44,8 +45,34 @@ class SillouetteRenderer
         };
 
     }
+    private void EnsureWhiteTargetSize()
+    {
+        int width = _graphicsDevice.PresentationParameters.BackBufferWidth;
+        int height = _graphicsDevice.PresentationParameters.BackBufferHeight;
+
+        if (WhiteTarget != null &&
+            WhiteTarget.Width == width &&
+            WhiteTarget.Height == height)
+        {
+            return;
+        }
+
+        WhiteTarget?.Dispose();
+
+        WhiteTarget = new RenderTarget2D(
+            _graphicsDevice,
+            width,
+            height,
+            false,
+            SurfaceFormat.Color,
+            DepthFormat.Depth24Stencil8,
+            0,
+            RenderTargetUsage.DiscardContents
+        );
+    }
     public void Render(IReadOnlyList<ModelInScene> modelsInScene, Matrix view, Matrix projection)
     {
+        EnsureWhiteTargetSize();
         Vector3 realCameraPosition = Matrix.Invert(view).Translation;
         var previousDepthState = _graphicsDevice.DepthStencilState;
         var previousRasterizer = _graphicsDevice.RasterizerState;
@@ -72,6 +99,7 @@ class SillouetteRenderer
 
                 Matrix[] bones = new Matrix[modelo.Bones.Count];
                 modelo.CopyAbsoluteBoneTransformsTo(bones);
+                int index = 0;
 
                 foreach (ModelMesh mesh in modelo.Meshes)
                 {
@@ -83,16 +111,30 @@ class SillouetteRenderer
                     );
                     _effect.Parameters["View"].SetValue(view);
                     _effect.Parameters["Projection"].SetValue(projection);
-
                     foreach (ModelMeshPart part in mesh.MeshParts)
                     {
+                        if (model.GetTextures()[index] != null)
+                        {
+                            _effect.Parameters["ModelTexture"].SetValue(
+                                model.GetTextures()[index]
+                            );
+                        }
                         _effect.CurrentTechnique.Passes[0].Apply();
-
-                        _graphicsDevice.SetVertexBuffer(part.VertexBuffer);
-                        _graphicsDevice.Indices = part.IndexBuffer;
-                        _graphicsDevice.DrawIndexedPrimitives(
-                            PrimitiveType.TriangleList, part.VertexOffset,
-                            part.StartIndex, part.PrimitiveCount);
+                        if (model is Tank tank)
+                        {
+                            _graphicsDevice.SetVertexBuffer(tank._dynamicVertexBuffers[part]);
+                            _graphicsDevice.Indices = part.IndexBuffer;
+                            _graphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, part.StartIndex, part.PrimitiveCount);
+                        }
+                        else
+                        {
+                            _graphicsDevice.SetVertexBuffer(part.VertexBuffer);
+                            _graphicsDevice.Indices = part.IndexBuffer;
+                            _graphicsDevice.DrawIndexedPrimitives(
+                                PrimitiveType.TriangleList, part.VertexOffset,
+                                part.StartIndex, part.PrimitiveCount);
+                        }
+                        index++;
                     }
                 }
             }

@@ -174,7 +174,7 @@ namespace TGC.MonoGame.TP.Renderers
                     }
                 }
                 _graphicsDevice.DepthStencilState = DepthStencilState.Default;
-
+                _effect.Parameters["TrackOffset"].SetValue(0f);
             }
         }
     }

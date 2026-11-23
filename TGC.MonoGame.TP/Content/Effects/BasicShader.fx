@@ -56,7 +56,7 @@ struct SolidVertexInput
 {
     float4 Position : POSITION0; 
 	float3 Normal : NORMAL;
-
+	float2 TexCoord : TEXCOORD0;
 };
 
 struct SolidVertexOutput
@@ -64,6 +64,7 @@ struct SolidVertexOutput
     float4 Position : SV_POSITION;
     float3 WorldNormal : TEXCOORD1;
 	float3 WorldPosition : TEXCOORD2;
+	float2 TexCoord : TEXCOORD0;
 };
 
 VertexShaderOutput MainVS(in VertexShaderInput input)
@@ -100,14 +101,19 @@ SolidVertexOutput SolidVS(in SolidVertexInput input)
 	output.WorldNormal = normalize(
         mul(input.Normal, (float3x3)WorldInverseTranspose)
     );	
+	 output.TexCoord = input.TexCoord;
+    output.TexCoord.y += TrackOffset;
     return output;
 }
 
 // El Pixel Shader ya no recibe TexCoord
 float4 SolidColorPS(SolidVertexOutput input) : COLOR
 {
-    return float4(DiffuseColor, 1.0f);
-}
+	float4 textureColor = tex2D(TextureSampler, input.TexCoord);
+
+    clip(textureColor.a - 0.1f);
+
+    return float4(DiffuseColor, 1.0f);}
 float4 SillouettePS(SolidVertexOutput input) : COLOR{
 	float3 N = normalize(input.WorldNormal);
 

@@ -83,6 +83,7 @@ float4 OutlinePS(SpriteVertexOutput input) : COLOR
     clip(isEdge ? 1 : -1);
 
     return float4(1, 1, 1, 1);
+
 }
 technique SillouetteDrawing
 {

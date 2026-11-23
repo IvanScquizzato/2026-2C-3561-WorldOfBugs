@@ -775,7 +775,6 @@ namespace TGC.MonoGame.TP.Tanks
                     verticesPorMeshPart[meshPart] = (vertexs, mesh);
                 }
             }
-            Console.WriteLine($"El tanque tiene {verticesPorMeshPart.Sum(kvp => kvp.Value.Item1.Length)} vertices y {verticesPorMeshPart.Sum(kvp => kvp.Value.Item2.MeshParts.Sum(mp => mp.PrimitiveCount))} triangulos");
             if (ModeloLowPoly == null)
             {
                 ModeloLowPoly = Content.Load<Model>("Models/Tanks/Panzer/Panzer old");
