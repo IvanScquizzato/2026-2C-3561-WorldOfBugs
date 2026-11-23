@@ -19,7 +19,7 @@ public sealed class ShadowMapRenderer : IDisposable
 {
     private const int CloseMapSize = 1024;
     private float CloseShadowAreaSize;
-    private const int FarMapSize = 2048;
+    private const int FarMapSize = 1024;
     private float FarShadowAreaSize;
     private const float MaxCasterDistanceSq = 7500f * 7500f;
 

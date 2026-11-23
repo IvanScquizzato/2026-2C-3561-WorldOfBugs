@@ -147,7 +147,7 @@ public class TGCGame : Game
     private float _horaDelDia = 6.7f;
     private float _velocidadDelTiempoHora = 0.1f;
     private double _lastShadowMapTime = 0.0;
-    private float _farShadowAreaSize = 9000f;
+    private float _farShadowAreaSize = 8000f;
     private float _closeShadowAreaSize = 1500f;
 
     private Effect _terrainEffect;
@@ -172,7 +172,6 @@ public class TGCGame : Game
 
         _graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width - 100;
         _graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height - 100;
-        _graphics.PreferredDepthStencilFormat = DepthFormat.Depth24Stencil8;
         // Para que el juego sea pantalla completa se puede usar Graphics IsFullScreen.
         // Carpeta raiz donde va a estar toda la Media.
         Content.RootDirectory = "Content";
@@ -1172,13 +1171,13 @@ public class TGCGame : Game
         bool hasSun = _dayNightCycle.SunIntensity > 0.01f;
         _lastShadowMapTime += gameTime.ElapsedGameTime.TotalSeconds;
 
-        if (hasSun && _lastShadowMapTime > 1.0 / 30.0 && _gameState != GameState.MainMenu)
+        if (hasSun && _lastShadowMapTime > 1.0 / 60.0 && _gameState != GameState.MainMenu)
         {
             _shadowMapRenderer.Render(
-                _tanks[0].Position,
-                _dayNightCycle.SunDirection,
-                _modelosEnEscenario,
-                _currentCamera);
+              _tanks[0].Position,
+            _dayNightCycle.SunDirection,
+           _modelosEnEscenario,
+           _currentCamera);
             _lastShadowMapTime = 0d;
         }
         if (_gameState != GameState.MainMenu)
