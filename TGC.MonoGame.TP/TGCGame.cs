@@ -39,6 +39,8 @@ using TGC.MonoGame.TP.Colliders;
 using System.Security.Cryptography.X509Certificates;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using static TGC.MonoGame.TP.Renderers.TerrainRenderer;
+
 namespace TGC.MonoGame.TP;
 
 public struct ImpactData
@@ -60,6 +62,9 @@ public struct ImpactData
 /// </summary>
 public class TGCGame : Game
 {
+    [System.Runtime.InteropServices.DllImport("opengl32.dll")]
+    private static extern IntPtr glGetString(uint name);
+
     public const string ContentFolder3D = "Models/";
     public const string ContentFolderEffects = "Effects/";
     public const string ContentFolderMusic = "Music/";
@@ -116,7 +121,10 @@ public class TGCGame : Game
     private const float MissileSpeed = 1500f;
     public static Vector3 gravity = new Vector3(0, -1000f, 0);
     public static Dictionary<CollidableReference, ModelInScene> PhysicsToGameObjects = new Dictionary<CollidableReference, ModelInScene>();
-
+    private readonly System.Diagnostics.Stopwatch _frameClock = System.Diagnostics.Stopwatch.StartNew();
+    private double _fpsAccumTime;
+    private int _fpsAccumFrames;
+    private float _fps;
     public static TGCGame Instance { get; private set; }
     private List<DynamicRock> _dynamicRocks = new List<DynamicRock>();
 
@@ -199,7 +207,6 @@ public class TGCGame : Game
         // Seria hasta aca.
 
         _camera = new SimpleCamera(GraphicsDevice.Viewport.AspectRatio, Vector3.UnitY * 500, 200, 1f, 1, 1000000);
-        _modelosEnEscenario.Add(_tanks);
         _modelosEnEscenario.Add(_trees);
         _modelosEnEscenario.Add(_plants);
         _modelosEnEscenario.Add(_terrains);
@@ -207,9 +214,10 @@ public class TGCGame : Game
         _modelosEnEscenario.Add(_decor);
         _modelosEnEscenario.Add(_missiles);
         _modelosEnEscenario.Add(_dynamicRocks);
+        _modelosEnEscenario.Add(_tanks);
 
         _bufferPool = new BufferPool();
-        _graphics.IsFullScreen = true;
+        _graphics.IsFullScreen = false;
         _graphics.ApplyChanges();
         base.Initialize();
     }
@@ -428,6 +436,8 @@ public class TGCGame : Game
             _stars.SetData(face, new[] { Color.Black });
 
         _sillouetteRenderer = new SillouetteRenderer(GraphicsDevice, _effect, _outlineEffect);
+        Console.WriteLine("GPU: " + System.Runtime.InteropServices.Marshal.PtrToStringAnsi(glGetString(0x1F01)));   // GL_RENDERER
+
         base.LoadContent();
 
     }
@@ -1065,7 +1075,8 @@ public class TGCGame : Game
         effect.Parameters["FarShadowAreaSize"]?.SetValue(_farShadowAreaSize);
         effect.Parameters["LightDirection"]?.SetValue(-_dayNightCycle.SunDirection);
         effect.Parameters["TankPosition"]?.SetValue(_tanks[0].Position);
-        effect.Parameters["ShadowBias"].SetValue(0.003f);
+        effect.Parameters["CloseShadowBias"].SetValue(0.002f);
+        effect.Parameters["FarShadowBias"].SetValue(0.007f);
         effect.Parameters["ShadowsEnabled"].SetValue(enabled ? 1f : 0f);
     }
 
@@ -1076,6 +1087,10 @@ public class TGCGame : Game
     protected override void Draw(GameTime gameTime)
     {
         //GraphicsDevice.Clear(Color.LightBlue);
+        double frameSeconds = _frameClock.Elapsed.TotalSeconds;
+        _frameClock.Restart();
+        _fpsAccumTime += frameSeconds;
+        _fpsAccumFrames++;
 
         Matrix view = _currentCamera.View;
         Matrix projection = _currentCamera.Projection;
@@ -1132,8 +1147,14 @@ public class TGCGame : Game
             }
             else
             {
-                float fps = 1f / (float)gameTime.ElapsedGameTime.TotalSeconds;
-                _hud.Draw(_spriteBatch, _tanks[0], _tanks, fps);
+                if (_fpsAccumTime >= 0.5)
+                {
+                    _fps = (float)(_fpsAccumFrames / _fpsAccumTime);
+                    _fpsAccumTime = 0;
+                    _fpsAccumFrames = 0;
+                }
+                _hud.Draw(_spriteBatch, _tanks[0], _tanks, _fps);
+
             }
 
 
@@ -1145,9 +1166,6 @@ public class TGCGame : Game
     }
     private void DrawWorld(Matrix view, Matrix projection, GameTime gameTime)
     {
-        GraphicsDevice.Clear(
-           ClearOptions.Target | ClearOptions.DepthBuffer | ClearOptions.Stencil,
-           Color.CornflowerBlue, 1f, 0);
 
         // Leer la cámara una sola vez para este frame.
 
@@ -1165,7 +1183,7 @@ public class TGCGame : Game
         }
         if (_gameState != GameState.MainMenu)
         {
-            _sillouetteRenderer.Render(_tanks.GetRange(1, _tanks.Count - 1), view, projection);
+            _sillouetteRenderer.Render(_tanks.GetRange(1, _tanks.Count - 1), view, projection, _currentCamera);
         }
 
 
@@ -1184,24 +1202,22 @@ public class TGCGame : Game
         Vector3 cameraPosition = Matrix.Invert(view).Translation;
         const float maxDrawDistance = 5000f;
         float maxDrawDistanceSquared = maxDrawDistance * maxDrawDistance;
+
+        _terrainRenderer.Part = TerrainPart.TiltedOnly;
         foreach (var lista in _modelosEnEscenario)
-        {
             foreach (var modelo in lista)
-            {
-                if (modelo._isDisabled)
-                    continue;
-                /*
-                if (modelo is not SimpleTerrain &&Vector3.DistanceSquared(modelo.Position, cameraPosition)> maxDrawDistanceSquared)
-                {
-                    continue;
-                }
-                if (modelo is Grass && Vector3.DistanceSquared(modelo.Position, cameraPosition) > 2000f * 2000f)
-                {
-                    continue;
-                }*/
-                modelo.Draw(view, projection);
-            }
-        }
+                if (!modelo._isDisabled && modelo.ShouldOcclude)
+                    modelo.Draw(view, projection);
+
+        if (_gameState != GameState.MainMenu)
+            _sillouetteRenderer.Show(_spriteBatch, _currentCamera, projection);
+
+        _terrainRenderer.Part = TerrainPart.FlatOnly;
+        foreach (var lista in _modelosEnEscenario)
+            foreach (var modelo in lista)
+                if (!modelo._isDisabled && (!modelo.ShouldOcclude || modelo is SimpleTerrain))
+                    modelo.Draw(view, projection);
+        _terrainRenderer.Part = TerrainPart.All;
 
 
         // El skybox cambia estados gráficos; guardarlos y restaurarlos.
@@ -1214,10 +1230,6 @@ public class TGCGame : Game
         GraphicsDevice.DepthStencilState = previousDepth;
         GraphicsDevice.RasterizerState = previousRasterizer;
         GraphicsDevice.BlendState = previousBlend;
-        if (_gameState != GameState.MainMenu)
-        {
-            _sillouetteRenderer.Show(_spriteBatch);
-        }
 
 
         if (_showShadowMap && hasSun && _gameState != GameState.MainMenu)

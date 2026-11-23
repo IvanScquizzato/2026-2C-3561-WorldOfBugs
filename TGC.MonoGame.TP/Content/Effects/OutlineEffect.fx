@@ -8,6 +8,9 @@
 #endif
 
 float4x4 MatrixTransform;
+float FarPlane;
+float ProjM33;      
+float ProjM43;
 texture Texture;
 
 sampler2D TextureSampler = sampler_state
@@ -34,6 +37,11 @@ struct SpriteVertexOutput
     float4 Color : COLOR0;
     float2 TexCoord : TEXCOORD0;
 };
+struct OutlineOutput
+{
+    float4 Color : COLOR0;
+    float Depth : DEPTH0;
+};
 
 SpriteVertexOutput SpriteVS(SpriteVertexInput input)
 {
@@ -47,11 +55,11 @@ SpriteVertexOutput SpriteVS(SpriteVertexInput input)
 }
 
 
-float4 OutlinePS(SpriteVertexOutput input) : COLOR
+OutlineOutput OutlinePS(SpriteVertexOutput input)
 {
     float2 uv = input.TexCoord;
 
-    float center = tex2D(TextureSampler, uv).a;
+    float4 center = tex2D(TextureSampler, uv);
 
     float left = tex2D(
                      TextureSampler,
@@ -74,15 +82,22 @@ float4 OutlinePS(SpriteVertexOutput input) : COLOR
                      .a;
 
     bool isEdge =
-        center > 0.5 &&
+        center.a > 0.5 &&
         (left < 0.5 ||
          right < 0.5 ||
          up < 0.5 ||
          down < 0.5);
 
     clip(isEdge ? 1 : -1);
+    float DepthBias = 5.0;
+    float d = (center.r + center.g / 255.0) * FarPlane - DepthBias;
+    d = max(d, 0.01);
+    float hardwareDepth = ProjM43 / d - ProjM33;
 
-    return float4(1, 1, 1, 1);
+    OutlineOutput o;
+    o.Color = float4(1, 1, 1, 1);
+    o.Depth = hardwareDepth;
+    return o;
 
 }
 technique SillouetteDrawing
