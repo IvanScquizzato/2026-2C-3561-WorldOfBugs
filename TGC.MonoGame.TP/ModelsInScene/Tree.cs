@@ -126,7 +126,7 @@ namespace TGC.MonoGame.TP.Trees
         }
         public override Model GetModelForRendering(float distance)
         {
-            if (distance > 6000f)
+            if (distance > 2000f)
             {
                 return ModeloLowPoly;
             }

@@ -20,7 +20,7 @@ namespace TGC.MonoGame.TP.Renderers
             _graphicsDevice = graphicsDevice;
             _effect = effect;
             _hitBoxEffect = hitboxEffect;
-            _occluderState =
+            _occluderState = DepthStencilState.Default;/*
                 new DepthStencilState
                 {
                     DepthBufferEnable = true,
@@ -35,7 +35,7 @@ namespace TGC.MonoGame.TP.Renderers
                     StencilDepthBufferFail = StencilOperation.Keep,
 
                     ReferenceStencil = 2
-                };
+                };*/
         }
 
         public void Draw(ModelInScene modelInScene, Matrix view, Matrix projection)
