@@ -19,7 +19,6 @@ namespace TGC.MonoGame.TP.Renderers
             _graphicsDevice = graphicsDevice;
             _effect = effect;
             _hitBoxEffect = hitboxEffect;
-
         }
 
         public void Draw(ModelInScene modelInScene, Matrix view, Matrix projection)

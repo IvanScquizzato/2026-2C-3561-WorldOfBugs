@@ -22,13 +22,12 @@ namespace TGC.MonoGame.TP.Cameras
         ///     The direction that is "up" from the camera's point of view.
         /// </summary>
         public readonly Vector3 DefaultWorldUpVector = Vector3.Up;
-        private MouseState _currentMouseState = new MouseState();
+       
 
         private float _sensitivity;
         public readonly ModelInScene modelThatFollows;
         public readonly float distanceToModel;
-        private float _turn = -MathHelper.PiOver2;
-        private float _pitch = MathHelper.PiOver4;
+
         public float _cameraYaw = MathHelper.Pi * 2;
         public float _cameraPitch = 0f;
         private float sensibilidadX = 0.004f;
@@ -36,7 +35,7 @@ namespace TGC.MonoGame.TP.Cameras
         private float alturaMaxCamara = 0.5f;
         private float alturaMinCamara = -0.2f;
         private float minDistanceFromGround = 50f;
-        private MouseState _previousMouseState;
+      
         private readonly SimpleTerrain _terrain;
 
 
@@ -138,7 +137,15 @@ namespace TGC.MonoGame.TP.Cameras
                     terrainHeight + minDistanceFromGround;
             }
 
-            View = Matrix.CreateLookAt(cameraPosition, cameraPosition + lookDirection, Vector3.Up);
+           Vector3 target =
+    modelThatFollows.Position +
+    Vector3.Up * 280f +
+    lookDirection * 100f;
+
+View = Matrix.CreateLookAt(
+    cameraPosition,
+    target,
+    Vector3.Up);
         }
 
 
