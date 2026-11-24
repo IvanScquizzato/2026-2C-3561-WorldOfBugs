@@ -129,6 +129,20 @@ public class TGCGame : Game
     private double _fpsAccumTime;
     private int _fpsAccumFrames;
     private float _fps;
+
+    // Tiempo real de trabajo por frame (BeginDraw -> EndDraw, incluye Present).
+    // Con fixed timestep los FPS quedan topados en 60, esto muestra el margen real.
+    private readonly Stopwatch _drawTimer = new();
+    private double _drawMsAccum;
+    private double _drawMsMaxAccum;
+    private int _drawMsFrames;
+    private float _frameMs;
+    private float _frameMsMax;
+    private string _perfText = string.Empty;
+
+    // true = muestra en el HUD tiempo de frame, draws y desglose de sombras.
+    // false = solo FPS.
+    public static bool ShowPerformanceStats = false;
     public static TGCGame Instance { get; private set; }
     private List<DynamicRock> _dynamicRocks = new List<DynamicRock>();
 
@@ -151,7 +165,7 @@ public class TGCGame : Game
     private float _horaDelDia = 6.7f;
     private float _velocidadDelTiempoHora = 0.1f;
     private double _lastShadowMapTime = 0.0;
-    private float _farShadowAreaSize = 6000f;
+    private float _farShadowAreaSize = 9000f;
     private float _closeShadowAreaSize = 1500f;
 
     private Effect _terrainEffect;
@@ -183,6 +197,8 @@ public class TGCGame : Game
         Content.RootDirectory = "Content";
         // Hace que el mouse sea visible.
         IsMouseVisible = true;
+
+        //_graphics.SynchronizeWithVerticalRetrace = false;
     }
 
     public enum GameState
@@ -1186,8 +1202,29 @@ public class TGCGame : Game
                     _fps = (float)(_fpsAccumFrames / _fpsAccumTime);
                     _fpsAccumTime = 0;
                     _fpsAccumFrames = 0;
+
+                    if (_drawMsFrames > 0)
+                    {
+                        _frameMs = (float)(_drawMsAccum / _drawMsFrames);
+                        _frameMsMax = (float)_drawMsMaxAccum;
+                    }
+                    _drawMsAccum = 0;
+                    _drawMsMaxAccum = 0;
+                    _drawMsFrames = 0;
+
+                    // Snapshot cada 0,5 s para que los números se puedan leer.
+                    // Metrics se resetea en cada Present, así que acá tiene todo
+                    // lo dibujado en este frame salvo el HUD.
+                    var metrics = GraphicsDevice.Metrics;
+                    int shadowDraws = _shadowMapRenderer.LastDrawCalls;
+                    _perfText =
+                        $"Frame: {_frameMs:0.0} ms (max {_frameMsMax:0.0})\n" +
+                        $"Sombras: {shadowDraws} draws, {_shadowMapRenderer.LastTriangles} tris, CPU {_shadowMapRenderer.LastCpuMs:0.00} ms\n" +
+                        $"{_shadowMapRenderer.GetStatsByTypeText()}\n" +
+                        $"Resto: {metrics.DrawCount - shadowDraws} draws, {metrics.PrimitiveCount - _shadowMapRenderer.LastTriangles} tris";
                 }
-                _hud.Draw(_spriteBatch, _tanks[0], _tanks, _fps, _remainingTime);
+                _hud.Draw(_spriteBatch, _tanks[0], _tanks, _fps,
+                    ShowPerformanceStats ? _perfText : string.Empty, _remainingTime);
 
             }
 
@@ -1195,9 +1232,24 @@ public class TGCGame : Game
 
         }
 
-
         base.Draw(gameTime);
     }
+
+    protected override bool BeginDraw()
+    {
+        _drawTimer.Restart();
+        return base.BeginDraw();
+    }
+
+    protected override void EndDraw()
+    {
+        base.EndDraw(); // Present: si la GPU va atrasada, acá se espera.
+        double ms = _drawTimer.Elapsed.TotalMilliseconds;
+        _drawMsAccum += ms;
+        _drawMsMaxAccum = Math.Max(_drawMsMaxAccum, ms);
+        _drawMsFrames++;
+    }
+
     private void DrawWorld(Matrix view, Matrix projection, GameTime gameTime)
     {
 
@@ -1206,7 +1258,7 @@ public class TGCGame : Game
         bool hasSun = _dayNightCycle.SunIntensity > 0.01f;
         _lastShadowMapTime += gameTime.ElapsedGameTime.TotalSeconds;
 
-        if (hasSun && _lastShadowMapTime > 1.0 / 60.0 && _gameState != GameState.MainMenu)
+        if (hasSun && _lastShadowMapTime >= 1.0 / 60.0 && _gameState != GameState.MainMenu)
         {
             _shadowMapRenderer.Render(
               _tanks[0].Position,

@@ -15,6 +15,14 @@ namespace TGC.MonoGame.TP.Renderers
         public Effect _effect { get; set; }
         public Effect _hitBoxEffect { get; set; }
         private HashSet<ModelInScene> _loggedModels = new();
+
+        // Si algo se ve mal, poner en false vuelve al camino anterior
+        // (un draw por ModelMeshPart).
+        private const bool UseMergedMeshes = true;
+
+        // Una malla unificada por Model, compartida entre instancias. null =
+        // el modelo no se pudo unificar y se dibuja por el camino de siempre.
+        private readonly Dictionary<Model, MergedModelMesh> _mergedMeshes = new();
         public PBRRenderer(GraphicsDevice graphicsDevice, Effect effect, Effect hitboxEffect)
         {
             _graphicsDevice = graphicsDevice;
@@ -41,6 +49,11 @@ namespace TGC.MonoGame.TP.Renderers
             _effect.Parameters["TrackOffset"]?.SetValue(0f);
             Model model = modelInScene.GetModelForRendering((realCameraPosition - modelInScene.Position).Length());
 
+            if (UseMergedMeshes && TryDrawMerged(modelInScene, model))
+            {
+                _graphicsDevice.DepthStencilState = DepthStencilState.Default;
+                return;
+            }
 
             var modelMeshesBaseTransforms = new Matrix[model.Bones.Count];
             model.CopyAbsoluteBoneTransformsTo(modelMeshesBaseTransforms);
@@ -83,6 +96,52 @@ namespace TGC.MonoGame.TP.Renderers
             }
             _graphicsDevice.DepthStencilState = DepthStencilState.Default;
 
+        }
+
+        private bool TryDrawMerged(ModelInScene modelInScene, Model model)
+        {
+            if (!_mergedMeshes.TryGetValue(model, out MergedModelMesh merged))
+            {
+                // Se construye la primera vez que el modelo se dibuja.
+                merged = MergedModelMesh.TryBuild(_graphicsDevice, model, modelInScene.GetTextures());
+                _mergedMeshes[model] = merged;
+            }
+            if (merged == null)
+                return false;
+
+            // Las transformaciones de los huesos ya están aplicadas en los vértices.
+            _effect.Parameters["World"].SetValue(modelInScene._world);
+
+            foreach (MergedModelMesh.Batch batch in merged.Batches)
+            {
+                // Mismo seteo de estado que hace el camino por partes.
+                Texture2D texture = batch.Texture;
+                if (texture != null)
+                {
+                    _effect.Parameters["ModelTexture"]?.SetValue(texture);
+                    if (modelInScene._normalMapsOfTexture.TryGetValue(texture, out Texture normalMap))
+                    {
+                        _effect.Parameters["NormalMap"]?.SetValue(normalMap);
+                        _effect.CurrentTechnique = _effect.Techniques["WithNormalMap"];
+                    }
+                    else
+                    {
+                        _effect.CurrentTechnique = _effect.Techniques["WithoutNormalMap"];
+                    }
+                    if (modelInScene._materialOfNameTexture.TryGetValue(texture.Name, out IMaterial material))
+                    {
+                        _effect.Parameters["Roughness"]?.SetValue(material.Roughness);
+                        _effect.Parameters["K"]?.SetValue(material.K);
+                        _effect.Parameters["F0"]?.SetValue(material.F0);
+                    }
+                }
+
+                _effect.CurrentTechnique.Passes[0].Apply();
+                _graphicsDevice.SetVertexBuffer(batch.Vertices);
+                _graphicsDevice.Indices = batch.Indices;
+                _graphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, batch.PrimitiveCount);
+            }
+            return true;
         }
     }
 }

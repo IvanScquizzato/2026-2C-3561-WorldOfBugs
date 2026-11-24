@@ -21,7 +21,7 @@ public sealed class ShadowMapRenderer : IDisposable
     private float CloseShadowAreaSize;
     private const int FarMapSize = 1024;
     private float FarShadowAreaSize;
-    private const float MaxCasterDistanceSq = 7500f * 7500f;
+    private const float MaxCasterDistanceSq = 7000f * 7000f;
 
     private readonly GraphicsDevice _graphicsDevice;
     private readonly Effect _effect;
@@ -35,7 +35,27 @@ public sealed class ShadowMapRenderer : IDisposable
     public int LastDrawCalls { get; private set; }
     public int LastTriangles { get; private set; }
     public double LastCpuMs { get; private set; }
+
+    // Diagnóstico temporal: draws y objetos dibujados por tipo en la última Render.
+    private readonly Dictionary<Type, (int Draws, int Objects)> _statsByType = new();
+
+    public string GetStatsByTypeText()
+    {
+        var entries = new List<KeyValuePair<Type, (int Draws, int Objects)>>(_statsByType);
+        entries.Sort((a, b) => b.Value.Draws.CompareTo(a.Value.Draws));
+        var lines = new List<string>(entries.Count);
+        foreach (var kv in entries)
+            lines.Add($"  {kv.Key.Name}: {kv.Value.Draws} draws ({kv.Value.Objects} obj)");
+        return string.Join("\n", lines);
+    }
     private ShadowCasterHull _shadowCasterHull = new ShadowCasterHull();
+
+    // Si algo falla con las mallas unificadas, poner en false vuelve al
+    // camino anterior (un draw por ModelMeshPart).
+    private const bool UseMergedMeshes = true;
+
+    // Una malla unificada por Model (compartida entre todas las instancias).
+    private readonly Dictionary<Model, MergedShadowMesh> _mergedMeshes = new();
     public ShadowMapRenderer(GraphicsDevice graphicsDevice, Effect effect, float farShadowAreaSize, float closeShadowAreaSize)
     {
         _graphicsDevice = graphicsDevice ?? throw new ArgumentNullException(nameof(graphicsDevice));
@@ -64,6 +84,7 @@ public sealed class ShadowMapRenderer : IDisposable
     {
         LastDrawCalls = 0;
         LastTriangles = 0;
+        _statsByType.Clear();
 
         Vector3 sunDirection = Vector3.Normalize(directionToSun);
         Vector3 up = Math.Abs(Vector3.Dot(sunDirection, Vector3.Up)) > 0.95f
@@ -105,6 +126,7 @@ public sealed class ShadowMapRenderer : IDisposable
             _graphicsDevice.SetRenderTarget(null);
 
             stopwatch.Stop();
+            LastCpuMs = stopwatch.Elapsed.TotalMilliseconds;
             //Console.WriteLine($"CPU Time={stopwatch.Elapsed.TotalMilliseconds} ms");
 
         }
@@ -131,7 +153,7 @@ public sealed class ShadowMapRenderer : IDisposable
                     continue;
                 if (model is SimpleTerrain terrain)
                 {
-                    DrawTerrain(terrain, lightViewProjection);
+                    //DrawTerrain(terrain, lightViewProjection);
                     continue;
                 }
                 if (Vector3.DistanceSquared(model.Position, focus) > MaxCasterDistanceSq)
@@ -147,7 +169,11 @@ public sealed class ShadowMapRenderer : IDisposable
                 }
 
 
+                int drawsBefore = LastDrawCalls;
                 DrawModel(model, lightViewProjection, focus, directionToSun);
+                Type modelType = model.GetType();
+                _statsByType.TryGetValue(modelType, out var stats);
+                _statsByType[modelType] = (stats.Draws + LastDrawCalls - drawsBefore, stats.Objects + 1);
 
 
             }
@@ -173,6 +199,13 @@ public sealed class ShadowMapRenderer : IDisposable
         float distanceForShadowMap = Vector3.Cross(focus - model.Position, directionToSun).Length() / directionToSun.Length();
         Model modelo = model.GetModelForShadowMap(distanceForShadowMap);
 
+        // Los tanques tienen torreta/cañón móviles y buffers dinámicos:
+        // siguen por el camino de siempre.
+        if (UseMergedMeshes && model is not Tank)
+        {
+            DrawMerged(model, modelo, LightViewProjection);
+            return;
+        }
 
         Matrix[] bones = new Matrix[modelo.Bones.Count];
         modelo.CopyAbsoluteBoneTransformsTo(bones);
@@ -227,6 +260,35 @@ public sealed class ShadowMapRenderer : IDisposable
     }
 
 
+    private void DrawMerged(ModelInScene model, Model modelo, Matrix lightViewProjection)
+    {
+        if (!_mergedMeshes.TryGetValue(modelo, out MergedShadowMesh merged))
+        {
+            // Se construye la primera vez que el modelo proyecta sombra.
+            merged = MergedShadowMesh.Build(
+                _graphicsDevice, modelo, model.GetTextures(), model.IsAlphaCutout);
+            _mergedMeshes[modelo] = merged;
+        }
+
+        _effect.CurrentTechnique = model.IsAlphaCutout ? _cutoutTechnique : _opaqueTechnique;
+        _effect.Parameters["WorldLightViewProjection"].SetValue(model._world * lightViewProjection);
+
+        foreach (MergedShadowMesh.Batch batch in merged.Batches)
+        {
+            if (model.IsAlphaCutout && batch.Texture != null)
+                _effect.Parameters["ModelTexture"].SetValue(batch.Texture);
+            _effect.CurrentTechnique.Passes[0].Apply();
+
+            _graphicsDevice.SetVertexBuffer(batch.Vertices);
+            _graphicsDevice.Indices = batch.Indices;
+            _graphicsDevice.DrawIndexedPrimitives(
+                PrimitiveType.TriangleList, 0, 0, batch.PrimitiveCount);
+
+            LastDrawCalls++;
+            LastTriangles += batch.PrimitiveCount;
+        }
+    }
+
     private static Matrix GetMeshWorld(ModelInScene model, ModelMesh mesh, Matrix bone)
     {
         if (model is Tank tank)
@@ -245,5 +307,8 @@ public sealed class ShadowMapRenderer : IDisposable
     {
         CloseShadowMap.Dispose();
         FarShadowMap.Dispose();
+        foreach (MergedShadowMesh merged in _mergedMeshes.Values)
+            merged.Dispose();
+        _mergedMeshes.Clear();
     }
 }
