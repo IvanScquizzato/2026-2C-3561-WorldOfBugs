@@ -275,7 +275,7 @@ namespace TGC.MonoGame.TP.Terrain
                 );
 
 
-                if (inclination > MathHelper.ToRadians(25f))
+                if (inclination > MathHelper.ToRadians(10f))
                 {
                     tiltedTriangles.Add(vertices[i - 2]);
                     tiltedTriangles.Add(vertices[i - 1]);

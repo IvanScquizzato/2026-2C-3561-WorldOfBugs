@@ -28,6 +28,7 @@ sampler2D NormalSampler: register(s1) = sampler_state
     Texture = (NormalMap);
     MinFilter = Linear;
     MagFilter = Linear;
+    MipFilter = Linear;
     AddressU = Wrap;
     AddressV = Wrap;
 };

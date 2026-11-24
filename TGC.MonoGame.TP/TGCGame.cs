@@ -149,7 +149,7 @@ public class TGCGame : Game
     private float _horaDelDia = 6.7f;
     private float _velocidadDelTiempoHora = 0.1f;
     private double _lastShadowMapTime = 0.0;
-    private float _farShadowAreaSize = 8000f;
+    private float _farShadowAreaSize = 6000f;
     private float _closeShadowAreaSize = 1500f;
 
     private Effect _terrainEffect;
@@ -1203,7 +1203,7 @@ public class TGCGame : Game
         bool hasSun = _dayNightCycle.SunIntensity > 0.01f;
         _lastShadowMapTime += gameTime.ElapsedGameTime.TotalSeconds;
 
-        if (hasSun && _lastShadowMapTime > 1.0 / 60.0 && _gameState != GameState.MainMenu)
+        if (hasSun && _lastShadowMapTime > 1.0 / 60.0 && _gameState != GameState.MainMenu && gameTime.TotalGameTime.TotalSeconds < 10.0)
         {
             _shadowMapRenderer.Render(
               _tanks[0].Position,

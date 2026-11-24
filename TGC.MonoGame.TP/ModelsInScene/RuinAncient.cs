@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using TGC.MonoGame.TP.Colliders;
 using TGC.MonoGame.TP.Editor;
+using TGC.MonoGame.TP.Materials;
 using TGC.MonoGame.TP.Renderers;
 using NumericQuaternion = System.Numerics.Quaternion;
 using NumericVector3 = System.Numerics.Vector3;
@@ -21,6 +22,14 @@ public class RuinAncient : ModelInScene
     private readonly Matrix[] _boxTransforms;
 
     public override Dictionary<Texture, Texture> _normalMapsOfTexture => NormalMaps;
+    public override Dictionary<string, string> _namesNormalMapsOfNameTexture { get; set; } = new Dictionary<string, string>
+    {
+        { "Models\\ancient-ruins-modular\\textures\\Ruined_Structure_SM_lambert1_BaseColor_0", "Models\\ancient-ruins-modular\\textures\\Ruined_Structure_SM_lambert1_Normal" }
+    };
+    public override Dictionary<string, IMaterial> _materialOfNameTexture { get; set; } = new Dictionary<string, IMaterial>
+    {
+        { "Models\\ancient-ruins-modular\\textures\\Ruined_Structure_SM_lambert1_BaseColor_0", Rock }
+    };
     internal SceneRepository.SceneHitbox[] Hitboxes { get; }
 
     public RuinAncient(ContentManager content, string modelPath, Vector3 position,

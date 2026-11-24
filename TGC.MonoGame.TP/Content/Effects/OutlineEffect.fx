@@ -89,7 +89,7 @@ OutlineOutput OutlinePS(SpriteVertexOutput input)
          down < 0.5);
 
     clip(isEdge ? 1 : -1);
-    float DepthBias = 5.0;
+    float DepthBias = 8.0;
     float d = (center.r + center.g / 255.0) * FarPlane - DepthBias;
     d = max(d, 0.01);
     float hardwareDepth = ProjM43 / d - ProjM33;

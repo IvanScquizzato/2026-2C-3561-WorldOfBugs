@@ -10,6 +10,7 @@ using BepuPhysics;
 using BepuUtilities.Memory;
 using NumericVector3 = System.Numerics.Vector3;
 using System.Collections.Generic;
+using TGC.MonoGame.TP.Materials;
 namespace TGC.MonoGame.TP.Walls
 {
     public class Wall : ModelInScene
@@ -19,6 +20,11 @@ namespace TGC.MonoGame.TP.Walls
 
         public override Dictionary<Texture, Texture> _normalMapsOfTexture
         => _normalMaps;
+        // VigiaPerimetro solo trae albedo (atlas de ladrillo, piedra, madera y chapa); sin mapa de normales.
+        public override Dictionary<string, IMaterial> _materialOfNameTexture { get; set; } = new Dictionary<string, IMaterial>
+        {
+            { "Models\\VigiaPerimetro\\vigia-perimetro-albedo_0", Rock }
+        };
         public Wall(
             ContentManager content,
             string modelPath,
