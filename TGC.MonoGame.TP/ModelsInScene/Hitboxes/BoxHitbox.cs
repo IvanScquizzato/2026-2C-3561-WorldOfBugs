@@ -6,13 +6,20 @@ namespace TGC.MonoGame.TP.ModelsInScene
 {
     public class BoxHitbox : Hitbox
     {
+        private readonly Matrix _localTransform;
         public Vector3 Min { get; private set; }
         public Vector3 Max { get; private set; }
         public BoxHitboxRenderer boxHitboxRenderer { get; set; }
         public BoxHitbox(Vector3 min, Vector3 max, Effect hitboxEffect, GraphicsDevice graphicsDevice)
+            : this(min, max, Matrix.Identity, hitboxEffect, graphicsDevice)
+        {
+        }
+
+        public BoxHitbox(Vector3 min, Vector3 max, Matrix localTransform, Effect hitboxEffect, GraphicsDevice graphicsDevice)
         {
             Min = min;
             Max = max;
+            _localTransform = localTransform;
             boxHitboxRenderer = new BoxHitboxRenderer(hitboxEffect, graphicsDevice);
         }
 
@@ -21,7 +28,7 @@ namespace TGC.MonoGame.TP.ModelsInScene
             Matrix world
         )
         {
-            Matrix inverseWorld = Matrix.Invert(world);
+            Matrix inverseWorld = Matrix.Invert(_localTransform * world);
 
             Vector3 localPoint =
                 Vector3.Transform(worldPoint, inverseWorld);
@@ -37,6 +44,7 @@ namespace TGC.MonoGame.TP.ModelsInScene
 
         public Vector3[] GetWorldCorners(Matrix world)
         {
+            Matrix transform = _localTransform * world;
             Vector3[] corners =
             {
                 new Vector3(Min.X, Min.Y, Min.Z),
@@ -53,7 +61,7 @@ namespace TGC.MonoGame.TP.ModelsInScene
             for (int i = 0; i < corners.Length; i++)
             {
                 corners[i] =
-                    Vector3.Transform(corners[i], world);
+                    Vector3.Transform(corners[i], transform);
             }
 
             return corners;

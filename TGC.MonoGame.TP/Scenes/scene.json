@@ -8,7 +8,7 @@
       "Model": "Models/Car/source/car_low",
       "Position": [
         1989.99996,
-        155.0,
+        122.2,
         -1064.99996
       ],
       "Rotation": [
@@ -29,7 +29,7 @@
       "Model": "Models/Car/source/car_low",
       "Position": [
         889.99996,
-        113.85,
+        107.45,
         2550.0
       ],
       "Rotation": [
@@ -50,7 +50,7 @@
       "Model": "Models/Car/source/car_low",
       "Position": [
         -806.05898,
-        133.91885,
+        107.63549,
         367.66446
       ],
       "Rotation": [
@@ -66,12 +66,1188 @@
       ]
     },
     {
+      "Id": "Vigia_Arboleda_Este_01",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        18392.63916,
+        157.41175,
+        2316.92734
+      ],
+      "Rotation": [
+        0.0,
+        0.56223053,
+        0.0,
+        0.82698059
+      ],
+      "Scale": [
+        111.1268082,
+        111.1268082,
+        111.1268082
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Este_02",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        17564.59351,
+        265.70878,
+        1850.50011
+      ],
+      "Rotation": [
+        0.0,
+        -0.30147663,
+        0.0,
+        0.95347357
+      ],
+      "Scale": [
+        135.3701477,
+        135.3701477,
+        135.3701477
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Este_03",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        17455.76935,
+        357.76834,
+        910.1058
+      ],
+      "Rotation": [
+        -0.0,
+        -0.78253114,
+        -0.0,
+        0.62261146
+      ],
+      "Scale": [
+        101.3735886,
+        101.3735886,
+        101.3735886
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Este_04",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        17389.36462,
+        336.85613,
+        1254.31976
+      ],
+      "Rotation": [
+        0.0,
+        0.73071027,
+        0.0,
+        0.6826877
+      ],
+      "Scale": [
+        137.0410919,
+        137.0410919,
+        137.0410919
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Este_05",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        17287.48322,
+        430.10192,
+        261.25069
+      ],
+      "Rotation": [
+        0.0,
+        0.12412742,
+        0.0,
+        0.9922663
+      ],
+      "Scale": [
+        134.7507172,
+        134.7507172,
+        134.7507172
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Este_06",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        18220.03021,
+        196.4461,
+        1816.25881
+      ],
+      "Rotation": [
+        0.0,
+        0.8574872,
+        0.0,
+        0.51450521
+      ],
+      "Scale": [
+        154.305069,
+        154.305069,
+        154.305069
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Este_07",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        18460.38971,
+        213.39636,
+        671.42377
+      ],
+      "Rotation": [
+        0.0,
+        0.93700618,
+        0.0,
+        0.34931269
+      ],
+      "Scale": [
+        124.0251999,
+        124.0252075,
+        124.0251999
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Este_08",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        18091.19873,
+        334.09767,
+        -3737.86888
+      ],
+      "Rotation": [
+        0.0,
+        0.91602135,
+        0.0,
+        0.40112957
+      ],
+      "Scale": [
+        132.6752319,
+        132.6752319,
+        132.6752319
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Este_09",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        17361.9751,
+        558.02078,
+        -1220.30745
+      ],
+      "Rotation": [
+        0.0,
+        0.48632354,
+        0.0,
+        0.87377888
+      ],
+      "Scale": [
+        103.7990341,
+        103.7990341,
+        103.7990341
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Este_10",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        17406.11725,
+        547.57304,
+        -1681.03924
+      ],
+      "Rotation": [
+        0.0,
+        -0.33882296,
+        0.0,
+        0.94085014
+      ],
+      "Scale": [
+        107.2084732,
+        107.2084808,
+        107.2084732
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Este_11",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        17700.97809,
+        485.22668,
+        -2074.51935
+      ],
+      "Rotation": [
+        0.0,
+        0.55245858,
+        0.0,
+        0.83354038
+      ],
+      "Scale": [
+        138.4766846,
+        138.4766846,
+        138.4766846
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Este_12",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        18172.47009,
+        346.1072,
+        -2774.63169
+      ],
+      "Rotation": [
+        0.0,
+        0.87010378,
+        0.0,
+        0.4928686
+      ],
+      "Scale": [
+        141.0862274,
+        141.0862274,
+        141.0862274
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Este_13",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        17514.14795,
+        519.1669,
+        -1862.41035
+      ],
+      "Rotation": [
+        0.0,
+        0.76046902,
+        0.0,
+        0.64937425
+      ],
+      "Scale": [
+        149.6910095,
+        149.6910095,
+        149.6910095
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Este_14",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        17258.55713,
+        579.21472,
+        -1259.03311
+      ],
+      "Rotation": [
+        -0.0,
+        -0.78087461,
+        -0.0,
+        0.62468779
+      ],
+      "Scale": [
+        107.5246277,
+        107.5246277,
+        107.5246277
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Norte_01",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        2947.50805,
+        80.39941,
+        -18025.02289
+      ],
+      "Rotation": [
+        0.0,
+        0.15669456,
+        0.0,
+        0.98764712
+      ],
+      "Scale": [
+        107.9782257,
+        107.9782333,
+        107.9782257
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Norte_02",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        2662.82654,
+        88.01306,
+        -17575.96588
+      ],
+      "Rotation": [
+        0.0,
+        0.63485521,
+        0.0,
+        0.77263111
+      ],
+      "Scale": [
+        100.1160202,
+        100.1160202,
+        100.1160202
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Norte_03",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        1971.44699,
+        98.52308,
+        -17674.42322
+      ],
+      "Rotation": [
+        0.0,
+        0.12665604,
+        0.0,
+        0.9919467
+      ],
+      "Scale": [
+        104.2712021,
+        104.2712097,
+        104.2712021
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Norte_04",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        4283.86612,
+        99.85387,
+        -18175.01984
+      ],
+      "Rotation": [
+        0.0,
+        0.10286579,
+        0.0,
+        0.99469525
+      ],
+      "Scale": [
+        135.538147,
+        135.538147,
+        135.538147
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Norte_05",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        2627.90108,
+        69.6265,
+        -18096.83685
+      ],
+      "Rotation": [
+        -0.0,
+        -0.78605294,
+        -0.0,
+        0.61815917
+      ],
+      "Scale": [
+        112.3436584,
+        112.3436584,
+        112.3436584
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Norte_06",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        4354.21638,
+        140.00596,
+        -17544.52209
+      ],
+      "Rotation": [
+        0.0,
+        0.98334813,
+        0.0,
+        0.1817317
+      ],
+      "Scale": [
+        148.0305176,
+        148.0305176,
+        148.0305176
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Norte_07",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        4532.30667,
+        149.17111,
+        -17572.83478
+      ],
+      "Rotation": [
+        0.0,
+        0.19039713,
+        0.0,
+        0.98170716
+      ],
+      "Scale": [
+        118.5871658,
+        118.5871658,
+        118.5871658
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Norte_08",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        -718.13016,
+        79.26319,
+        -18312.21008
+      ],
+      "Rotation": [
+        0.0,
+        0.89780396,
+        0.0,
+        0.44039539
+      ],
+      "Scale": [
+        142.3003845,
+        142.3003845,
+        142.3003845
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Norte_09",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        366.87295,
+        93.28195,
+        -17722.32361
+      ],
+      "Rotation": [
+        0.0,
+        -0.69909346,
+        0.0,
+        0.71503031
+      ],
+      "Scale": [
+        154.5330353,
+        154.5330353,
+        154.5330353
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Norte_10",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        -224.20809,
+        75.5,
+        -18175.32501
+      ],
+      "Rotation": [
+        0.0,
+        0.99848014,
+        0.0,
+        0.05511298
+      ],
+      "Scale": [
+        101.2674408,
+        101.2674408,
+        101.2674408
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Norte_11",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        -0.25703,
+        82.10116,
+        -18565.28625
+      ],
+      "Rotation": [
+        -0.0,
+        -0.97160888,
+        -0.0,
+        0.23659281
+      ],
+      "Scale": [
+        142.2843781,
+        142.2843781,
+        142.2843781
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Norte_12",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        240.94925,
+        83.13797,
+        -17867.76428
+      ],
+      "Rotation": [
+        0.0,
+        0.93468934,
+        0.0,
+        0.35546565
+      ],
+      "Scale": [
+        118.1453018,
+        118.1453018,
+        118.1453018
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Norte_13",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        246.57614,
+        93.68507,
+        -17622.68677
+      ],
+      "Rotation": [
+        0.0,
+        0.99999988,
+        0.0,
+        0.00045498
+      ],
+      "Scale": [
+        140.8437958,
+        140.843811,
+        140.8437958
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Norte_14",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        -32.11837,
+        76.99121,
+        -17830.6015
+      ],
+      "Rotation": [
+        0.0,
+        0.28710297,
+        0.0,
+        0.95789975
+      ],
+      "Scale": [
+        105.4123688,
+        105.4123688,
+        105.4123688
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Oeste_01",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        -17281.56891,
+        136.97447,
+        1102.32286
+      ],
+      "Rotation": [
+        0.0,
+        0.96423954,
+        0.0,
+        0.26503253
+      ],
+      "Scale": [
+        136.0678253,
+        136.0678253,
+        136.0678253
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Oeste_02",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        -17201.24359,
+        149.2512,
+        1548.73562
+      ],
+      "Rotation": [
+        0.0,
+        -0.4930819,
+        0.0,
+        0.8699829
+      ],
+      "Scale": [
+        144.7624969,
+        144.7624969,
+        144.7624969
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Oeste_03",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        -18019.08112,
+        115.5,
+        295.67254
+      ],
+      "Rotation": [
+        0.0,
+        -0.34760684,
+        0.0,
+        0.93764037
+      ],
+      "Scale": [
+        153.4085846,
+        153.4085846,
+        153.4085846
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Oeste_04",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        -17247.12372,
+        139.84513,
+        995.99018
+      ],
+      "Rotation": [
+        0.0,
+        0.28420135,
+        0.0,
+        0.95876461
+      ],
+      "Scale": [
+        132.7189026,
+        132.7189026,
+        132.7189026
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Oeste_05",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        -17295.86182,
+        137.66555,
+        1482.62577
+      ],
+      "Rotation": [
+        0.0,
+        0.49451023,
+        0.0,
+        0.8691718
+      ],
+      "Scale": [
+        127.8065948,
+        127.8065948,
+        127.8065948
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Oeste_06",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        -18137.23297,
+        98.32669,
+        1292.09909
+      ],
+      "Rotation": [
+        -0.0,
+        -0.99225259,
+        -0.0,
+        0.12423703
+      ],
+      "Scale": [
+        153.0855408,
+        153.0855255,
+        153.0855408
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Oeste_07",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        -17057.56378,
+        188.98422,
+        2633.68015
+      ],
+      "Rotation": [
+        -0.0,
+        -0.97872531,
+        -0.0,
+        0.20517503
+      ],
+      "Scale": [
+        107.0121002,
+        107.0121002,
+        107.0121002
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Oeste_08",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        -17298.28796,
+        300.43399,
+        4982.39403
+      ],
+      "Rotation": [
+        0.0,
+        -0.44793633,
+        0.0,
+        0.8940655
+      ],
+      "Scale": [
+        146.2263336,
+        146.2263336,
+        146.2263336
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Oeste_09",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        -17930.65643,
+        240.1849,
+        5551.06125
+      ],
+      "Rotation": [
+        0.0,
+        -0.69381744,
+        0.0,
+        0.72015095
+      ],
+      "Scale": [
+        135.0342865,
+        135.0342865,
+        135.0342865
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Oeste_10",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        -17667.39197,
+        171.09048,
+        3752.38495
+      ],
+      "Rotation": [
+        -0.0,
+        -0.78834224,
+        -0.0,
+        0.61523694
+      ],
+      "Scale": [
+        151.2291412,
+        151.2291412,
+        151.2291412
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Oeste_11",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        -17435.43243,
+        330.36199,
+        5648.71292
+      ],
+      "Rotation": [
+        0.0,
+        0.98916799,
+        0.0,
+        0.14678791
+      ],
+      "Scale": [
+        147.5008545,
+        147.5008392,
+        147.5008545
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Oeste_12",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        -17253.02124,
+        333.44026,
+        5230.29594
+      ],
+      "Rotation": [
+        0.0,
+        0.20947956,
+        0.0,
+        0.97781307
+      ],
+      "Scale": [
+        127.0058517,
+        127.0058517,
+        127.0058517
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Oeste_13",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        -17426.47247,
+        310.23154,
+        5337.08878
+      ],
+      "Rotation": [
+        0.0,
+        -0.38562566,
+        0.0,
+        0.92265534
+      ],
+      "Scale": [
+        109.7934723,
+        109.7934723,
+        109.7934723
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Oeste_14",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        -17931.36749,
+        187.42771,
+        4273.6618
+      ],
+      "Rotation": [
+        0.0,
+        0.78591549,
+        0.0,
+        0.61833394
+      ],
+      "Scale": [
+        108.1287003,
+        108.1287003,
+        108.1287003
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Sur_01",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        -3597.17178,
+        96.16216,
+        17586.27472
+      ],
+      "Rotation": [
+        0.0,
+        -0.54402363,
+        0.0,
+        0.8390699
+      ],
+      "Scale": [
+        116.2440948,
+        116.2440948,
+        116.2440948
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Sur_02",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        -4817.55142,
+        86.31553,
+        18279.61121
+      ],
+      "Rotation": [
+        0.0,
+        0.99986905,
+        0.0,
+        0.01618513
+      ],
+      "Scale": [
+        154.4209595,
+        154.4209595,
+        154.4209595
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Sur_03",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        -5988.95454,
+        115.46131,
+        18050.96741
+      ],
+      "Rotation": [
+        0.0,
+        0.0637611,
+        0.0,
+        0.99796522
+      ],
+      "Scale": [
+        122.9902039,
+        122.9902039,
+        122.9902039
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Sur_04",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        -5222.70775,
+        105.47562,
+        17500.60883
+      ],
+      "Rotation": [
+        0.0,
+        0.92652631,
+        0.0,
+        0.37623
+      ],
+      "Scale": [
+        135.4056244,
+        135.4056244,
+        135.4056244
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Sur_05",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        -3910.34393,
+        81.12171,
+        18149.11346
+      ],
+      "Rotation": [
+        -0.0,
+        -0.98051429,
+        -0.0,
+        0.19644779
+      ],
+      "Scale": [
+        150.1441498,
+        150.144165,
+        150.1441498
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Sur_06",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        -5980.65453,
+        120.72618,
+        17856.76575
+      ],
+      "Rotation": [
+        0.0,
+        0.39405543,
+        0.0,
+        0.91908669
+      ],
+      "Scale": [
+        102.2775421,
+        102.2775421,
+        102.2775421
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Sur_07",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        -3849.05396,
+        86.3242,
+        17880.34058
+      ],
+      "Rotation": [
+        0.0,
+        -0.14782618,
+        0.0,
+        0.98901331
+      ],
+      "Scale": [
+        101.4032898,
+        101.4032898,
+        101.4032898
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Sur_08",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        221.16346,
+        71.9628,
+        18290.4068
+      ],
+      "Rotation": [
+        0.0,
+        0.95335817,
+        0.0,
+        0.30184147
+      ],
+      "Scale": [
+        158.6719513,
+        158.6719513,
+        158.6719513
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Sur_09",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        -1513.98764,
+        71.26354,
+        17555.91125
+      ],
+      "Rotation": [
+        0.0,
+        -0.43621519,
+        0.0,
+        0.89984238
+      ],
+      "Scale": [
+        104.4173584,
+        104.417366,
+        104.4173584
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Sur_10",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        136.48443,
+        75.5,
+        17392.52625
+      ],
+      "Rotation": [
+        0.0,
+        -0.67544323,
+        0.0,
+        0.73741198
+      ],
+      "Scale": [
+        137.964859,
+        137.964859,
+        137.964859
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Sur_11",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        -677.63262,
+        63.5,
+        18646.82159
+      ],
+      "Rotation": [
+        0.0,
+        0.90759087,
+        0.0,
+        0.4198558
+      ],
+      "Scale": [
+        142.6968231,
+        142.6968231,
+        142.6968231
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Sur_12",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        -1854.87747,
+        77.253,
+        17711.05194
+      ],
+      "Rotation": [
+        0.0,
+        -0.48321354,
+        0.0,
+        0.87550253
+      ],
+      "Scale": [
+        140.7473145,
+        140.7473145,
+        140.7473145
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Sur_13",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        24.17976,
+        69.34549,
+        18396.13647
+      ],
+      "Rotation": [
+        0.0,
+        0.88523036,
+        0.0,
+        0.46515292
+      ],
+      "Scale": [
+        118.6761856,
+        118.6761856,
+        118.6761856
+      ]
+    },
+    {
+      "Id": "Vigia_Arboleda_Sur_14",
+      "Type": "Tree",
+      "Model": "Models/Tree/Tree",
+      "Position": [
+        -1161.43665,
+        54.54782,
+        17973.80524
+      ],
+      "Rotation": [
+        0.0,
+        0.77509779,
+        0.0,
+        0.6318413
+      ],
+      "Scale": [
+        111.8599167,
+        111.8599243,
+        111.8599167
+      ]
+    },
+    {
       "Id": "Vigia_DeadBush_001",
       "Type": "DeadBush",
       "Model": "Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0",
       "Position": [
         2914.40811,
-        251.49729,
+        113.5,
         -1700.60978
       ],
       "Rotation": [
@@ -92,7 +1268,7 @@
       "Model": "Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0",
       "Position": [
         -1742.35535,
-        258.01291,
+        109.19422,
         -1243.87484
       ],
       "Rotation": [
@@ -113,7 +1289,7 @@
       "Model": "Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0",
       "Position": [
         431.18973,
-        261.29928,
+        105.49999,
         -1949.66545
       ],
       "Rotation": [
@@ -134,7 +1310,7 @@
       "Model": "Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0",
       "Position": [
         -1915.94715,
-        197.41366,
+        104.13789,
         210.35767
       ],
       "Rotation": [
@@ -155,7 +1331,7 @@
       "Model": "Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0",
       "Position": [
         1746.63219,
-        101.34233,
+        124.08452,
         2285.67429
       ],
       "Rotation": [
@@ -176,7 +1352,7 @@
       "Model": "Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0",
       "Position": [
         370.40431,
-        112.59621,
+        105.49999,
         -1172.59464
       ],
       "Rotation": [
@@ -197,7 +1373,7 @@
       "Model": "Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0",
       "Position": [
         1907.76367,
-        293.49999,
+        115.18946,
         -3931.27975
       ],
       "Rotation": [
@@ -218,7 +1394,7 @@
       "Model": "Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0",
       "Position": [
         -967.22031,
-        175.7195,
+        105.49999,
         4301.91307
       ],
       "Rotation": [
@@ -239,7 +1415,7 @@
       "Model": "Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0",
       "Position": [
         404.54435,
-        127.26463,
+        105.49999,
         1121.39425
       ],
       "Rotation": [
@@ -260,7 +1436,7 @@
       "Model": "Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0",
       "Position": [
         -927.43359,
-        181.5876,
+        104.78405,
         -509.53479
       ],
       "Rotation": [
@@ -281,7 +1457,7 @@
       "Model": "Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0",
       "Position": [
         -1721.84162,
-        226.53954,
+        102.58293,
         -905.23167
       ],
       "Rotation": [
@@ -302,7 +1478,7 @@
       "Model": "Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0",
       "Position": [
         -1606.60744,
-        276.35806,
+        97.5,
         0.74133
       ],
       "Rotation": [
@@ -323,7 +1499,7 @@
       "Model": "Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0",
       "Position": [
         1720.23106,
-        121.43439,
+        122.65795,
         -78.94875
       ],
       "Rotation": [
@@ -344,7 +1520,7 @@
       "Model": "Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0",
       "Position": [
         2098.4972,
-        173.13935,
+        106.02587,
         288.35597
       ],
       "Rotation": [
@@ -365,7 +1541,7 @@
       "Model": "Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0",
       "Position": [
         1065.34986,
-        289.42325,
+        109.5,
         -4058.84132
       ],
       "Rotation": [
@@ -386,7 +1562,7 @@
       "Model": "Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0",
       "Position": [
         -1835.94418,
-        247.09029,
+        104.93777,
         -713.05118
       ],
       "Rotation": [
@@ -407,7 +1583,7 @@
       "Model": "Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0",
       "Position": [
         1752.40192,
-        205.96173,
+        166.09355,
         -1209.82132
       ],
       "Rotation": [
@@ -428,7 +1604,7 @@
       "Model": "Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0",
       "Position": [
         557.0312,
-        103.02501,
+        105.49999,
         455.00021
       ],
       "Rotation": [
@@ -449,7 +1625,7 @@
       "Model": "Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0",
       "Position": [
         -2368.72845,
-        275.43781,
+        138.24914,
         -2181.54278
       ],
       "Rotation": [
@@ -470,7 +1646,7 @@
       "Model": "Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0",
       "Position": [
         -312.19523,
-        173.66596,
+        145.5,
         -3843.99529
       ],
       "Rotation": [
@@ -491,7 +1667,7 @@
       "Model": "Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0",
       "Position": [
         -1979.49886,
-        121.46357,
+        102.05884,
         1534.47208
       ],
       "Rotation": [
@@ -512,7 +1688,7 @@
       "Model": "Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0",
       "Position": [
         122.71386,
-        142.95722,
+        109.5,
         4150.66071
       ],
       "Rotation": [
@@ -533,7 +1709,7 @@
       "Model": "Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0",
       "Position": [
         -2432.92313,
-        101.34505,
+        127.69302,
         1261.02085
       ],
       "Rotation": [
@@ -554,7 +1730,7 @@
       "Model": "Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0",
       "Position": [
         172.86183,
-        125.87029,
+        109.5,
         3742.15164
       ],
       "Rotation": [
@@ -575,7 +1751,7 @@
       "Model": "Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0",
       "Position": [
         -2867.80109,
-        145.45743,
+        207.63614,
         -820.68624
       ],
       "Rotation": [
@@ -596,7 +1772,7 @@
       "Model": "Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0",
       "Position": [
         -1115.03525,
-        328.23036,
+        129.5,
         -2517.41009
       ],
       "Rotation": [
@@ -617,7 +1793,7 @@
       "Model": "Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0",
       "Position": [
         2521.16089,
-        141.57493,
+        94.65356,
         -3471.84525
       ],
       "Rotation": [
@@ -638,7 +1814,7 @@
       "Model": "Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0",
       "Position": [
         -1587.09927,
-        114.37777,
+        160.68088,
         -3689.76097
       ],
       "Rotation": [
@@ -659,7 +1835,7 @@
       "Model": "Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0",
       "Position": [
         1541.58211,
-        113.5295,
+        121.16328,
         -167.57333
       ],
       "Rotation": [
@@ -680,7 +1856,7 @@
       "Model": "Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0",
       "Position": [
         2593.75057,
-        163.65988,
+        127.79503,
         1278.68786
       ],
       "Rotation": [
@@ -701,7 +1877,7 @@
       "Model": "Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0",
       "Position": [
         260.96344,
-        149.83088,
+        105.49999,
         -1767.53807
       ],
       "Rotation": [
@@ -722,7 +1898,7 @@
       "Model": "Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0",
       "Position": [
         -2809.89628,
-        98.10806,
+        170.0821,
         1115.13634
       ],
       "Rotation": [
@@ -743,7 +1919,7 @@
       "Model": "Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0",
       "Position": [
         -685.55989,
-        111.94464,
+        105.49999,
         202.2434
       ],
       "Rotation": [
@@ -764,7 +1940,7 @@
       "Model": "Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0",
       "Position": [
         -479.7123,
-        316.92336,
+        145.5,
         -3635.44006
       ],
       "Rotation": [
@@ -785,7 +1961,7 @@
       "Model": "Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0",
       "Position": [
         -2675.95406,
-        85.24126,
+        157.24126,
         -2208.3765
       ],
       "Rotation": [
@@ -806,7 +1982,7 @@
       "Model": "Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0",
       "Position": [
         -656.11053,
-        100.74668,
+        105.49999,
         393.27507
       ],
       "Rotation": [
@@ -827,7 +2003,7 @@
       "Model": "Models/DeadBush/source/Salix elaeagnos HD_Dead mat 50_LOD0",
       "Position": [
         23.23,
-        113.31886,
+        109.5,
         4531.05469
       ],
       "Rotation": [
@@ -847,9 +2023,9 @@
       "Type": "Debris",
       "Model": "Models/RocksMedium/source/Rocks_medium/Rocks_medium",
       "Position": [
-        505.00002,
-        180.99999,
-        -705.00002
+        1550.6691,
+        179.5755,
+        -1511.04212
       ],
       "Rotation": [
         0.0,
@@ -869,7 +2045,7 @@
       "Model": "Models/RocksMedium/source/Rocks_medium/Rocks_medium",
       "Position": [
         709.58176,
-        161.17746,
+        121.0,
         1276.11217
       ],
       "Rotation": [
@@ -890,7 +2066,7 @@
       "Model": "Models/RocksMedium/source/Rocks_medium/Rocks_medium",
       "Position": [
         -1510.00004,
-        249.53399,
+        113.0,
         -509.99999
       ],
       "Rotation": [
@@ -911,7 +2087,7 @@
       "Model": "Models/RocksMedium/source/Rocks_medium/Rocks_medium",
       "Position": [
         -1255.00002,
-        336.31001,
+        173.11001,
         -1519.99998
       ],
       "Rotation": [
@@ -932,7 +2108,7 @@
       "Model": "Models/RocksMedium/source/Rocks_medium/Rocks_medium",
       "Position": [
         1430.00002,
-        302.62001,
+        222.79999,
         -2464.99996
       ],
       "Rotation": [
@@ -953,7 +2129,7 @@
       "Model": "Models/RocksMedium/source/Rocks_medium/Rocks_medium",
       "Position": [
         -1939.99996,
-        181.11,
+        230.0,
         -3509.99985
       ],
       "Rotation": [
@@ -974,7 +2150,7 @@
       "Model": "Models/RocksMedium/source/Rocks_medium/Rocks_medium",
       "Position": [
         3420.00008,
-        201.29001,
+        273.60001,
         1700.0
       ],
       "Rotation": [
@@ -995,7 +2171,7 @@
       "Model": "Models/RocksMedium/source/Rocks_medium/Rocks_medium",
       "Position": [
         3334.99985,
-        174.79,
+        170.59001,
         -1410.00004
       ],
       "Rotation": [
@@ -1016,7 +2192,7 @@
       "Model": "Models/RocksMedium/source/Rocks_medium/Rocks_medium",
       "Position": [
         -3309.99985,
-        258.41999,
+        350.39997,
         -280.0
       ],
       "Rotation": [
@@ -1037,7 +2213,7 @@
       "Model": "Models/RocksMedium/source/Rocks_medium/Rocks_medium",
       "Position": [
         -3185.00004,
-        179.21,
+        231.6,
         2179.99992
       ],
       "Rotation": [
@@ -1058,7 +2234,7 @@
       "Model": "Models/RocksMedium/source/Rocks_medium/Rocks_medium",
       "Position": [
         110.0,
-        208.64,
+        217.19999,
         -4209.99985
       ],
       "Rotation": [
@@ -1079,7 +2255,7 @@
       "Model": "Models/RocksMedium/source/Rocks_medium/Rocks_medium",
       "Position": [
         -469.99998,
-        247.72999,
+        178.0,
         4400.0
       ],
       "Rotation": [
@@ -1100,7 +2276,7 @@
       "Model": "Models/Rocks/source/stone_fence_old_low",
       "Position": [
         -734.99999,
-        146.30001,
+        114.0,
         -330.0
       ],
       "Rotation": [
@@ -1121,7 +2297,7 @@
       "Model": "Models/Rocks/source/stone_fence_old_low",
       "Position": [
         -1092.84019,
-        138.93387,
+        86.0,
         -132.75667
       ],
       "Rotation": [
@@ -1142,7 +2318,7 @@
       "Model": "Models/Rocks/source/stone_fence_old_low",
       "Position": [
         250.0,
-        351.04001,
+        115.6,
         -2889.99996
       ],
       "Rotation": [
@@ -1163,7 +2339,7 @@
       "Model": "Models/Rocks/source/stone_fence_old_low",
       "Position": [
         744.99998,
-        265.08,
+        130.0,
         -2895.99991
       ],
       "Rotation": [
@@ -1184,7 +2360,7 @@
       "Model": "Models/Rocks/source/stone_fence_old_low",
       "Position": [
         3320.00008,
-        114.5,
+        130.4,
         719.99998
       ],
       "Rotation": [
@@ -1205,7 +2381,7 @@
       "Model": "Models/Rocks/source/stone_fence_old_low",
       "Position": [
         3909.99985,
-        119.6,
+        138.2,
         755.00002
       ],
       "Rotation": [
@@ -1226,7 +2402,7 @@
       "Model": "Models/Rocks/source/stone_fence_old_low",
       "Position": [
         -1300.0,
-        157.02,
+        114.0,
         2470.00008
       ],
       "Rotation": [
@@ -1247,7 +2423,7 @@
       "Model": "Models/Rocks/source/stone_fence_old_low",
       "Position": [
         -2779.99992,
-        119.68,
+        165.59999,
         1380.00002
       ],
       "Rotation": [
@@ -1268,7 +2444,7 @@
       "Model": "Models/Rocks/source/stone_fence_old_low",
       "Position": [
         -2429.99992,
-        115.1,
+        153.19999,
         -2579.99992
       ],
       "Rotation": [
@@ -1289,7 +2465,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         652.57964,
-        106.40546,
+        102.5,
         2550.5909
       ],
       "Rotation": [
@@ -1310,7 +2486,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         1211.37857,
-        91.60667,
+        112.28091,
         2733.14419
       ],
       "Rotation": [
@@ -1331,7 +2507,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         111.20503,
-        130.91439,
+        106.50001,
         3460.25124
       ],
       "Rotation": [
@@ -1352,7 +2528,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         -993.67313,
-        220.35103,
+        108.87747,
         -1665.76347
       ],
       "Rotation": [
@@ -1373,7 +2549,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         1047.90831,
-        175.01956,
+        102.58367,
         -4330.73578
       ],
       "Rotation": [
@@ -1394,7 +2570,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         -835.66923,
-        111.98107,
+        98.5,
         1348.58751
       ],
       "Rotation": [
@@ -1415,7 +2591,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         -2204.57287,
-        197.88631,
+        140.68291,
         -2713.37566
       ],
       "Rotation": [
@@ -1436,7 +2612,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         1633.14075,
-        65.21144,
+        119.24851,
         2617.78603
       ],
       "Rotation": [
@@ -1457,7 +2633,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         -926.74541,
-        242.33012,
+        149.4837,
         -3637.2963
       ],
       "Rotation": [
@@ -1478,7 +2654,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         1469.22693,
-        272.32556,
+        146.34539,
         -3008.89511
       ],
       "Rotation": [
@@ -1499,7 +2675,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         1829.8151,
-        249.65041,
+        143.34438,
         -1705.80235
       ],
       "Rotation": [
@@ -1520,7 +2696,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         2176.00212,
-        277.0365,
+        101.45992,
         -3546.09413
       ],
       "Rotation": [
@@ -1541,7 +2717,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         1412.14819,
-        80.39558,
+        111.69266,
         2583.83408
       ],
       "Rotation": [
@@ -1562,7 +2738,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         -604.98939,
-        103.60253,
+        102.5,
         -312.59489
       ],
       "Rotation": [
@@ -1583,7 +2759,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         2968.73722,
-        197.97306,
+        106.50001,
         -1244.16294
       ],
       "Rotation": [
@@ -1604,7 +2780,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         2294.4706,
-        130.46113,
+        140.27883,
         1769.65466
       ],
       "Rotation": [
@@ -1625,7 +2801,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         -2842.4387,
-        103.1989,
+        171.19889,
         -2017.40513
       ],
       "Rotation": [
@@ -1646,7 +2822,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         -1120.62826,
-        216.15026,
+        102.5,
         3349.64676
       ],
       "Rotation": [
@@ -1667,7 +2843,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         535.69465,
-        96.61081,
+        102.5,
         197.2297
       ],
       "Rotation": [
@@ -1688,7 +2864,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         -690.89007,
-        89.59319,
+        98.5,
         1168.99424
       ],
       "Rotation": [
@@ -1709,7 +2885,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         -1166.49303,
-        127.96247,
+        102.5,
         2286.56178
       ],
       "Rotation": [
@@ -1730,7 +2906,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         2833.83865,
-        86.39908,
+        152.25787,
         1631.31561
       ],
       "Rotation": [
@@ -1751,7 +2927,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         -1663.22994,
-        107.72948,
+        98.5,
         1964.78653
       ],
       "Rotation": [
@@ -1772,7 +2948,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         -1684.67045,
-        188.48076,
+        95.88682,
         440.57012
       ],
       "Rotation": [
@@ -1793,7 +2969,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         395.01295,
-        107.29793,
+        102.5,
         2677.41528
       ],
       "Rotation": [
@@ -1814,7 +2990,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         844.21396,
-        106.64105,
+        102.5,
         -1319.77081
       ],
       "Rotation": [
@@ -1835,7 +3011,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         -2791.67271,
-        119.27369,
+        173.83381,
         -1788.98525
       ],
       "Rotation": [
@@ -1856,7 +3032,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         2736.74889,
-        160.5163,
+        118.07383,
         1094.67297
       ],
       "Rotation": [
@@ -1877,7 +3053,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         -2798.47755,
-        146.61652,
+        182.37821,
         -1403.07779
       ],
       "Rotation": [
@@ -1898,7 +3074,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         165.4478,
-        109.14979,
+        102.90691,
         3260.17265
       ],
       "Rotation": [
@@ -1919,7 +3095,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         1502.17218,
-        252.72946,
+        139.11022,
         -1227.19727
       ],
       "Rotation": [
@@ -1940,7 +3116,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         -2067.95177,
-        162.88345,
+        142.5,
         -2976.19629
       ],
       "Rotation": [
@@ -1961,7 +3137,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         425.70066,
-        98.91133,
+        102.5,
         2911.68461
       ],
       "Rotation": [
@@ -1982,7 +3158,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         -2962.91962,
-        147.30879,
+        220.99342,
         39.34285
       ],
       "Rotation": [
@@ -2003,7 +3179,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         -986.93829,
-        182.39205,
+        102.5,
         2598.65055
       ],
       "Rotation": [
@@ -2024,7 +3200,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         -213.18874,
-        110.6972,
+        153.02755,
         -4134.05952
       ],
       "Rotation": [
@@ -2045,7 +3221,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         1017.9431,
-        166.86528,
+        111.78228,
         -2944.40327
       ],
       "Rotation": [
@@ -2066,7 +3242,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         -1227.08845,
-        254.40998,
+        114.5,
         -1828.21369
       ],
       "Rotation": [
@@ -2087,7 +3263,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         -579.94728,
-        117.57584,
+        144.89578,
         -3856.65245
       ],
       "Rotation": [
@@ -2108,7 +3284,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         -184.36592,
-        176.0317,
+        106.50001,
         4277.46735
       ],
       "Rotation": [
@@ -2129,7 +3305,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         1120.91856,
-        107.81169,
+        102.5,
         2474.07227
       ],
       "Rotation": [
@@ -2150,7 +3326,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         1085.09378,
-        348.17505,
+        102.5,
         1193.54982
       ],
       "Rotation": [
@@ -2171,7 +3347,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         413.67788,
-        107.66736,
+        106.50001,
         3883.94279
       ],
       "Rotation": [
@@ -2192,7 +3368,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         1516.63036,
-        233.92687,
+        160.7735,
         -2754.842
       ],
       "Rotation": [
@@ -2213,7 +3389,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         1935.31036,
-        209.31056,
+        125.43793,
         -1463.6282
       ],
       "Rotation": [
@@ -2234,7 +3410,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         2058.60367,
-        281.29413,
+        106.15585,
         -3709.50851
       ],
       "Rotation": [
@@ -2255,7 +3431,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         2526.89095,
-        231.49755,
+        101.77807,
         -3831.95152
       ],
       "Rotation": [
@@ -2276,7 +3452,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         1041.11767,
-        203.4451,
+        112.55863,
         -2707.41653
       ],
       "Rotation": [
@@ -2297,7 +3473,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         183.39969,
-        290.07645,
+        102.5,
         -2004.28295
       ],
       "Rotation": [
@@ -2318,7 +3494,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         -904.29564,
-        104.47596,
+        98.5,
         972.59445
       ],
       "Rotation": [
@@ -2339,7 +3515,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         -1420.12224,
-        318.93206,
+        98.5,
         179.76907
       ],
       "Rotation": [
@@ -2360,7 +3536,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         53.49661,
-        328.76244,
+        102.5,
         -2747.61772
       ],
       "Rotation": [
@@ -2381,7 +3557,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         -1452.74677,
-        279.25498,
+        142.71975,
         -3412.13341
       ],
       "Rotation": [
@@ -2402,7 +3578,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         784.77182,
-        92.90471,
+        102.5,
         2777.90108
       ],
       "Rotation": [
@@ -2423,7 +3599,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         2548.63319,
-        116.72038,
+        139.95857,
         1587.83112
       ],
       "Rotation": [
@@ -2444,7 +3620,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         363.47198,
-        103.03888,
+        102.5,
         812.03194
       ],
       "Rotation": [
@@ -2465,7 +3641,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         -1257.17087,
-        171.63639,
+        102.5,
         2678.55034
       ],
       "Rotation": [
@@ -2486,7 +3662,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         -1892.69867,
-        209.16543,
+        100.20795,
         -105.91497
       ],
       "Rotation": [
@@ -2507,7 +3683,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         600.9717,
-        121.26634,
+        102.5,
         1591.87822
       ],
       "Rotation": [
@@ -2528,7 +3704,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         1279.79097,
-        89.22337,
+        109.05333,
         -84.04218
       ],
       "Rotation": [
@@ -2549,7 +3725,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         -1424.71085,
-        203.55785,
+        105.63166,
         -1228.29161
       ],
       "Rotation": [
@@ -2570,7 +3746,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         -1383.10041,
-        179.94977,
+        98.5,
         669.51098
       ],
       "Rotation": [
@@ -2591,7 +3767,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         393.39111,
-        200.42832,
+        142.5,
         -4068.36128
       ],
       "Rotation": [
@@ -2612,7 +3788,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         -1848.25974,
-        115.89787,
+        98.5,
         1740.09132
       ],
       "Rotation": [
@@ -2633,7 +3809,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         -1220.2569,
-        157.99584,
+        98.5,
         828.15094
       ],
       "Rotation": [
@@ -2654,7 +3830,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         -100.15253,
-        194.00277,
+        102.5,
         -1893.47954
       ],
       "Rotation": [
@@ -2675,7 +3851,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         1961.82098,
-        133.18832,
+        113.70302,
         58.10335
       ],
       "Rotation": [
@@ -2696,7 +3872,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         -2563.41,
-        83.37603,
+        143.5728,
         -2568.32924
       ],
       "Rotation": [
@@ -2717,7 +3893,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         3069.70367,
-        200.75946,
+        106.50001,
         -910.87837
       ],
       "Rotation": [
@@ -2738,7 +3914,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         -784.02572,
-        165.15563,
+        102.5,
         4448.33946
       ],
       "Rotation": [
@@ -2759,7 +3935,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         2415.0383,
-        90.5,
+        157.21549,
         2050.94967
       ],
       "Rotation": [
@@ -2780,7 +3956,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         -1187.14352,
-        244.92092,
+        120.99353,
         -2112.33826
       ],
       "Rotation": [
@@ -2801,7 +3977,7 @@
       "Model": "Models/Grass/source/grassExampleScene",
       "Position": [
         -731.30445,
-        140.62819,
+        102.5,
         -934.40161
       ],
       "Rotation": [
@@ -2822,8 +3998,8 @@
       "Model": "Models/Monumento/source/Monumento",
       "Position": [
         480.00002,
-        956.05001,
-        -2460.00004
+        804.71792,
+        -2444.71264
       ],
       "Rotation": [
         0.0,
@@ -2832,9 +4008,2928 @@
         1.0
       ],
       "Scale": [
-        4.25,
-        4.25,
-        4.25
+        5.6446552,
+        5.6446552,
+        5.6446552
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_001",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/CasaCapataz",
+      "Position": [
+        -14662.55493,
+        108.0,
+        16100.0
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        1.0261531,
+        1.0261531,
+        1.0261531
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_002",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Granero",
+      "Position": [
+        -11868.30826,
+        123.10712,
+        16100.0
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        0.9333581,
+        0.9333581,
+        0.9333581
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_003",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/CasaGuardia",
+      "Position": [
+        -8799.03412,
+        242.08918,
+        16100.0
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        1.0519962,
+        1.0519962,
+        1.0519962
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_004",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Muro",
+      "Position": [
+        -15801.05438,
+        87.68,
+        16100.0
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        0.9080504,
+        0.9885676,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_005",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Muro",
+      "Position": [
+        -13271.16089,
+        109.0,
+        16100.0
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        1.2447932,
+        1.052534,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_006",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Muro",
+      "Position": [
+        -10826.20697,
+        157.43278,
+        16100.0
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        0.7644315,
+        1.0041617,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_007",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Muro",
+      "Position": [
+        -9750.03052,
+        204.15525,
+        16100.0
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        0.7644315,
+        0.9910839,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_008",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Muro",
+      "Position": [
+        -7727.84424,
+        293.24,
+        16100.0
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        0.9244759,
+        1.1140957,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_009",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Muro",
+      "Position": [
+        -6411.28159,
+        242.24,
+        16100.0
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        0.9244759,
+        1.1110767,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_010",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        -5800.0,
+        205.83999,
+        16400.0
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        1.0,
+        1.0468935,
+        0.5099867
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_011",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Porton",
+      "Position": [
+        -2900.0,
+        122.76,
+        16700.0
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_012",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Granero",
+      "Position": [
+        -5100.0,
+        167.256,
+        16700.0
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        1.03,
+        1.03,
+        1.03
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_013",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/CasaCapataz",
+      "Position": [
+        -3925.0,
+        140.0,
+        16700.0
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        0.9,
+        0.9,
+        0.9
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_014",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Taller",
+      "Position": [
+        -1825.0,
+        106.57001,
+        16700.0
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        0.9,
+        0.9,
+        0.9
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_015",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/CasaGuardia",
+      "Position": [
+        -700.0,
+        104.0,
+        16700.0
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        1.03,
+        1.03,
+        1.03
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_016",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Granero",
+      "Position": [
+        1747.45617,
+        107.39801,
+        16700.0
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        0.9585068,
+        0.9585068,
+        0.9585068
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_017",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/CasaGuardia",
+      "Position": [
+        4769.54613,
+        108.32195,
+        16700.0
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        0.9771457,
+        0.9771457,
+        0.9771457
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_018",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Taller",
+      "Position": [
+        7918.91251,
+        140.2511,
+        16700.0
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        1.0959632,
+        1.0959632,
+        1.0959632
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_019",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/CasaGuardia",
+      "Position": [
+        10910.58044,
+        103.03273,
+        16700.0
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        1.1811502,
+        1.1811502,
+        1.1811502
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_020",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Granero",
+      "Position": [
+        13449.76044,
+        89.66137,
+        16700.0
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        1.0346406,
+        1.0346406,
+        1.0346406
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_021",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Muro",
+      "Position": [
+        -5751.59988,
+        197.4,
+        16700.0
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        0.1749667,
+        1.0174962,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_022",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Muro",
+      "Position": [
+        -4450.40016,
+        148.8,
+        16700.0
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        0.1723036,
+        1.034511,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_023",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Muro",
+      "Position": [
+        -3399.49989,
+        131.92,
+        16700.0
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        0.1724368,
+        0.9861556,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_024",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Muro",
+      "Position": [
+        -2414.87503,
+        117.11,
+        16700.0
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        0.1532956,
+        1.0162799,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_025",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Muro",
+      "Position": [
+        -1209.26247,
+        105.0,
+        16700.0
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        0.187733,
+        1.1053089,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_026",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Muro",
+      "Position": [
+        467.06872,
+        107.12,
+        16700.0
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        1.0636401,
+        1.0519071,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_027",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Muro",
+      "Position": [
+        2795.29133,
+        97.46132,
+        16700.0
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        0.7539835,
+        1.1028568,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_028",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Muro",
+      "Position": [
+        3855.77469,
+        95.12,
+        16700.0
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        0.7539835,
+        1.0886,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_029",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Muro",
+      "Position": [
+        5689.04533,
+        132.48605,
+        16700.0
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        0.7616105,
+        0.9670879,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_030",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Muro",
+      "Position": [
+        6760.98404,
+        141.24,
+        16700.0
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        0.7616105,
+        1.0149543,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_031",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Muro",
+      "Position": [
+        9017.39883,
+        149.24001,
+        16700.0
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        0.6824591,
+        1.0651901,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_032",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Muro",
+      "Position": [
+        9970.45212,
+        130.08338,
+        16700.0
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        0.6824591,
+        1.0788556,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_033",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Muro",
+      "Position": [
+        12132.61795,
+        91.12,
+        16700.0
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        1.0578375,
+        0.952574,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_034",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Muro",
+      "Position": [
+        14927.73285,
+        77.0,
+        16700.0
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        1.2719935,
+        1.0510066,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_035",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/CasaGuardiaLateral",
+      "Position": [
+        15800.0,
+        83.35732,
+        15248.84033
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.1699184,
+        1.1699184,
+        1.1699184
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_036",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/TallerLateral",
+      "Position": [
+        15800.0,
+        109.18736,
+        12363.96484
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.1565651,
+        1.1565651,
+        1.1565651
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_037",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/CasaGuardiaLateral",
+      "Position": [
+        15800.0,
+        330.77998,
+        9280.14069
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        0.888335,
+        0.888335,
+        0.888335
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_038",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/GraneroLateral",
+      "Position": [
+        15800.0,
+        345.06164,
+        6086.64436
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.0950669,
+        1.0950669,
+        1.0950669
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_039",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        15800.0,
+        75.12,
+        16227.51617
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.0,
+        0.9863652,
+        0.7396581
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_040",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        15800.0,
+        99.12,
+        13904.98199
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.0,
+        0.9973844,
+        1.22592
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_041",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        15800.0,
+        144.11083,
+        11187.91428
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.0,
+        1.0772712,
+        0.7399474
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_042",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        15800.0,
+        236.47146,
+        10148.51303
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.0,
+        1.0051626,
+        0.7399474
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_043",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        15800.0,
+        408.8522,
+        8368.09692
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.0,
+        1.0322695,
+        0.7980989
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_044",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        15800.0,
+        429.78988,
+        7241.35284
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.0,
+        1.0910424,
+        0.7980989
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_045",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        15800.0,
+        279.11999,
+        5174.15428
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.0,
+        1.0815939,
+        0.4755714
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_046",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Muro",
+      "Position": [
+        16200.0,
+        235.92,
+        4900.0
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        0.6431425,
+        1.0063217,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_047",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/PortonLateral",
+      "Position": [
+        16600.0,
+        630.39999,
+        -600.0
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_048",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/TallerLateral",
+      "Position": [
+        16600.0,
+        329.09501,
+        1600.0
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.03,
+        1.03,
+        1.03
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_049",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/CasaGuardiaLateral",
+      "Position": [
+        16600.0,
+        492.60998,
+        425.0
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        0.9,
+        0.9,
+        0.9
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_050",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/GraneroLateral",
+      "Position": [
+        16600.0,
+        702.65002,
+        -1675.0
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        0.9,
+        0.9,
+        0.9
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_051",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/CasaCapatazLateral",
+      "Position": [
+        16600.0,
+        680.44801,
+        -2800.0
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.03,
+        1.03,
+        1.03
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_052",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/GraneroLateral",
+      "Position": [
+        16600.0,
+        226.02696,
+        3586.97357
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.1339856,
+        1.1339856,
+        1.1339856
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_053",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/CasaGuardiaLateral",
+      "Position": [
+        16600.0,
+        397.62421,
+        -5806.07033
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.0116217,
+        1.0116217,
+        1.0116217
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_054",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/GraneroLateral",
+      "Position": [
+        16600.0,
+        415.60445,
+        -8754.74701
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        0.8929991,
+        0.8929991,
+        0.8929991
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_055",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/TallerLateral",
+      "Position": [
+        16600.0,
+        208.8896,
+        -11828.44009
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.1409335,
+        1.1409335,
+        1.1409335
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_056",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/CasaCapatazLateral",
+      "Position": [
+        16600.0,
+        96.0,
+        -14789.30511
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        0.8803357,
+        0.8803357,
+        0.8803357
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_057",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        16600.0,
+        227.11999,
+        4573.16284
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.0,
+        1.0873706,
+        0.5457219
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_058",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        16600.0,
+        246.81516,
+        2579.57306
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.0,
+        1.1101784,
+        0.5739655
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_059",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        16600.0,
+        429.12998,
+        896.86251
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.0,
+        1.0476155,
+        0.2058755
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_060",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        16600.0,
+        556.81,
+        -61.12501
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.0,
+        0.9956474,
+        0.2248668
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_061",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        16600.0,
+        679.6,
+        -1097.50004
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.0,
+        1.0488986,
+        0.1697736
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_062",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        16600.0,
+        722.35999,
+        -2233.30002
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.0,
+        1.0426124,
+        0.1442077
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_063",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        16600.0,
+        564.47549,
+        -3823.05222
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.0,
+        1.1122464,
+        0.751867
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_064",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        16600.0,
+        466.15963,
+        -4880.3566
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.0,
+        1.0416163,
+        0.751867
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_065",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        16600.0,
+        372.54076,
+        -6720.48111
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.0,
+        1.0271627,
+        0.7368163
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_066",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        16600.0,
+        385.33957,
+        -7755.17883
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.0,
+        0.983025,
+        0.7368163
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_067",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        16600.0,
+        450.88,
+        -9722.96524
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.0,
+        0.9555025,
+        0.6950711
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_068",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        16600.0,
+        342.80157,
+        -10694.96231
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.0,
+        0.9714255,
+        0.6950711
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_069",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        16600.0,
+        115.17127,
+        -13421.33179
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.0,
+        0.9602979,
+        1.3068067
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_070",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        16600.0,
+        91.12,
+        -15729.43268
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.0,
+        0.9851407,
+        0.7371066
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_071",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/CasaGuardia",
+      "Position": [
+        5982.10297,
+        419.1896,
+        -16200.0
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.0093116,
+        1.0093116,
+        1.0093116
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_072",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Granero",
+      "Position": [
+        8793.36548,
+        163.73919,
+        -16200.0
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.1834177,
+        1.1834177,
+        1.1834177
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_073",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Taller",
+      "Position": [
+        12175.19684,
+        80.0,
+        -16200.0
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        0.9620889,
+        0.9620889,
+        0.9620889
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_074",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/CasaCapataz",
+      "Position": [
+        14901.9165,
+        75.83302,
+        -16200.0
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        0.9098898,
+        0.9098898,
+        0.9098898
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_075",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Muro",
+      "Position": [
+        5019.47403,
+        288.15999,
+        -16200.0
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        0.802229,
+        1.1042576,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_076",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Muro",
+      "Position": [
+        7266.28876,
+        283.32019,
+        -16200.0
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.2304009,
+        1.0590261,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_077",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Muro",
+      "Position": [
+        9981.61087,
+        87.6551,
+        -16200.0
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        0.7792279,
+        1.0257291,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_078",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Muro",
+      "Position": [
+        11080.01175,
+        75.12,
+        -16200.0
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        0.7792279,
+        1.1190579,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_079",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Muro",
+      "Position": [
+        13593.17627,
+        81.07325,
+        -16200.0
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.2090455,
+        1.1093619,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_080",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Muro",
+      "Position": [
+        15992.83142,
+        81.45303,
+        -16200.0
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        0.9189994,
+        1.0571425,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_081",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        4500.0,
+        210.04,
+        -16500.0
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.0,
+        1.0611998,
+        0.5099867
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_082",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Porton",
+      "Position": [
+        1400.0,
+        190.36,
+        -16800.0
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_083",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Granero",
+      "Position": [
+        -800.0,
+        155.752,
+        -16800.0
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.03,
+        1.03,
+        1.03
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_084",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/CasaCapataz",
+      "Position": [
+        375.0,
+        211.71999,
+        -16800.0
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        0.9,
+        0.9,
+        0.9
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_085",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Taller",
+      "Position": [
+        2475.0,
+        155.99999,
+        -16800.0
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        0.9,
+        0.9,
+        0.9
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_086",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/CasaGuardia",
+      "Position": [
+        3600.0,
+        159.658,
+        -16800.0
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.03,
+        1.03,
+        1.03
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_087",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Taller",
+      "Position": [
+        -14142.17224,
+        124.0,
+        -16800.0
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        0.9827394,
+        0.9827394,
+        0.9827394
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_088",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/CasaGuardia",
+      "Position": [
+        -11468.62335,
+        137.75795,
+        -16800.0
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.1144661,
+        1.1144661,
+        1.1144661
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_089",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Granero",
+      "Position": [
+        -8222.17712,
+        251.76101,
+        -16800.0
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        0.8885457,
+        0.8885457,
+        0.8885457
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_090",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Taller",
+      "Position": [
+        -5427.90451,
+        187.08409,
+        -16800.0
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.0586826,
+        1.0586826,
+        1.0586826
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_091",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Muro",
+      "Position": [
+        -15223.43903,
+        131.12,
+        -16800.0
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        0.7450888,
+        1.074468,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_092",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Muro",
+      "Position": [
+        -12745.25909,
+        131.12,
+        -16800.0
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.1653901,
+        1.0867052,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_093",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Muro",
+      "Position": [
+        -10448.8945,
+        149.74436,
+        -16800.0
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        0.8233036,
+        1.0016948,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_094",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Muro",
+      "Position": [
+        -9284.2926,
+        190.49755,
+        -16800.0
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        0.8233036,
+        1.1012893,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_095",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Muro",
+      "Position": [
+        -6885.53467,
+        239.12001,
+        -16800.0
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.1888517,
+        1.005197,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_096",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Muro",
+      "Position": [
+        -3959.37653,
+        147.12,
+        -16800.0
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.2033629,
+        1.0315348,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_097",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Muro",
+      "Position": [
+        -2223.92559,
+        135.36,
+        -16800.0
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.2033629,
+        0.9500594,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_098",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Muro",
+      "Position": [
+        -150.39998,
+        195.544,
+        -16800.0
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        0.1723036,
+        0.9936796,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_099",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Muro",
+      "Position": [
+        900.50001,
+        208.96001,
+        -16800.0
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        0.1724368,
+        1.0938201,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_100",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Muro",
+      "Position": [
+        1885.12497,
+        173.33,
+        -16800.0
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        0.1532956,
+        1.1057116,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_101",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Muro",
+      "Position": [
+        3090.73753,
+        157.00001,
+        -16800.0
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        0.187733,
+        1.0783505,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_102",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Muro",
+      "Position": [
+        4275.63744,
+        181.971,
+        -16800.0
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        0.409271,
+        0.9881102,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_103",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/TallerLateral",
+      "Position": [
+        -15700.0,
+        348.22233,
+        -5992.0414
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        0.8901842,
+        0.8901842,
+        0.8901842
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_104",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/CasaCapatazLateral",
+      "Position": [
+        -15700.0,
+        211.99999,
+        -9117.05933
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        0.875408,
+        0.875408,
+        0.875408
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_105",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/GraneroLateral",
+      "Position": [
+        -15700.0,
+        308.76977,
+        -11693.43338
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        0.9093109,
+        0.9093109,
+        0.9093109
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_106",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/CasaGuardiaLateral",
+      "Position": [
+        -15700.0,
+        212.95872,
+        -14946.80023
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        0.9701982,
+        0.9701982,
+        0.9701982
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_107",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        -15700.0,
+        387.41105,
+        -4919.93103
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        1.0,
+        0.972326,
+        0.8028375
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_108",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        -15700.0,
+        283.03494,
+        -7047.13135
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        1.0,
+        1.0675731,
+        0.7801739
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_109",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        -15700.0,
+        232.04546,
+        -8146.95282
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        1.0,
+        1.1037682,
+        0.7801739
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_110",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        -15700.0,
+        217.5106,
+        -10369.83032
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        1.0,
+        1.0614069,
+        1.1565583
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_111",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        -15700.0,
+        398.10164,
+        -12779.84543
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        1.0,
+        1.0002995,
+        0.8407244
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_112",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        -15700.0,
+        301.36085,
+        -13970.6131
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        1.0,
+        1.0173988,
+        0.8407244
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_113",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        -15700.0,
+        146.07999,
+        -16087.30164
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        1.0,
+        1.0647631,
+        1.0595185
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_114",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Muro",
+      "Position": [
+        -16050.0,
+        322.56,
+        -4400.0
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        0.5765646,
+        1.0490967,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_115",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/PortonLateral",
+      "Position": [
+        -16400.0,
+        280.04,
+        3200.0
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_116",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/TallerLateral",
+      "Position": [
+        -16400.0,
+        482.33299,
+        5400.0
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        1.03,
+        1.03,
+        1.03
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_117",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/CasaGuardiaLateral",
+      "Position": [
+        -16400.0,
+        384.34999,
+        4225.0
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        0.9,
+        0.9,
+        0.9
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_118",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/GraneroLateral",
+      "Position": [
+        -16400.0,
+        245.79999,
+        2125.0
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        0.9,
+        0.9,
+        0.9
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_119",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/CasaCapatazLateral",
+      "Position": [
+        -16400.0,
+        221.9629,
+        1000.0
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        1.03,
+        1.03,
+        1.03
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_120",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/GraneroLateral",
+      "Position": [
+        -16400.0,
+        95.35131,
+        14724.88098
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        1.1876606,
+        1.1876606,
+        1.1876606
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_121",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/TallerLateral",
+      "Position": [
+        -16400.0,
+        155.59483,
+        11739.13574
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        1.0942624,
+        1.0942624,
+        1.0942624
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_122",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/CasaCapatazLateral",
+      "Position": [
+        -16400.0,
+        512.63986,
+        8362.23755
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        0.9678403,
+        0.9678403,
+        0.9678403
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_123",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/TallerLateral",
+      "Position": [
+        -16400.0,
+        220.0,
+        -564.44936
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        0.9851872,
+        0.9851872,
+        0.9851872
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_124",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        -16400.0,
+        86.85566,
+        15756.60858
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        1.0,
+        1.0280533,
+        0.5677648
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_125",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        -16400.0,
+        119.12,
+        13221.83685
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        1.0,
+        0.9749178,
+        1.1953491
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_126",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        -16400.0,
+        265.24668,
+        10545.3064
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        1.0,
+        0.9996201,
+        0.8106994
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_127",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        -16400.0,
+        402.44231,
+        9399.63608
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        1.0,
+        0.9864895,
+        0.8106994
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_128",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        -16400.0,
+        572.82696,
+        7419.38705
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        1.0,
+        0.9838865,
+        0.6848032
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_129",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        -16400.0,
+        563.065,
+        6462.81204
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        1.0,
+        0.9673105,
+        0.6848032
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_130",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        -16400.0,
+        425.81,
+        4696.86241
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        1.0,
+        1.0843856,
+        0.2058755
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_131",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        -16400.0,
+        330.0,
+        3738.87482
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        1.0,
+        1.1171917,
+        0.2248668
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_132",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        -16400.0,
+        264.12001,
+        2702.49996
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        1.0,
+        0.9629971,
+        0.1697736
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_133",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        -16400.0,
+        233.57599,
+        1566.69998
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        1.0,
+        1.0037802,
+        0.1442077
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_134",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        -16400.0,
+        225.23999,
+        250.12221
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        1.0,
+        1.092677,
+        0.3881196
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_135",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        -16400.0,
+        239.12001,
+        -1954.40731
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        1.0,
+        1.0458672,
+        1.1542799
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_136",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/MuroLateral",
+      "Position": [
+        -16400.0,
+        303.39603,
+        -3616.13579
+      ],
+      "Rotation": [
+        -0.0,
+        -1.0,
+        -0.0,
+        4e-08
+      ],
+      "Scale": [
+        1.0,
+        0.9619256,
+        1.1542799
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_137",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Silo",
+      "Position": [
+        17900.0,
+        355.99999,
+        -1800.0
+      ],
+      "Rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "Scale": [
+        1.1,
+        1.1,
+        1.1
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_138",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Silo",
+      "Position": [
+        2600.0,
+        82.0,
+        -18400.0
+      ],
+      "Rotation": [
+        0.0,
+        0.70710677,
+        0.0,
+        0.70710677
+      ],
+      "Scale": [
+        0.98,
+        0.98,
+        0.98
+      ]
+    },
+    {
+      "Id": "Vigia_Perimetro_139",
+      "Type": "Wall",
+      "Model": "Models/VigiaPerimetro/Silo",
+      "Position": [
+        -17900.0,
+        162.3168,
+        4300.0
+      ],
+      "Rotation": [
+        0.0,
+        0.25881904,
+        0.0,
+        0.96592581
+      ],
+      "Scale": [
+        1.04,
+        1.04,
+        1.04
       ]
     },
     {
@@ -2843,7 +6938,7 @@
       "Model": "Models/AbandonedHouse/source/abandonhouse",
       "Position": [
         3770.00008,
-        231.50001,
+        88.3,
         -245.0
       ],
       "Rotation": [
@@ -2864,7 +6959,7 @@
       "Model": "Models/AbandonedHouse/source/abandonhouse",
       "Position": [
         3529.99992,
-        319.49999,
+        105.69999,
         -2420.00008
       ],
       "Rotation": [
@@ -2880,12 +6975,227 @@
       ]
     },
     {
+      "Id": "Vigia_RuinaAntigua_001",
+      "Type": "RuinAncient",
+      "Model": "Models/ancient-ruins-modular/RuinAncient",
+      "Position": [
+        9908.4671,
+        271.1601,
+        -6680.48706
+      ],
+      "Rotation": [
+        0.68125522,
+        -0.1894497,
+        0.18944974,
+        0.6812554
+      ],
+      "Scale": [
+        0.0192636,
+        0.0192636,
+        0.0192636
+      ],
+      "Hitboxes": [
+        {
+          "Center": [
+            87470.42236,
+            850.07496,
+            -8099.99847
+          ],
+          "HalfAxes": [
+            [
+              14071.78802,
+              -0.00076,
+              0.0
+            ],
+            [
+              0.0,
+              4549.99962,
+              -0.0
+            ],
+            [
+              -0.0,
+              -0.0,
+              8499.99924
+            ]
+          ]
+        },
+        {
+          "Center": [
+            199.24519,
+            -10248.21396,
+            -37905.55115
+          ],
+          "HalfAxes": [
+            [
+              66663.80615,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              18204.38385,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              4948.24333
+            ]
+          ]
+        },
+        {
+          "Center": [
+            -3300.03433,
+            2250.07744,
+            -41530.22766
+          ],
+          "HalfAxes": [
+            [
+              16600.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              4049.99962,
+              -0.0
+            ],
+            [
+              0.0,
+              0.0,
+              41634.71069
+            ]
+          ]
+        },
+        {
+          "Center": [
+            44900.01526,
+            2100.02861,
+            -41697.18628
+          ],
+          "HalfAxes": [
+            [
+              16499.99695,
+              0.0,
+              0.0
+            ],
+            [
+              0.00019,
+              4199.99962,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              42056.94885
+            ]
+          ]
+        },
+        {
+          "Center": [
+            -51400.0,
+            2250.05112,
+            -16114.04724
+          ],
+          "HalfAxes": [
+            [
+              16600.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              4049.99962,
+              -0.0
+            ],
+            [
+              0.0,
+              0.0,
+              16785.01892
+            ]
+          ]
+        },
+        {
+          "Center": [
+            -2972.93568,
+            -25919.62585,
+            -20112.91046
+          ],
+          "HalfAxes": [
+            [
+              3789.25247,
+              -0.00019,
+              0.0
+            ],
+            [
+              0.00019,
+              4550.00076,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              19422.45026
+            ]
+          ]
+        },
+        {
+          "Center": [
+            -51607.99561,
+            -26076.12,
+            -20045.84045
+          ],
+          "HalfAxes": [
+            [
+              3789.25247,
+              -0.00019,
+              0.0
+            ],
+            [
+              0.00019,
+              4550.00076,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              19422.45026
+            ]
+          ]
+        },
+        {
+          "Center": [
+            45133.75244,
+            -25970.30945,
+            -20029.51508
+          ],
+          "HalfAxes": [
+            [
+              3789.25247,
+              -0.00019,
+              0.0
+            ],
+            [
+              0.00019,
+              4550.00076,
+              0.0
+            ],
+            [
+              0.0,
+              -0.0,
+              19422.45026
+            ]
+          ]
+        }
+      ]
+    },
+    {
       "Id": "Vigia_Tree_001",
       "Type": "Tree",
       "Model": "Models/Tree/Tree",
       "Position": [
         -2940.77911,
-        79.23767,
+        183.91323,
         987.00657
       ],
       "Rotation": [
@@ -2906,7 +7216,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -3405.17349,
-        101.74948,
+        252.99897,
         823.93637
       ],
       "Rotation": [
@@ -2927,7 +7237,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -3066.09859,
-        86.99331,
+        224.43182,
         343.83368
       ],
       "Rotation": [
@@ -2948,7 +7258,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -3416.88385,
-        91.91256,
+        223.70093,
         1285.31408
       ],
       "Rotation": [
@@ -2969,7 +7279,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -2932.60708,
-        86.27167,
+        194.90725,
         687.64
       ],
       "Rotation": [
@@ -2990,7 +7300,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -3807.83234,
-        161.96404,
+        299.02413,
         694.72899
       ],
       "Rotation": [
@@ -3011,7 +7321,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -3787.99477,
-        186.33499,
+        310.07881,
         398.52474
       ],
       "Rotation": [
@@ -3032,7 +7342,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -3872.71004,
-        155.22239,
+        276.49717,
         1045.49074
       ],
       "Rotation": [
@@ -3053,7 +7363,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -3210.04028,
-        82.30986,
+        214.6982,
         1087.58297
       ],
       "Rotation": [
@@ -3074,7 +7384,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -3403.06892,
-        120.37147,
+        274.11783,
         371.82975
       ],
       "Rotation": [
@@ -3095,7 +7405,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -3094.05861,
-        84.09578,
+        175.62047,
         1530.05276
       ],
       "Rotation": [
@@ -3116,7 +7426,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -2694.08569,
-        109.04971,
+        160.20367,
         839.66532
       ],
       "Rotation": [
@@ -3137,7 +7447,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -2874.98035,
-        176.15696,
+        202.49686,
         129.40534
       ],
       "Rotation": [
@@ -3158,7 +7468,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -3677.64854,
-        201.21088,
+        309.81781,
         124.52989
       ],
       "Rotation": [
@@ -3179,7 +7489,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -3905.14221,
-        281.23219,
+        226.50001,
         -2693.5379
       ],
       "Rotation": [
@@ -3200,7 +7510,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -3637.61444,
-        307.78155,
+        234.5,
         -2161.02638
       ],
       "Rotation": [
@@ -3221,7 +7531,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -2952.70939,
-        120.555,
+        180.33824,
         -2012.17232
       ],
       "Rotation": [
@@ -3242,7 +7552,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -2953.25642,
-        135.1513,
+        197.89404,
         -1378.17469
       ],
       "Rotation": [
@@ -3263,7 +7573,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -3856.73256,
-        436.11584,
+        264.08477,
         -1810.38094
       ],
       "Rotation": [
@@ -3284,7 +7594,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -3631.72531,
-        247.19181,
+        225.76902,
         -2513.69553
       ],
       "Rotation": [
@@ -3305,7 +7615,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -3092.3399,
-        168.66156,
+        204.85952,
         -1718.0315
       ],
       "Rotation": [
@@ -3326,7 +7636,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -4252.53868,
-        490.416,
+        233.82952,
         -2166.76197
       ],
       "Rotation": [
@@ -3347,7 +7657,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -3278.8868,
-        194.25895,
+        212.64629,
         -2054.11644
       ],
       "Rotation": [
@@ -3368,7 +7678,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -3029.78115,
-        123.64837,
+        180.07374,
         -2420.19653
       ],
       "Rotation": [
@@ -3389,7 +7699,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -3248.07472,
-        146.34598,
+        198.34598,
         -2852.65198
       ],
       "Rotation": [
@@ -3410,7 +7720,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -3735.28252,
-        396.10779,
+        298.9218,
         -1222.65129
       ],
       "Rotation": [
@@ -3431,7 +7741,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -3943.26248,
-        389.88419,
+        234.5,
         -2306.88057
       ],
       "Rotation": [
@@ -3452,7 +7762,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -3322.64328,
-        164.09656,
+        204.31147,
         -2575.32997
       ],
       "Rotation": [
@@ -3473,7 +7783,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -2940.03143,
-        102.80155,
+        173.70251,
         -2777.47574
       ],
       "Rotation": [
@@ -3494,7 +7804,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -3567.11502,
-        324.13146,
+        263.91625,
         -1549.41187
       ],
       "Rotation": [
@@ -3515,7 +7825,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -3474.23592,
-        158.72544,
+        215.46943,
         -3165.54432
       ],
       "Rotation": [
@@ -3536,7 +7846,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -3548.94981,
-        302.792,
+        244.73,
         -1891.09955
       ],
       "Rotation": [
@@ -3557,7 +7867,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -2755.99785,
-        111.36686,
+        164.76206,
         -1811.44218
       ],
       "Rotation": [
@@ -3578,7 +7888,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -2933.8541,
-        637.29439,
+        209.20832,
         -4619.37141
       ],
       "Rotation": [
@@ -3599,7 +7909,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -1375.01421,
-        269.47598,
+        171.50056,
         -4504.04282
       ],
       "Rotation": [
@@ -3620,7 +7930,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -2998.51494,
-        399.49799,
+        210.3812,
         -4226.95427
       ],
       "Rotation": [
@@ -3641,7 +7951,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -2292.65995,
-        169.47328,
+        165.56227,
         -3826.55678
       ],
       "Rotation": [
@@ -3662,7 +7972,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -1525.79803,
-        199.08812,
+        162.74055,
         -4080.21584
       ],
       "Rotation": [
@@ -3683,7 +7993,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -2872.91794,
-        103.54306,
+        180.2071,
         -3346.84143
       ],
       "Rotation": [
@@ -3704,7 +8014,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -2735.53677,
-        294.09125,
+        189.34294,
         -4044.01512
       ],
       "Rotation": [
@@ -3725,7 +8035,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -1476.18971,
-        354.46532,
+        180.84669,
         -4808.66737
       ],
       "Rotation": [
@@ -3746,7 +8056,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -2096.71268,
-        654.04038,
+        190.46128,
         -4849.03183
       ],
       "Rotation": [
@@ -3767,7 +8077,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -2676.9062,
-        494.09347,
+        210.5,
         -5287.70218
       ],
       "Rotation": [
@@ -3788,7 +8098,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -2519.65122,
-        506.99444,
+        181.28605,
         -4309.17664
       ],
       "Rotation": [
@@ -3809,7 +8119,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -3272.59026,
-        523.69957,
+        238.11445,
         -4644.23752
       ],
       "Rotation": [
@@ -3830,7 +8140,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -2541.60671,
-        693.7016,
+        205.32796,
         -5029.09241
       ],
       "Rotation": [
@@ -3851,7 +8161,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -3090.63835,
-        507.09462,
+        225.75107,
         -5032.48978
       ],
       "Rotation": [
@@ -3872,7 +8182,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -1842.23785,
-        439.05215,
+        178.45333,
         -4448.83308
       ],
       "Rotation": [
@@ -3893,7 +8203,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -3314.39896,
-        177.42484,
+        215.65192,
         -3664.77432
       ],
       "Rotation": [
@@ -3914,7 +8224,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -2585.9087,
-        685.81982,
+        195.2938,
         -4633.93631
       ],
       "Rotation": [
@@ -3935,7 +8245,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -2209.73263,
-        606.9653,
+        184.8893,
         -4501.33553
       ],
       "Rotation": [
@@ -3956,7 +8266,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -2234.40762,
-        372.27514,
+        177.87631,
         -4199.19548
       ],
       "Rotation": [
@@ -3977,7 +8287,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -3061.05022,
-        199.75553,
+        204.4857,
         -3877.54211
       ],
       "Rotation": [
@@ -3998,7 +8308,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         622.65682,
-        311.98573,
+        119.59373,
         -4559.99031
       ],
       "Rotation": [
@@ -4019,7 +8329,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         129.81184,
-        650.5887,
+        151.30752,
         -4867.35229
       ],
       "Rotation": [
@@ -4040,7 +8350,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -294.74044,
-        256.29416,
+        157.24269,
         -4518.56728
       ],
       "Rotation": [
@@ -4061,7 +8371,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         663.74836,
-        544.41247,
+        117.95007,
         -4852.25792
       ],
       "Rotation": [
@@ -4082,7 +8392,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -563.3914,
-        374.20971,
+        181.31018,
         -5185.12726
       ],
       "Rotation": [
@@ -4103,7 +8413,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -400.48532,
-        231.3534,
+        137.98039,
         -3737.00981
       ],
       "Rotation": [
@@ -4124,7 +8434,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -622.7366,
-        388.12413,
+        169.40947,
         -4881.74438
       ],
       "Rotation": [
@@ -4145,7 +8455,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -918.5813,
-        201.10784,
+        196.55899,
         -5401.47476
       ],
       "Rotation": [
@@ -4166,7 +8476,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         1136.70082,
-        358.09762,
+        113.94281,
         -4849.36943
       ],
       "Rotation": [
@@ -4187,7 +8497,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -418.80903,
-        99.84304,
+        149.11277,
         -4115.31944
       ],
       "Rotation": [
@@ -4208,7 +8518,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -1.10426,
-        565.40837,
+        162.50448,
         -5199.0078
       ],
       "Rotation": [
@@ -4229,7 +8539,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         935.84538,
-        222.10743,
+        107.06619,
         -4148.84415
       ],
       "Rotation": [
@@ -4250,7 +8560,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -845.82233,
-        112.76222,
+        157.79822,
         -4232.45544
       ],
       "Rotation": [
@@ -4271,7 +8581,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -236.63199,
-        572.56355,
+        162.54969,
         -4851.24207
       ],
       "Rotation": [
@@ -4292,7 +8602,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -441.19086,
-        124.05282,
+        196.96004,
         -5620.31021
       ],
       "Rotation": [
@@ -4313,7 +8623,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -774.01986,
-        104.79101,
+        147.46079,
         -3828.98369
       ],
       "Rotation": [
@@ -4334,7 +8644,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         2920.25204,
-        312.02223,
+        164.12016,
         -4892.3851
       ],
       "Rotation": [
@@ -4355,7 +8665,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         2340.97366,
-        330.41646,
+        100.79815,
         -4007.45392
       ],
       "Rotation": [
@@ -4376,7 +8686,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         2508.45051,
-        590.17463,
+        124.07871,
         -4531.0173
       ],
       "Rotation": [
@@ -4397,7 +8707,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         2064.78977,
-        563.34252,
+        114.5,
         -4408.44269
       ],
       "Rotation": [
@@ -4418,7 +8728,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         2618.27221,
-        187.70856,
+        97.27492,
         -3716.41426
       ],
       "Rotation": [
@@ -4439,7 +8749,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         2057.55901,
-        284.25794,
+        102.5,
         -3908.58459
       ],
       "Rotation": [
@@ -4460,7 +8770,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         2981.40488,
-        163.86513,
+        130.37752,
         -3915.53307
       ],
       "Rotation": [
@@ -4481,7 +8791,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         1736.26347,
-        375.03142,
+        111.04946,
         -4224.18365
       ],
       "Rotation": [
@@ -4502,7 +8812,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         2051.30386,
-        730.25455,
+        122.5,
         -4767.68951
       ],
       "Rotation": [
@@ -4523,7 +8833,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         3025.214,
-        208.20694,
+        166.41335,
         -4323.703
       ],
       "Rotation": [
@@ -4544,7 +8854,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         2261.88927,
-        223.71542,
+        98.02443,
         -3675.49973
       ],
       "Rotation": [
@@ -4565,7 +8875,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         2698.90842,
-        284.22084,
+        121.3411,
         -4123.21053
       ],
       "Rotation": [
@@ -4586,7 +8896,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         2890.38429,
-        127.99249,
+        103.81799,
         -3542.56554
       ],
       "Rotation": [
@@ -4607,7 +8917,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         2859.19914,
-        359.01647,
+        155.23593,
         -4605.69954
       ],
       "Rotation": [
@@ -4628,7 +8938,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         1838.49106,
-        586.93471,
+        129.28627,
         -4973.21892
       ],
       "Rotation": [
@@ -4649,7 +8959,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         1581.91071,
-        434.692,
+        117.80668,
         -4600.75645
       ],
       "Rotation": [
@@ -4670,7 +8980,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         5092.87758,
-        734.67927,
+        137.04029,
         -3013.50746
       ],
       "Rotation": [
@@ -4690,9 +9000,9 @@
       "Type": "Tree",
       "Model": "Models/Tree/Tree",
       "Position": [
-        4735.08377,
-        419.29932,
-        -2403.26519
+        4131.28357,
+        138.42745,
+        -3103.69129
       ],
       "Rotation": [
         -0.0,
@@ -4712,7 +9022,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         4837.23221,
-        840.0342,
+        160.17604,
         -3178.3802
       ],
       "Rotation": [
@@ -4733,7 +9043,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         4544.43016,
-        831.77509,
+        150.84277,
         -3152.14233
       ],
       "Rotation": [
@@ -4754,7 +9064,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         4930.49927,
-        619.64355,
+        116.05792,
         -2688.94806
       ],
       "Rotation": [
@@ -4774,9 +9084,9 @@
       "Type": "Tree",
       "Model": "Models/Tree/Tree",
       "Position": [
-        4523.28033,
-        219.69621,
-        -1933.34484
+        3493.48679,
+        334.58407,
+        -3661.67259
       ],
       "Rotation": [
         0.0,
@@ -4795,9 +9105,9 @@
       "Type": "Tree",
       "Model": "Models/Tree/Tree",
       "Position": [
-        4807.52487,
-        317.55891,
-        -1820.93182
+        6063.55057,
+        69.67064,
+        -2678.30715
       ],
       "Rotation": [
         0.0,
@@ -4817,7 +9127,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         4315.03792,
-        633.63457,
+        231.1789,
         -3645.63217
       ],
       "Rotation": [
@@ -4838,7 +9148,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         4563.43384,
-        654.88358,
+        117.40686,
         -2822.67132
       ],
       "Rotation": [
@@ -4859,7 +9169,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         5107.59964,
-        743.30115,
+        187.43838,
         -3410.35309
       ],
       "Rotation": [
@@ -4879,9 +9189,9 @@
       "Type": "Tree",
       "Model": "Models/Tree/Tree",
       "Position": [
-        4855.10712,
-        327.75877,
-        -2125.05836
+        5640.78789,
+        74.91935,
+        -2682.45316
       ],
       "Rotation": [
         0.0,
@@ -4900,9 +9210,9 @@
       "Type": "Tree",
       "Model": "Models/Tree/Tree",
       "Position": [
-        5173.53821,
-        395.73872,
-        -2106.34403
+        5837.81281,
+        -93.77948,
+        -3018.14651
       ],
       "Rotation": [
         -0.0,
@@ -4922,7 +9232,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         5209.91173,
-        477.58365,
+        115.1273,
         -2565.6826
       ],
       "Rotation": [
@@ -4943,7 +9253,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         3808.63113,
-        445.48068,
+        144.06701,
         -3469.33365
       ],
       "Rotation": [
@@ -4964,7 +9274,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         4556.02531,
-        847.47171,
+        207.82256,
         -3455.40771
       ],
       "Rotation": [
@@ -4985,7 +9295,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         4420.6131,
-        264.88993,
+        172.95331,
         1527.31524
       ],
       "Rotation": [
@@ -5006,7 +9316,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         3990.52238,
-        157.85499,
+        162.5566,
         1350.47169
       ],
       "Rotation": [
@@ -5027,7 +9337,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         4466.3765,
-        156.98129,
+        138.5,
         1039.2045
       ],
       "Rotation": [
@@ -5048,7 +9358,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         4408.14819,
-        128.00058,
+        127.77551,
         723.73953
       ],
       "Rotation": [
@@ -5069,7 +9379,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         3895.36095,
-        199.09279,
+        201.6433,
         1691.31451
       ],
       "Rotation": [
@@ -5090,7 +9400,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         4910.15778,
-        182.5,
+        138.5,
         1020.91522
       ],
       "Rotation": [
@@ -5111,7 +9421,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         4714.97002,
-        171.494,
+        133.81819,
         732.95474
       ],
       "Rotation": [
@@ -5132,7 +9442,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         4133.74596,
-        294.07923,
+        218.20414,
         1875.44975
       ],
       "Rotation": [
@@ -5153,7 +9463,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         4948.32382,
-        229.6998,
+        150.407,
         1345.99895
       ],
       "Rotation": [
@@ -5174,7 +9484,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         4609.80148,
-        350.67658,
+        195.1521,
         1808.70132
       ],
       "Rotation": [
@@ -5195,7 +9505,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         4157.37495,
-        131.6601,
+        137.45503,
         1023.876
       ],
       "Rotation": [
@@ -5216,7 +9526,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         4709.38568,
-        498.24839,
+        213.01572,
         2090.83214
       ],
       "Rotation": [
@@ -5237,7 +9547,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         3859.08546,
-        116.24542,
+        139.81034,
         1066.37926
       ],
       "Rotation": [
@@ -5258,7 +9568,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         5009.03778,
-        295.32406,
+        161.64124,
         1646.60664
       ],
       "Rotation": [
@@ -5279,7 +9589,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         4622.63107,
-        196.25497,
+        154.76146,
         1283.90541
       ],
       "Rotation": [
@@ -5300,7 +9610,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         5032.92007,
-        393.31055,
+        179.45793,
         1944.89422
       ],
       "Rotation": [
@@ -5321,7 +9631,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         5237.54425,
-        240.65936,
+        131.38114,
         1347.11695
       ],
       "Rotation": [
@@ -5342,7 +9652,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         2160.09216,
-        180.18374,
+        229.83999,
         3706.86874
       ],
       "Rotation": [
@@ -5363,7 +9673,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         1756.86531,
-        63.47596,
+        154.6225,
         2925.60101
       ],
       "Rotation": [
@@ -5384,7 +9694,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         2717.96494,
-        93.50862,
+        299.9372,
         3325.21553
       ],
       "Rotation": [
@@ -5405,7 +9715,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         2069.03419,
-        59.99303,
+        178.36627,
         2669.77711
       ],
       "Rotation": [
@@ -5426,7 +9736,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         1848.31982,
-        188.56041,
+        179.82056,
         3780.13268
       ],
       "Rotation": [
@@ -5447,7 +9757,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         2113.10406,
-        359.75006,
+        195.99384,
         4025.98305
       ],
       "Rotation": [
@@ -5468,7 +9778,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         2429.28753,
-        92.157,
+        267.186,
         3210.29549
       ],
       "Rotation": [
@@ -5489,7 +9799,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         1620.53127,
-        99.14318,
+        152.1425,
         3458.03986
       ],
       "Rotation": [
@@ -5510,7 +9820,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         1461.75604,
-        80.62587,
+        122.50684,
         2838.41496
       ],
       "Rotation": [
@@ -5531,7 +9841,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         1794.03381,
-        89.13351,
+        173.54541,
         3223.93456
       ],
       "Rotation": [
@@ -5552,7 +9862,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         1939.20231,
-        113.39787,
+        200.77238,
         3465.41214
       ],
       "Rotation": [
@@ -5573,7 +9883,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         2550.88596,
-        73.28419,
+        258.81712,
         2918.71872
       ],
       "Rotation": [
@@ -5594,7 +9904,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         2170.66002,
-        76.20899,
+        225.01667,
         3050.46825
       ],
       "Rotation": [
@@ -5615,7 +9925,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -1920.1376,
-        349.06099,
+        93.40215,
         4122.55363
       ],
       "Rotation": [
@@ -5636,7 +9946,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -1601.82095,
-        164.75855,
+        98.5,
         3534.27391
       ],
       "Rotation": [
@@ -5657,7 +9967,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -2322.85213,
-        185.6881,
+        77.41408,
         3674.44458
       ],
       "Rotation": [
@@ -5678,7 +9988,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -1771.78383,
-        212.53285,
+        94.5,
         3815.80734
       ],
       "Rotation": [
@@ -5699,7 +10009,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -1794.07806,
-        126.5,
+        94.94567,
         3094.78016
       ],
       "Rotation": [
@@ -5720,7 +10030,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -1271.45443,
-        166.5994,
+        98.5,
         3726.06049
       ],
       "Rotation": [
@@ -5741,7 +10051,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -2020.56713,
-        127.92945,
+        87.67731,
         3317.86804
       ],
       "Rotation": [
@@ -5762,7 +10072,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -2177.17075,
-        103.70166,
+        86.5,
         3001.43547
       ],
       "Rotation": [
@@ -5783,7 +10093,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -1252.74906,
-        194.06015,
+        98.5,
         3077.53239
       ],
       "Rotation": [
@@ -5804,7 +10114,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -1699.98932,
-        113.72349,
+        98.5,
         2826.8589
       ],
       "Rotation": [
@@ -5825,7 +10135,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -2497.11208,
-        107.65496,
+        84.38448,
         3382.21855
       ],
       "Rotation": [
@@ -5846,7 +10156,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -2755.91545,
-        172.32611,
+        106.73661,
         3701.91422
       ],
       "Rotation": [
@@ -5867,7 +10177,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -1399.88594,
-        156.84146,
+        98.5,
         2769.20795
       ],
       "Rotation": [
@@ -5888,7 +10198,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -1339.43958,
-        184.9112,
+        98.5,
         3435.70061
       ],
       "Rotation": [
@@ -5909,7 +10219,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -1551.75343,
-        138.44615,
+        98.5,
         3249.55139
       ],
       "Rotation": [
@@ -5930,7 +10240,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -1313.86337,
-        327.60906,
+        90.5,
         -62.12627
       ],
       "Rotation": [
@@ -5951,7 +10261,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -1015.81697,
-        228.48618,
+        94.5,
         37.16635
       ],
       "Rotation": [
@@ -5972,7 +10282,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -1555.84059,
-        247.38684,
+        90.5,
         387.06741
       ],
       "Rotation": [
@@ -5993,7 +10303,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -1248.88105,
-        256.0472,
+        94.5,
         409.10096
       ],
       "Rotation": [
@@ -6014,7 +10324,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -1036.3061,
-        200.8837,
+        97.94325,
         -622.38736
       ],
       "Rotation": [
@@ -6035,7 +10345,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         -1734.21803,
-        197.23822,
+        93.86872,
         126.24643
       ],
       "Rotation": [
@@ -6056,7 +10366,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         1205.73292,
-        380.91686,
+        94.5,
         1089.00499
       ],
       "Rotation": [
@@ -6077,7 +10387,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         797.4937,
-        141.57963,
+        98.5,
         617.25478
       ],
       "Rotation": [
@@ -6098,7 +10408,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         1081.7605,
-        272.53263,
+        97.22958,
         800.12083
       ],
       "Rotation": [
@@ -6119,7 +10429,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         1537.67433,
-        214.49203,
+        90.5,
         1107.27587
       ],
       "Rotation": [
@@ -6140,7 +10450,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         1518.78719,
-        253.54691,
+        91.74851,
         803.3514
       ],
       "Rotation": [
@@ -6161,7 +10471,7 @@
       "Model": "Models/Tree/Tree",
       "Position": [
         1193.9455,
-        144.6818,
+        96.74218,
         533.9541
       ],
       "Rotation": [

@@ -101,6 +101,7 @@ namespace TGC.MonoGame.TP.Colliders
                         Collider childCollider = new Collider(_simulation, _bufferPool, _effect, _graphicsDevice)
                         {
                             parentCollider = this,
+                            _isStatic = this._isStatic,
                             _isChildCollider = true,
                             childObjectOfThis = child
                         };
@@ -229,7 +230,7 @@ namespace TGC.MonoGame.TP.Colliders
             }
             return _bodyReference.LocalInertia.InverseMass;
         }
-        public void Remove()
+        public virtual void Remove()
         {
             if (Exists())
             {

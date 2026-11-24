@@ -46,7 +46,7 @@ namespace TGC.MonoGame.TP.ColliderRenderers
                 for (var i = 0; i < collider._childColliders.Count; i++)
                 {
                     Collider childCollider = collider._childColliders[i];
-                    _shapeColliderRenderers.Find(sr => sr.GetShapeId() == childCollider.GetShape().Type).Draw(childCollider, view, projection);
+                    _shapeColliderRenderers.Find(sr => sr.GetShapeId() == childCollider.GetShape().Type)?.Draw(childCollider, view, projection);
                 }
             }
             else

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using TGC.MonoGame.TP.Bush;
@@ -43,6 +44,23 @@ namespace TGC.MonoGame.TP.Editor
             public float[] Rotation { get; set; } = Array.Empty<float>();
             // Vector3, incluso si el editor trabaja con escala uniforme.
             public float[] Scale { get; set; } = Array.Empty<float>();
+            [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+            public SceneHitbox[]? Hitboxes { get; set; }
+        }
+
+        public sealed class SceneHitbox
+        {
+            public float[] Center { get; set; } = Array.Empty<float>();
+            public float[][] HalfAxes { get; set; } = Array.Empty<float[]>();
+
+            internal Matrix ToModelTransform()
+            {
+                return new Matrix(
+                    HalfAxes[0][0], HalfAxes[0][1], HalfAxes[0][2], 0f,
+                    HalfAxes[1][0], HalfAxes[1][1], HalfAxes[1][2], 0f,
+                    HalfAxes[2][0], HalfAxes[2][1], HalfAxes[2][2], 0f,
+                    Center[0], Center[1], Center[2], 1f);
+            }
         }
 
         public sealed class LegacyTransform
@@ -139,7 +157,8 @@ namespace TGC.MonoGame.TP.Editor
                 Model = model._modelPath,
                 Position = new[] { model.Position.X, model.Position.Y, model.Position.Z },
                 Rotation = new[] { rotation.X, rotation.Y, rotation.Z, rotation.W },
-                Scale = new[] { model.Scale.X, model.Scale.Y, model.Scale.Z }
+                Scale = new[] { model.Scale.X, model.Scale.Y, model.Scale.Z },
+                Hitboxes = (model as RuinAncient)?.Hitboxes
             };
         }
 
@@ -168,6 +187,7 @@ namespace TGC.MonoGame.TP.Editor
             {
                 nameof(Tree) => new Tree(content, path, position, rotation, scale, renderer),
                 nameof(RuinHouse1) => new RuinHouse1(content, path, position, rotation, scale, renderer),
+                nameof(RuinAncient) => new RuinAncient(content, path, position, rotation, scale, renderer, RequireHitboxes(data)),
                 nameof(Fence) => new Fence(content, path, position, rotation, scale, renderer),
                 nameof(Debris) => new Debris(content, path, position, rotation, scale, renderer),
                 nameof(AbandonedCar) => new AbandonedCar(content, path, position, rotation, scale, renderer),
@@ -177,6 +197,33 @@ namespace TGC.MonoGame.TP.Editor
                 nameof(Wall) => new Wall(content, path, position, rotation, scale, renderer),
                 _ => throw new InvalidDataException($"Tipo de modelo no soportado: '{data.Type}' (ID: {data.Id}).")
             };
+        }
+
+        private static SceneHitbox[] RequireHitboxes(SceneObject data)
+        {
+            if (data.Hitboxes is not { Length: > 0 } hitboxes)
+                throw new InvalidDataException($"'{data.Id}' necesita al menos una hitbox exportada desde Blender.");
+
+            for (int i = 0; i < hitboxes.Length; i++)
+            {
+                SceneHitbox box = hitboxes[i];
+                if (box == null || !IsFiniteVector(box.Center) || box.HalfAxes is not { Length: 3 } axes ||
+                    !axes.All(IsFiniteVector))
+                    throw new InvalidDataException($"Hitbox {i + 1} inválida en '{data.Id}'.");
+
+                Matrix shape = box.ToModelTransform();
+                float volume = Vector3.Dot(Vector3.Cross(Vector3.Normalize(shape.Right),
+                    Vector3.Normalize(shape.Up)), Vector3.Normalize(shape.Backward));
+                if (!float.IsFinite(volume) || MathF.Abs(volume) < 1e-5f)
+                    throw new InvalidDataException($"Hitbox {i + 1} sin volumen en '{data.Id}'.");
+            }
+
+            return hitboxes;
+        }
+
+        private static bool IsFiniteVector(float[] values)
+        {
+            return values is { Length: 3 } && values.All(float.IsFinite);
         }
 
         /// <summary>Lee la antigua carpeta Documentos/WorldOfBugs solo al migrar.</summary>
