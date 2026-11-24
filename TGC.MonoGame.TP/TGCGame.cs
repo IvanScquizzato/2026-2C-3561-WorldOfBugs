@@ -162,7 +162,7 @@ public class TGCGame : Game
     private Texture2D _terrainGround;
     private SillouetteRenderer _sillouetteRenderer;
     private Effect _outlineEffect;
-    
+
     private float _remainingTime = 300f; // 5 minutos
 
     private float _menuRotation = 0f;
@@ -402,7 +402,7 @@ public class TGCGame : Game
         _menuFont = Content.Load<SpriteFont>("MenuFont");
         _hud = new HUD.HUD(_pixel, _tanks[0], _menuFont);
         _mainMenu = new HUD.MainMenu(_pixel, _menuFont);
-        _helpMenu = new HUD.HelpMenu(_pixel,_menuFont);
+        _helpMenu = new HUD.HelpMenu(_pixel, _menuFont);
         _pauseMenu = new HUD.PauseMenu(_pixel, _menuFont);
 
         _victoryMenu = new VictoryMenu(_pixel, _menuFont);
@@ -597,7 +597,7 @@ public class TGCGame : Game
         var nuevos = new List<(string Id, ModelInScene Model)>();
         foreach (SceneRepository.SceneObject data in scene.Objects)
         {
-            ModelInScene modelo = SceneRepository.Create(data, Content, _basicRenderer);
+            ModelInScene modelo = SceneRepository.Create(data, Content, _PBRRenderer);
             nuevos.Add((data.Id, modelo));
         }
 
@@ -779,14 +779,14 @@ public class TGCGame : Game
         switch (_gameState)
         {
             case GameState.Help:
-              IsMouseVisible = true;
-             _helpMenu.Update();
+                IsMouseVisible = true;
+                _helpMenu.Update();
                 if (_helpMenu.BackToMenu)
                 {
                     _helpMenu.BackToMenu = false;
-                     _gameState = GameState.MainMenu;
+                    _gameState = GameState.MainMenu;
                 }
-            break;
+                break;
             case GameState.MainMenu:
                 _remainingTime = 300f;
                 _menuRotation += (float)gameTime.ElapsedGameTime.TotalSeconds * 0.1f;
@@ -801,9 +801,10 @@ public class TGCGame : Game
                 else if (_mainMenu.LeaveGame)
                 {
                     Exit();
-                }else if (_mainMenu.HelpMenu)
+                }
+                else if (_mainMenu.HelpMenu)
                 {
-                     _mainMenu.HelpMenu = false;
+                    _mainMenu.HelpMenu = false;
                     _gameState = GameState.Help;
                 }
                 break;
@@ -830,13 +831,13 @@ public class TGCGame : Game
 
             case GameState.Playing:
                 // SceneEditor controla la cámara libre únicamente en modo edición.
-                 _remainingTime -=(float)gameTime.ElapsedGameTime.TotalSeconds;
+                _remainingTime -= (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (_remainingTime <= 0f)
-            {
-            _remainingTime = 0f;
-            _gameState = GameState.Fail;
-            }
+                if (_remainingTime <= 0f)
+                {
+                    _remainingTime = 0f;
+                    _gameState = GameState.Fail;
+                }
 
                 bool estabaEditando = _sceneEditor.Enabled;
                 _sceneEditor.Update(gameTime, _camera);
@@ -1149,7 +1150,8 @@ public class TGCGame : Game
                 );
             DrawWorld(menuView, menuProjection, gameTime);
             _mainMenu.Draw(_spriteBatch);
-        }else if(_gameState == GameState.Help)
+        }
+        else if (_gameState == GameState.Help)
         {
             _helpMenu.Draw(_spriteBatch);
         }

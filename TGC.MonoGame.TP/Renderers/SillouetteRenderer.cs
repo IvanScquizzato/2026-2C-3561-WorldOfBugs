@@ -26,23 +26,10 @@ class SillouetteRenderer
         WhiteTarget = new RenderTarget2D(
             graphicsDevice, _graphicsDevice.PresentationParameters.BackBufferWidth,
            _graphicsDevice.PresentationParameters.BackBufferHeight, false,
-            SurfaceFormat.Color, DepthFormat.Depth24Stencil8, 0,
+            SurfaceFormat.Color, DepthFormat.Depth24, 0,
             RenderTargetUsage.DiscardContents);
 
-        /* _compositeState = new DepthStencilState
-         {
-             DepthBufferEnable = false,
-             DepthBufferWriteEnable = false,
 
-             StencilEnable = true,
-             StencilFunction = CompareFunction.Equal,
-
-             StencilPass = StencilOperation.Keep,
-             StencilFail = StencilOperation.Keep,
-             StencilDepthBufferFail = StencilOperation.Keep,
-
-             ReferenceStencil = 2
-         };*/
         _compositeState = new DepthStencilState
         {
             DepthBufferEnable = true,
@@ -72,7 +59,7 @@ class SillouetteRenderer
             height,
             false,
             SurfaceFormat.Color,
-            DepthFormat.None,
+            DepthFormat.Depth24,
             0,
             RenderTargetUsage.DiscardContents
         );
