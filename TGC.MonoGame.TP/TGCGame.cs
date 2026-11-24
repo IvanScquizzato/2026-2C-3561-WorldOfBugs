@@ -72,6 +72,8 @@ public class TGCGame : Game
     public const string ContentFolderSpriteFonts = "SpriteFonts/";
     public const string ContentFolderTextures = "Textures/";
 
+
+    public static bool GodMode { get; set; } = false;
     public static Simulation _simulation;
     private BufferPool _bufferPool;
 
@@ -882,7 +884,7 @@ public class TGCGame : Game
                 }
 
                 if (currentKeyboardState.IsKeyDown(Keys.C) &&
-                    _previousKeyboardState.IsKeyUp(Keys.C))
+                    _previousKeyboardState.IsKeyUp(Keys.C) && GodMode)
                 {
                     _currentCamera = _currentCamera == _camera2 ? _camera : _camera2;
                 }
@@ -901,6 +903,7 @@ public class TGCGame : Game
                 //los dejo de actualizar (y los borro) 
                 for (int i = _tanks.Count - 1; i >= 0; i--)
                 {
+
                     if (_tanks[i]._isDisabled)
                     {
                         _tanks[i].Destroy();
@@ -1203,7 +1206,7 @@ public class TGCGame : Game
         bool hasSun = _dayNightCycle.SunIntensity > 0.01f;
         _lastShadowMapTime += gameTime.ElapsedGameTime.TotalSeconds;
 
-        if (hasSun && _lastShadowMapTime > 1.0 / 60.0 && _gameState != GameState.MainMenu && gameTime.TotalGameTime.TotalSeconds < 10.0)
+        if (hasSun && _lastShadowMapTime > 1.0 / 60.0 && _gameState != GameState.MainMenu)
         {
             _shadowMapRenderer.Render(
               _tanks[0].Position,
