@@ -104,6 +104,7 @@ public class TGCGame : Game
     private Effect _PBREffect;
     private BasicRenderer _basicRenderer;
     private PBRRenderer _PBRRenderer;
+    private LampBloomRenderer _lampBloom;
     private TerrainRenderer _terrainRenderer;
     private KeyboardState _previousKeyboardState;
     private SpriteBatch _spriteBatch;
@@ -167,6 +168,13 @@ public class TGCGame : Game
     private double _lastShadowMapTime = 0.0;
     private float _farShadowAreaSize = 9000f;
     private float _closeShadowAreaSize = 1500f;
+    
+    // luces
+    private const int MaxPointLights = 4;
+    private readonly Lamp[] _pointLamps = new Lamp[MaxPointLights];
+    private PointLightShadowRenderer _pointLightShadows;
+    private readonly Vector4[] _positionsAndRadii = new Vector4[MaxPointLights];
+    private readonly Vector4[] _colorsAndIntensities = new Vector4[MaxPointLights];
 
     private Effect _terrainEffect;
     private Texture2D _terrainGrassNormal;
@@ -396,6 +404,7 @@ public class TGCGame : Game
 
         _outlineEffect = Content.Load<Effect>(ContentFolderEffects + "OutlineEffect");
         _PBREffect = Content.Load<Effect>(ContentFolderEffects + "PBRShader");
+        _PBREffect.Parameters["LampOpacityMap"].SetValue(Content.Load<Texture2D>(ContentFolder3D + "street-lamp/textures/StreetLamp_01 - Default_Opacity"));
         _PBRRenderer = new PBRRenderer(GraphicsDevice, _PBREffect, _debugEffect);
 
         _sceneRepository = new SceneRepository();
@@ -415,6 +424,8 @@ public class TGCGame : Game
         // Interfaz: se carga después de inicializar el escenario y los tanques.
         _pixel = new Texture2D(GraphicsDevice, 1, 1);
         _pixel.SetData(new[] { Color.White });
+        _lampBloom = new LampBloomRenderer(GraphicsDevice, _spriteBatch, _pixel, _PBRRenderer,
+            Content.Load<Effect>(ContentFolderEffects + "LampBloom"));
 
 
         _menuFont = Content.Load<SpriteFont>("MenuFont");
@@ -451,6 +462,9 @@ public class TGCGame : Game
 
         _shadowMapRenderer = new ShadowMapRenderer(
             GraphicsDevice, Content.Load<Effect>("Effects/ShadowMapGenerate"), _farShadowAreaSize, _closeShadowAreaSize);
+
+        _pointLightShadows = new PointLightShadowRenderer(GraphicsDevice,
+            Content.Load<Effect>(ContentFolderEffects + "PointShadowGenerate"), MaxPointLights);
 
         _stars = new TextureCube(GraphicsDevice, 1, false, SurfaceFormat.Color);
 
@@ -1103,6 +1117,35 @@ public class TGCGame : Game
             MathHelper.Lerp(0.06f, 0.2f, 1.5f - _dayNightCycle.NightFactor));
     }
 
+    private void ApplyPointLights(Matrix view, Matrix projection)
+    {
+        int count = 0;
+
+        foreach (Lamp lamp in _decor.OfType<Lamp>())
+        {
+            float intensity = lamp.EffectiveLightIntensity;
+            if (intensity <= 0f) continue;
+
+            _pointLamps[count] = lamp;
+            _positionsAndRadii[count] = new Vector4(lamp.LightPosition, lamp.LightRadius);
+            _colorsAndIntensities[count] = new Vector4(lamp.LightColor, intensity);
+            count++;
+
+            if (count == MaxPointLights) break;
+        }
+        _pointLightShadows.Update(_pointLamps, count, _terrains[0], _modelosEnEscenario, view * projection);
+        SetPointLightParameters(_PBREffect, count);
+        SetPointLightParameters(_terrainRenderer._effect, count);
+    }
+
+    private void SetPointLightParameters(Effect effect, int count)
+    {
+        effect.Parameters["PointLightPositionRadius"].SetValue(_positionsAndRadii);
+        effect.Parameters["PointLightColorIntensity"].SetValue(_colorsAndIntensities);
+        effect.Parameters["PointLightCount"].SetValue(count);
+        _pointLightShadows.ApplyMaps(effect);
+    }
+
     private void ApplyShadowMap(Effect effect, bool enabled)
     {
         effect.Parameters["CloseLightViewProjection"].SetValue(
@@ -1273,7 +1316,8 @@ public class TGCGame : Game
         }
 
 
-        // Al volver del render target, limpiar de nuevo el backbuffer.
+        ApplyPointLights(view, projection);
+        bool drawLampBloom = _lampBloom.BeginScene(_decor, view, projection);
         GraphicsDevice.Clear(Color.LightBlue);
         GraphicsDevice.BlendState = BlendState.Opaque;
         GraphicsDevice.DepthStencilState = DepthStencilState.Default;
@@ -1318,6 +1362,9 @@ public class TGCGame : Game
         GraphicsDevice.BlendState = previousBlend;
 
 
+        if (drawLampBloom)
+            _lampBloom.Composite(view, projection);
+
         if (_showShadowMap && hasSun && _gameState != GameState.MainMenu)
         {
             _spriteBatch.Begin(
@@ -1349,6 +1396,8 @@ public class TGCGame : Game
         _skybox?.Dispose();
         _stars?.Dispose();
         _shadowMapRenderer?.Dispose();
+        _pointLightShadows?.Dispose();
+        _lampBloom?.Dispose();
         _pixel?.Dispose();
         _spriteBatch?.Dispose();
         Content.Unload();

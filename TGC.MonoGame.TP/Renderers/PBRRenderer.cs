@@ -38,7 +38,10 @@ namespace TGC.MonoGame.TP.Renderers
             {
                 return;
             }
+            
+            Vector3 emission = modelInScene is Lamp lamp ? lamp.LightColor * lamp.EffectiveLightIntensity : Vector3.Zero;
 
+            _effect.Parameters["LampEmission"].SetValue(emission);
             _effect.Parameters["View"].SetValue(view);
             _effect.Parameters["Projection"].SetValue(projection);
             _effect.Parameters["Roughness"]?.SetValue(0.7f);
@@ -55,6 +58,31 @@ namespace TGC.MonoGame.TP.Renderers
                 return;
             }
 
+            DrawMeshes(modelInScene, model, false);
+            _graphicsDevice.DepthStencilState = DepthStencilState.Default;
+        }
+
+        internal void DrawLampBloomMask(Lamp lamp, Matrix view, Matrix projection)
+        {
+            EffectTechnique previousTechnique = _effect.CurrentTechnique;
+            try
+            {
+                _effect.Parameters["LampEmission"].SetValue(lamp.LightColor * lamp.EffectiveLightIntensity);
+                _effect.Parameters["View"].SetValue(view);
+                _effect.Parameters["Projection"].SetValue(projection);
+                _effect.Parameters["TrackOffset"].SetValue(0f);
+                _effect.CurrentTechnique = _effect.Techniques["LampBloomMask"];
+                DrawMeshes(lamp, lamp._model, true);
+            }
+            finally
+            {
+                _effect.CurrentTechnique = previousTechnique;
+            }
+        }
+
+        private void DrawMeshes(ModelInScene modelInScene, Model model, bool drawBloomMask)
+        {
+            var textures = modelInScene.GetTextures();
             var modelMeshesBaseTransforms = new Matrix[model.Bones.Count];
             model.CopyAbsoluteBoneTransformsTo(modelMeshesBaseTransforms);
             var index = 0;
@@ -67,23 +95,27 @@ namespace TGC.MonoGame.TP.Renderers
                 _effect.Parameters["World"].SetValue(world);
                 foreach (var meshPart in mesh.MeshParts)
                 {
-                    if (modelInScene.GetTextures()[index] != null)
+                    Texture2D texture = textures[index];
+                    if (texture != null)
                     {
-                        _effect.Parameters["ModelTexture"]?.SetValue(modelInScene.GetTextures()[index]);
-                        if (modelInScene._normalMapsOfTexture.TryGetValue(modelInScene.GetTextures()[index], out Texture normalMap))
+                        _effect.Parameters["ModelTexture"]?.SetValue(texture);
+                        if (!drawBloomMask)
                         {
-                            _effect.Parameters["NormalMap"]?.SetValue(normalMap);
-                            _effect.CurrentTechnique = _effect.Techniques["WithNormalMap"];
-                        }
-                        else
-                        {
-                            _effect.CurrentTechnique = _effect.Techniques["WithoutNormalMap"];
-                        }
-                        if (modelInScene._materialOfNameTexture.TryGetValue(modelInScene.GetTextures()[index].Name, out IMaterial material))
-                        {
-                            _effect.Parameters["Roughness"]?.SetValue(material.Roughness);
-                            _effect.Parameters["K"]?.SetValue(material.K);
-                            _effect.Parameters["F0"]?.SetValue(material.F0);
+                            if (modelInScene._normalMapsOfTexture.TryGetValue(texture, out Texture normalMap))
+                            {
+                                _effect.Parameters["NormalMap"]?.SetValue(normalMap);
+                                _effect.CurrentTechnique = _effect.Techniques["WithNormalMap"];
+                            }
+                            else
+                            {
+                                _effect.CurrentTechnique = _effect.Techniques["WithoutNormalMap"];
+                            }
+                            if (modelInScene._materialOfNameTexture.TryGetValue(texture.Name, out IMaterial material))
+                            {
+                                _effect.Parameters["Roughness"]?.SetValue(material.Roughness);
+                                _effect.Parameters["K"]?.SetValue(material.K);
+                                _effect.Parameters["F0"]?.SetValue(material.F0);
+                            }
                         }
                     }
 
@@ -94,8 +126,6 @@ namespace TGC.MonoGame.TP.Renderers
                     index++;
                 }
             }
-            _graphicsDevice.DepthStencilState = DepthStencilState.Default;
-
         }
 
         private bool TryDrawMerged(ModelInScene modelInScene, Model model)

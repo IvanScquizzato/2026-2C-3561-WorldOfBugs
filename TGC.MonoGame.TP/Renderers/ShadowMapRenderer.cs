@@ -289,7 +289,7 @@ public sealed class ShadowMapRenderer : IDisposable
         }
     }
 
-    private static Matrix GetMeshWorld(ModelInScene model, ModelMesh mesh, Matrix bone)
+    internal static Matrix GetMeshWorld(ModelInScene model, ModelMesh mesh, Matrix bone)
     {
         if (model is Tank tank)
         {

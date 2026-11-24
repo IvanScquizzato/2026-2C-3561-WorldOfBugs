@@ -94,10 +94,10 @@ namespace TGC.MonoGame.TP.Terrain
             {
                 for (var j = 0; j < length - 1; j++)
                 {
-                    var v1 = new Vector3(center.X + (i * _scaleXZ), center.Y + (HeightmapData[i, j] * _scaleY), center.Z + (j * _scaleXZ));
-                    var v2 = new Vector3(center.X + (i * _scaleXZ), center.Y + (HeightmapData[i, j + 1] * _scaleY), center.Z + ((j + 1) * _scaleXZ));
-                    var v3 = new Vector3(center.X + ((i + 1) * _scaleXZ), center.Y + (HeightmapData[i + 1, j] * _scaleY), center.Z + (j * _scaleXZ));
-                    var v4 = new Vector3(center.X + ((i + 1) * _scaleXZ), center.Y + (HeightmapData[i + 1, j + 1] * _scaleY), center.Z + ((j + 1) * _scaleXZ));
+                    var v1 = HeightmapPosition(i, j);
+                    var v2 = HeightmapPosition(i, j + 1);
+                    var v3 = HeightmapPosition(i + 1, j);
+                    var v4 = HeightmapPosition(i + 1, j + 1);
 
                     // Sumar las normales de los dos triángulos a sus vértices.
                     var firstNormal = Vector3.Cross(v2 - v1, v4 - v1);
@@ -122,10 +122,10 @@ namespace TGC.MonoGame.TP.Terrain
             {
                 for (var j = 0; j < length - 1; j++)
                 {
-                    var v1 = new Vector3(center.X + (i * _scaleXZ), center.Y + (HeightmapData[i, j] * _scaleY), center.Z + (j * _scaleXZ));
-                    var v2 = new Vector3(center.X + (i * _scaleXZ), center.Y + (HeightmapData[i, j + 1] * _scaleY), center.Z + ((j + 1) * _scaleXZ));
-                    var v3 = new Vector3(center.X + ((i + 1) * _scaleXZ), center.Y + (HeightmapData[i + 1, j] * _scaleY), center.Z + (j * _scaleXZ));
-                    var v4 = new Vector3(center.X + ((i + 1) * _scaleXZ), center.Y + (HeightmapData[i + 1, j + 1] * _scaleY), center.Z + ((j + 1) * _scaleXZ));
+                    var v1 = HeightmapPosition(i, j);
+                    var v2 = HeightmapPosition(i, j + 1);
+                    var v3 = HeightmapPosition(i + 1, j);
+                    var v4 = HeightmapPosition(i + 1, j + 1);
 
                     var t1 = new Vector2(i / (float)width, j / (float)length) * tx_scale;
                     var t2 = new Vector2(i / (float)width, (j + 1) / (float)length) * tx_scale;
@@ -147,6 +147,45 @@ namespace TGC.MonoGame.TP.Terrain
             LoadTriangles(data);
             vertices = data;
         }
+        private Vector3 HeightmapPosition(int x, int z) => new(
+            Center.X + x * _scaleXZ, Center.Y + HeightmapData[x, z] * _scaleY, Center.Z + z * _scaleXZ);
+
+        internal VertexPositionTexture[] BuildPointShadowPatch(BoundingSphere influence)
+        {
+            Matrix inverseWorld = Matrix.Invert(_world);
+            Vector3 center = Vector3.Transform(influence.Center, inverseWorld);
+            float radiusX = influence.Radius * new Vector3(inverseWorld.M11, inverseWorld.M21, inverseWorld.M31).Length();
+            float radiusZ = influence.Radius * new Vector3(inverseWorld.M13, inverseWorld.M23, inverseWorld.M33).Length();
+            float gridX = (center.X - Center.X) / _scaleXZ;
+            float gridZ = (center.Z - Center.Z) / _scaleXZ;
+            float extentX = radiusX / _scaleXZ;
+            float extentZ = radiusZ / _scaleXZ;
+            int lastX = HeightmapData.GetLength(0) - 1;
+            int lastZ = HeightmapData.GetLength(1) - 1;
+            int minX = Math.Clamp((int)MathF.Floor(gridX - extentX), 0, lastX);
+            int maxX = Math.Clamp((int)MathF.Ceiling(gridX + extentX), 0, lastX);
+            int minZ = Math.Clamp((int)MathF.Floor(gridZ - extentZ), 0, lastZ);
+            int maxZ = Math.Clamp((int)MathF.Ceiling(gridZ + extentZ), 0, lastZ);
+
+            var patch = new VertexPositionTexture[(maxX - minX) * (maxZ - minZ) * 6];
+            int vertex = 0;
+            for (int x = minX; x < maxX; x++)
+            for (int z = minZ; z < maxZ; z++)
+            {
+                var v1 = new VertexPositionTexture(HeightmapPosition(x, z), Vector2.Zero);
+                var v2 = new VertexPositionTexture(HeightmapPosition(x, z + 1), Vector2.Zero);
+                var v3 = new VertexPositionTexture(HeightmapPosition(x + 1, z), Vector2.Zero);
+                var v4 = new VertexPositionTexture(HeightmapPosition(x + 1, z + 1), Vector2.Zero);
+                patch[vertex++] = v1;
+                patch[vertex++] = v2;
+                patch[vertex++] = v4;
+                patch[vertex++] = v1;
+                patch[vertex++] = v4;
+                patch[vertex++] = v3;
+            }
+            return patch;
+        }
+
         private void LoadTriangles(VertexPositionNormalTexture[] data)
         {
             for (var i = 0; i < data.Length / 3; i++)

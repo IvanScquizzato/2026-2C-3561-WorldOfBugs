@@ -25,6 +25,7 @@ namespace TGC.MonoGame.TP.Missile
     { "Models\\missile\\textures\\rocket2_body_BaseColor_0", Metal }
 };
         public Vector3 Direction { get; private set; }
+        internal Vector3 PreviousPosition { get; private set; }
 
         public float Speed { get; set; } = 1500f;
 
@@ -50,6 +51,7 @@ namespace TGC.MonoGame.TP.Missile
             )
         {
             Direction = Vector3.Normalize(direction);
+            PreviousPosition = position;
 
             Matrix modelCorrection =
                 Matrix.CreateRotationX(-MathHelper.PiOver2);
@@ -64,6 +66,7 @@ namespace TGC.MonoGame.TP.Missile
             float deltaTime =
                 (float)gameTime.ElapsedGameTime.TotalSeconds;
 
+            PreviousPosition = Position;
             Position +=
                 Direction *
                 Speed *

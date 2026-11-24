@@ -9,6 +9,14 @@ float3 SunlightColor;
 float LightIntensity;
 float AmbientIntensity;
 
+#include "PointShadowSampling.fx"
+
+#define MAX_POINT_LIGHTS 4
+
+float4 PointLightPositionRadius[MAX_POINT_LIGHTS];
+float4 PointLightColorIntensity[MAX_POINT_LIGHTS];
+int PointLightCount;
+
 float3 BDRF(float3 albedo, float3 omega0, float3 omegai, float3 normal, float shadowVisibility)
 {
     float3 H = normalize(omega0 + omegai + float3(0.0001f, 0.0f, 0.0f));
@@ -44,4 +52,36 @@ float3 BDRF(float3 albedo, float3 omega0, float3 omegai, float3 normal, float sh
     float3 AmbientLight = albedo.xyz * AmbientIntensity;
 
     return (DiffuseComponent + CookTorrance) * NdotL * LightIntensity * SunlightColor * shadowVisibility + AmbientLight;
+}
+
+float3 CalculatePointLights(float3 albedo, float3 worldPosition, float3 normal)
+{
+    float3 lighting = float3(0.0f, 0.0f, 0.0f);
+
+    [unroll]
+    for (int i = 0; i < MAX_POINT_LIGHTS; i++)
+    {
+        if (i < PointLightCount)
+        {
+            float4 positionRadius = PointLightPositionRadius[i];
+            float4 colorIntensity = PointLightColorIntensity[i];
+
+            float3 toLight = positionRadius.xyz - worldPosition;
+            float distanceToLight = length(toLight);
+            float3 lightDirection = toLight / max(distanceToLight, 0.001f);
+
+            float facing = saturate(dot(normal, lightDirection));
+            float radius = max(positionRadius.w, 0.001f);
+            float falloff = saturate(1.0f - distanceToLight / radius);
+
+            if (facing > 0.0f && falloff > 0.0f)
+            {
+                float visibility = PointShadowVisibility(i, -toLight, distanceToLight, radius, facing);
+                lighting += colorIntensity.rgb
+                    * (colorIntensity.w * facing * falloff * falloff * visibility);
+            }
+        }
+    }
+
+    return albedo * lighting;
 }

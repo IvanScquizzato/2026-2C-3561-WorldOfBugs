@@ -46,6 +46,30 @@ sampler2D TextureSampler: register(s0) = sampler_state
 	AddressV = Wrap;
 };
 
+float3 LampEmission;
+texture LampOpacityMap;
+
+sampler2D LampOpacitySampler = sampler_state
+{
+    Texture = (LampOpacityMap);
+    MinFilter = Linear;
+    MagFilter = Linear;
+    MipFilter = Linear;
+    AddressU = Wrap;
+    AddressV = Wrap;
+};
+
+float3 CalculateLampEmission(float2 uv, float modelY)
+{
+    float opacity = tex2D(LampOpacitySampler, uv).r;
+    // The glass of the StreetLamp model spans these heights in model space.
+    const float glassBottom = 413.3f;
+    const float glassTop = 465.1f;
+    float glassBand = step(glassBottom, modelY) * step(modelY, glassTop);
+    float emissiveMask = (1.0f - opacity) * glassBand;
+    return emissiveMask * LampEmission;
+}
+
 struct VertexShaderInput
 {
 	float4 Position : POSITION0;
@@ -59,6 +83,7 @@ struct VertexShaderOutput
 	float2 TexCoord : TEXCOORD0;
     float3 Normal : TEXCOORD1;
     float3 WorldPosition : TEXCOORD2;
+    float ModelY : TEXCOORD3;
 };
 
 VertexShaderOutput MainVS(in VertexShaderInput input)
@@ -76,7 +101,16 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 
     output.Normal = normalize(mul(input.Normal, (float3x3)World));
     output.WorldPosition = worldPosition.xyz;
+    output.ModelY = input.Position.y;
     return output;
+}
+
+float4 LampBloomMaskPS(VertexShaderOutput input) : COLOR0
+{
+    clip(tex2D(TextureSampler, input.TexCoord).a - 0.1f);
+    float3 emission = CalculateLampEmission(input.TexCoord, input.ModelY);
+    float mask = saturate(max(emission.r, max(emission.g, emission.b)));
+    return float4(0.0f, 0.0f, 0.0f, mask);
 }
 
 float4 NormalMapPS(VertexShaderOutput input) : COLOR
@@ -104,7 +138,11 @@ float4 NormalMapPS(VertexShaderOutput input) : COLOR
 
     float shadow = ShadowVisibility(input.WorldPosition, saturate(dot(finalNormal, omegai)));
     float3 hdrColor = BDRF(albedo.xyz, omega0, omegai, finalNormal, shadow);
-
+    
+    hdrColor += CalculatePointLights(albedo.xyz, input.WorldPosition, finalNormal);
+    
+    hdrColor += CalculateLampEmission(input.TexCoord, input.ModelY);
+    
     float a = 2.51f, b = 0.03f, c = 2.43f, d = 0.59f, e = 0.14f;
     float3 mappedColor = saturate((hdrColor*(a*hdrColor+b))/(hdrColor*(c*hdrColor+d)+e));
     
@@ -122,6 +160,9 @@ float4 InterpolatedNormalPS(VertexShaderOutput input) : COLOR{
 
     float shadow = ShadowVisibility(input.WorldPosition, saturate(dot(normal, omegai)));
     float3 hdrColor = BDRF(albedo.xyz, omega0, omegai, normal, shadow);
+
+    hdrColor += CalculatePointLights(albedo.xyz, input.WorldPosition, normal);
+    hdrColor += CalculateLampEmission(input.TexCoord, input.ModelY);
 
     float a = 2.51f, b = 0.03f, c = 2.43f, d = 0.59f, e = 0.14f;
     float3 mappedColor = saturate((hdrColor*(a*hdrColor+b))/(hdrColor*(c*hdrColor+d)+e));
@@ -142,5 +183,14 @@ technique WithoutNormalMap{
     pass P0{
         VertexShader = compile VS_SHADERMODEL MainVS();
         PixelShader = compile PS_SHADERMODEL InterpolatedNormalPS();
+    }
+}
+
+technique LampBloomMask
+{
+    pass P0
+    {
+        VertexShader = compile VS_SHADERMODEL MainVS();
+        PixelShader = compile PS_SHADERMODEL LampBloomMaskPS();
     }
 }

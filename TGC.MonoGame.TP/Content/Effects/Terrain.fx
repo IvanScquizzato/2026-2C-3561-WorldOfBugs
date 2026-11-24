@@ -163,6 +163,8 @@ float4 ps_RenderTerrain(PS_INPUT input) : COLOR0
 
     float shadow = ShadowVisibility(input.WorldPos, saturate(dot(baseNormal, omegai)));
     float3 hdrColor = BDRF(albedo, omega0, omegai, litNormal, shadow);
+    
+    hdrColor += CalculatePointLights(albedo, input.WorldPos, litNormal);
 
     float a = 2.51f, b = 0.03f, c = 2.43f, d = 0.59f, e = 0.14f;
     float3 mappedColor = saturate((hdrColor*(a*hdrColor+b))/(hdrColor*(c*hdrColor+d)+e));

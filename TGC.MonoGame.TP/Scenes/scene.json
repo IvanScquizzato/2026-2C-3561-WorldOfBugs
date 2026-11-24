@@ -10485,6 +10485,90 @@
         155.0462494,
         155.0462494
       ]
+    },
+    {
+      "Id": "Vigia_Lamp_Inicio",
+      "Type": "Lamp",
+      "Model": "Models/street-lamp/StreetLamp",
+      "Position": [
+        -620,
+        104,
+        -1350
+      ],
+      "Rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "Scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "Id": "Vigia_Lamp_CruceSur",
+      "Type": "Lamp",
+      "Model": "Models/street-lamp/StreetLamp",
+      "Position": [
+        -590,
+        116,
+        6120
+      ],
+      "Rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "Scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "Id": "Vigia_Lamp_CruceEste",
+      "Type": "Lamp",
+      "Model": "Models/street-lamp/StreetLamp",
+      "Position": [
+        6740,
+        164,
+        -1610
+      ],
+      "Rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "Scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "Id": "Vigia_Lamp_Ruina",
+      "Type": "Lamp",
+      "Model": "Models/street-lamp/StreetLamp",
+      "Position": [
+        9620,
+        316,
+        -6580
+      ],
+      "Rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "Scale": [
+        1,
+        1,
+        1
+      ]
     }
   ]
 }

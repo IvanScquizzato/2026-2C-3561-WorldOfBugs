@@ -195,6 +195,7 @@ namespace TGC.MonoGame.TP.Editor
                 nameof(Grass) => new Grass(content, path, position, rotation, scale, renderer),
                 nameof(DeadBush) => new DeadBush(content, path, position, rotation, scale, renderer),
                 nameof(Wall) => new Wall(content, path, position, rotation, scale, renderer),
+                nameof(Lamp) => new Lamp(content, path, position, rotation, scale, renderer),
                 _ => throw new InvalidDataException($"Tipo de modelo no soportado: '{data.Type}' (ID: {data.Id}).")
             };
         }

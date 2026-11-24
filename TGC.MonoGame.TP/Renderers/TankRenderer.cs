@@ -36,7 +36,8 @@ namespace TGC.MonoGame.TP.Renderers
                     return;
                 }
                 _graphicsDevice.DepthStencilState = DepthStencilState.Default;
-
+                
+                _effect.Parameters["LampEmission"].SetValue(Vector3.Zero);
                 _effect.Parameters["View"].SetValue(view);
                 _effect.Parameters["Projection"].SetValue(projection);
                 _effect.Parameters["Roughness"].SetValue(0.7f);
