@@ -26,24 +26,18 @@ class SillouetteRenderer
         WhiteTarget = new RenderTarget2D(
             graphicsDevice, _graphicsDevice.PresentationParameters.BackBufferWidth,
            _graphicsDevice.PresentationParameters.BackBufferHeight, false,
-            SurfaceFormat.Color, DepthFormat.Depth24Stencil8, 0,
+            SurfaceFormat.Color, DepthFormat.Depth24, 0,
             RenderTargetUsage.DiscardContents);
+
 
         _compositeState = new DepthStencilState
         {
-            DepthBufferEnable = false,
+            DepthBufferEnable = true,
             DepthBufferWriteEnable = false,
+            DepthBufferFunction = CompareFunction.Greater,
 
-            StencilEnable = true,
-            StencilFunction = CompareFunction.Equal,
-
-            StencilPass = StencilOperation.Keep,
-            StencilFail = StencilOperation.Keep,
-            StencilDepthBufferFail = StencilOperation.Keep,
-
-            ReferenceStencil = 2
+            StencilEnable = false,
         };
-
     }
     private void EnsureWhiteTargetSize()
     {
@@ -65,12 +59,12 @@ class SillouetteRenderer
             height,
             false,
             SurfaceFormat.Color,
-            DepthFormat.Depth24Stencil8,
+            DepthFormat.Depth24,
             0,
             RenderTargetUsage.DiscardContents
         );
     }
-    public void Render(IReadOnlyList<ModelInScene> modelsInScene, Matrix view, Matrix projection)
+    public void Render(IReadOnlyList<ModelInScene> modelsInScene, Matrix view, Matrix projection, Camera camera)
     {
         EnsureWhiteTargetSize();
         Vector3 realCameraPosition = Matrix.Invert(view).Translation;
@@ -88,8 +82,9 @@ class SillouetteRenderer
             _graphicsDevice.BlendState = BlendState.Opaque;
             _graphicsDevice.DepthStencilState = DepthStencilState.Default;
             _graphicsDevice.RasterizerState = RasterizerState.CullNone;
-            _effect.CurrentTechnique = _effect.Techniques["SolidColorDrawing"];
+            _effect.CurrentTechnique = _effect.Techniques["ZBufferDrawing"];
             _effect.Parameters["DiffuseColor"].SetValue(Color.White.ToVector3());
+            _effect.Parameters["FarPlane"].SetValue(camera.FarPlane);
 
             foreach (ModelInScene model in modelsInScene)
             {
@@ -160,7 +155,7 @@ class SillouetteRenderer
 
         return bone * model._world;
     }
-    public void Show(SpriteBatch spriteBatch)
+    public void Show(SpriteBatch spriteBatch, Camera camera, Matrix projection)
     {
 
         _graphicsDevice.DepthStencilState = _compositeState;
@@ -190,6 +185,10 @@ class SillouetteRenderer
 
         _outlineEffect.Parameters["MatrixTransform"]
             .SetValue(spriteTransform);
+        _outlineEffect.Parameters["FarPlane"].SetValue(camera.FarPlane);
+        _outlineEffect.Parameters["ProjM33"].SetValue(projection.M33);
+        _outlineEffect.Parameters["ProjM43"].SetValue(projection.M43);
+
         spriteBatch.Begin(
                 SpriteSortMode.Immediate,
                 BlendState.Opaque,

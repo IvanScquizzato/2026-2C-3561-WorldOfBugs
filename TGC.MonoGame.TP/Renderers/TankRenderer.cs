@@ -17,27 +17,13 @@ namespace TGC.MonoGame.TP.Renderers
         public Effect _arrowEffect { get; set; }
         public bool drawNormals = false;
         private float velocidad_ruedas = -4f;
-        private DepthStencilState tankNormalState;
         public TankRenderer(GraphicsDevice graphicsDevice, Effect effect, Effect hitboxEffect, Effect arrowEffect)
         {
             _graphicsDevice = graphicsDevice;
             _effect = effect;
             _hitBoxEffect = hitboxEffect;
             _arrowEffect = arrowEffect;
-            tankNormalState = new DepthStencilState
-            {
-                DepthBufferEnable = true,
-                DepthBufferWriteEnable = true,
-                DepthBufferFunction = CompareFunction.LessEqual,
 
-                StencilEnable = true,
-                StencilFunction = CompareFunction.Always,
-                StencilPass = StencilOperation.Replace,
-                StencilFail = StencilOperation.Keep,
-                StencilDepthBufferFail = StencilOperation.Keep,
-
-                ReferenceStencil = 0
-            };
         }
 
         public void Draw(ModelInScene modelInScene, Matrix view, Matrix projection)
@@ -49,7 +35,7 @@ namespace TGC.MonoGame.TP.Renderers
                     Debug.WriteLine("TankRenderer: Tank is outside the frustum, skipping draw.");
                     return;
                 }
-                _graphicsDevice.DepthStencilState = tankNormalState;
+                _graphicsDevice.DepthStencilState = DepthStencilState.Default;
 
                 _effect.Parameters["View"].SetValue(view);
                 _effect.Parameters["Projection"].SetValue(projection);

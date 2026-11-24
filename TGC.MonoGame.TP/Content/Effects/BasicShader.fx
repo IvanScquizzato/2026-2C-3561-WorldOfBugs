@@ -27,6 +27,7 @@ float3 CameraPosition;
 float3 CameraDirection;
 float4x4 WorldInverseTranspose;
 float TrackOffset = 0;
+float FarPlane;
 
 texture ModelTexture;
 sampler2D TextureSampler = sampler_state
@@ -106,6 +107,26 @@ SolidVertexOutput SolidVS(in SolidVertexInput input)
     return output;
 }
 
+struct DepthVSOutput
+{
+    float4 Position : SV_POSITION;
+    float ViewDistance : TEXCOORD0;
+};
+DepthVSOutput ZBufferVS(in SolidVertexInput input)
+{
+    DepthVSOutput output = (DepthVSOutput)0;
+    float4 viewPosition = mul(mul(input.Position, World), View);
+    output.Position = mul(viewPosition, Projection);
+    output.ViewDistance = -viewPosition.z;          
+    return output;
+}
+float4 ZBufferPS(DepthVSOutput input) : COLOR
+{
+    float v = saturate(input.ViewDistance / FarPlane);
+    float hi = floor(v * 255.0) / 255.0;
+    float lo = frac(v * 255.0);
+    return float4(hi, lo, 0, 1);                    
+}
 // El Pixel Shader ya no recibe TexCoord
 float4 SolidColorPS(SolidVertexOutput input) : COLOR
 {
@@ -140,9 +161,9 @@ technique SolidColorDrawing{
 		PixelShader = compile PS_SHADERMODEL SolidColorPS();
 	}
 };
-technique SillouetteDrawing{
+technique ZBufferDrawing{
 	pass P0{
-		VertexShader = compile VS_SHADERMODEL SolidVS();
-		PixelShader = compile PS_SHADERMODEL SillouettePS();
+		VertexShader = compile VS_SHADERMODEL ZBufferVS();
+		PixelShader = compile PS_SHADERMODEL ZBufferPS();
 	}
 };

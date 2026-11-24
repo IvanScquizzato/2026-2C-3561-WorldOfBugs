@@ -13,45 +13,24 @@ namespace TGC.MonoGame.TP.Renderers
         public GraphicsDevice _graphicsDevice { get; set; }
         public Effect _effect { get; set; }
         public Effect _hitBoxEffect { get; set; }
-        private DepthStencilState _occluderState;
 
         public BasicRenderer(GraphicsDevice graphicsDevice, Effect effect, Effect hitboxEffect)
         {
             _graphicsDevice = graphicsDevice;
             _effect = effect;
             _hitBoxEffect = hitboxEffect;
-            _occluderState =
-                new DepthStencilState
-                {
-                    DepthBufferEnable = true,
-                    DepthBufferWriteEnable = true,
-                    DepthBufferFunction = CompareFunction.Less,
-
-                    StencilEnable = true,
-                    StencilFunction = CompareFunction.Always,
-
-                    StencilPass = StencilOperation.Replace,
-                    StencilFail = StencilOperation.Keep,
-                    StencilDepthBufferFail = StencilOperation.Keep,
-
-                    ReferenceStencil = 2
-                };
         }
 
         public void Draw(ModelInScene modelInScene, Matrix view, Matrix projection)
         {
+            if (!new BoundingFrustum(view * projection).Intersects(modelInScene.AABB))
+            {
+                return;
+            }
             var previousStencil = _graphicsDevice.DepthStencilState;
-            if (modelInScene.ShouldOcclude)
-            {
-                _graphicsDevice.DepthStencilState = _occluderState;
-                //_graphicsDevice.DepthStencilState = DepthStencilState.Default;
+            _graphicsDevice.DepthStencilState = DepthStencilState.Default;
 
-            }
-            else
-            {
-                _graphicsDevice.DepthStencilState = DepthStencilState.Default;
 
-            }
             _effect.Parameters["View"].SetValue(view);
             _effect.Parameters["Projection"].SetValue(projection);
             _effect.CurrentTechnique = _effect.Techniques["BasicColorDrawing"];

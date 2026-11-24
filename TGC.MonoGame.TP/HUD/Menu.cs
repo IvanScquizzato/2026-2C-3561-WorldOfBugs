@@ -11,13 +11,16 @@ namespace TGC.MonoGame.TP.HUD
         private int _selectedOption = 0;
         private KeyboardState _previousKeyboard;
         public bool StartGame { get; set; }
+
+        public bool HelpMenu { get; set; }
         public bool LeaveGame { get; private set; }
         private readonly Texture2D _pixel;
         private readonly SpriteFont _font;
         public string[] Options =
         {
             "JUGAR",
-            "SALIR"
+            "SALIR",
+            "AYUDA"
         };
 
         public MainMenu(Texture2D pixel, SpriteFont font)
@@ -38,8 +41,13 @@ namespace TGC.MonoGame.TP.HUD
                 {
                     StartGame = true;
                 }
-                if (_selectedOption == 1)
+                if (_selectedOption == 2)
                     LeaveGame = true;
+                if(_selectedOption == 1)
+                {
+                    
+                    HelpMenu = true;
+                }
 
             }
 
@@ -63,31 +71,98 @@ namespace TGC.MonoGame.TP.HUD
         {
             
             int centerX = spriteBatch.GraphicsDevice.Viewport.Width / 2;
-            int centerY = spriteBatch.GraphicsDevice.Viewport.Height / 2;
+int centerY = spriteBatch.GraphicsDevice.Viewport.Height / 2;
 
-            spriteBatch.Begin();
+const int buttonWidth = 400;
+const int buttonHeight = 80;
+const int buttonBorder = 5;
+const int separation = 100;
 
+spriteBatch.Begin();
 
-            spriteBatch.Draw(_pixel, new Rectangle(centerX - 205, centerY - 55, 410, 90), Color.Black);
-            spriteBatch.Draw(_pixel, new Rectangle(centerX - 200, centerY - 50, 400, 80), _selectedOption == 0 ? Color.Green : Color.Gray);
-            spriteBatch.DrawString(_font, "JUGAR", new Vector2(centerX - 40, centerY - 30), Color.Black);
+// Título
+spriteBatch.DrawString(
+    _font,
+    "WORLD OF BUGS",
+    new Vector2(centerX - 170, centerY - 220),
+    Color.White);
 
-            spriteBatch.Draw(_pixel, new Rectangle(centerX - 205, centerY + 45, 410, 90), Color.Black);
-            spriteBatch.Draw(_pixel, new Rectangle(centerX - 200, centerY + 50, 400, 80), _selectedOption == 1 ? Color.Red : Color.Gray);
-            spriteBatch.DrawString(_font, "SALIR", new Vector2(centerX - 40, centerY + 70), Color.Black);
+// JUGAR
+spriteBatch.Draw(
+    _pixel,
+    new Rectangle(
+        centerX - buttonWidth / 2 - buttonBorder,
+        centerY - separation - buttonBorder,
+        buttonWidth + buttonBorder * 2,
+        buttonHeight + buttonBorder * 2),
+    Color.Black);
 
-            spriteBatch.DrawString(_font, "WORLD OF TANKS", new Vector2(centerX - 150, centerY - 200), Color.White);
+spriteBatch.Draw(
+    _pixel,
+    new Rectangle(
+        centerX - buttonWidth / 2,
+        centerY - separation,
+        buttonWidth,
+        buttonHeight),
+    _selectedOption == 0 ? Color.Green : Color.Gray);
 
-            spriteBatch.Draw(_pixel, new Rectangle(centerX - 205, centerY + 145, 410, 90), Color.Black);
-            spriteBatch.Draw(_pixel, new Rectangle(centerX - 200, centerY + 150, 400, 80), _selectedOption == 2 ? Color.Red : Color.Gray);
-            spriteBatch.DrawString(_font, "MODO GOD", new Vector2(centerX - 100, centerY + 170), Color.Black);
+spriteBatch.DrawString(
+    _font,
+    "JUGAR",
+    new Vector2(centerX - 45, centerY - separation + 25),
+    Color.Black);
 
-            spriteBatch.End();
+// AYUDA
+spriteBatch.Draw(
+    _pixel,
+    new Rectangle(
+        centerX - buttonWidth / 2 - buttonBorder,
+        centerY - buttonBorder,
+        buttonWidth + buttonBorder * 2,
+        buttonHeight + buttonBorder * 2),
+    Color.Black);
 
-            // esto protege al terreno de no renderizase mal
-            spriteBatch.GraphicsDevice.BlendState = BlendState.Opaque;
-            spriteBatch.GraphicsDevice.DepthStencilState = DepthStencilState.Default;
-            spriteBatch.GraphicsDevice.RasterizerState = RasterizerState.CullNone;
+spriteBatch.Draw(
+    _pixel,
+    new Rectangle(
+        centerX - buttonWidth / 2,
+        centerY,
+        buttonWidth,
+        buttonHeight),
+    _selectedOption == 1 ? Color.CornflowerBlue : Color.Gray);
+
+spriteBatch.DrawString(
+    _font,
+    "AYUDA",
+    new Vector2(centerX - 50, centerY + 25),
+    Color.Black);
+
+// SALIR
+spriteBatch.Draw(
+    _pixel,
+    new Rectangle(
+        centerX - buttonWidth / 2 - buttonBorder,
+        centerY + separation - buttonBorder,
+        buttonWidth + buttonBorder * 2,
+        buttonHeight + buttonBorder * 2),
+    Color.Black);
+
+spriteBatch.Draw(
+    _pixel,
+    new Rectangle(
+        centerX - buttonWidth / 2,
+        centerY + separation,
+        buttonWidth,
+        buttonHeight),
+    _selectedOption == 2 ? Color.Red : Color.Gray);
+
+spriteBatch.DrawString(
+    _font,
+    "SALIR",
+    new Vector2(centerX - 40, centerY + separation + 25),
+    Color.Black);
+
+spriteBatch.End();
         }
     }
 }

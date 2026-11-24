@@ -4,7 +4,8 @@ float4x4 FarLightViewProjection;
 float2 ShadowCloseTexelSize;
 float2 ShadowFarTexelSize;
 float CloseShadowAreaSize;
-float ShadowBias;
+float CloseShadowBias;
+float FarShadowBias;
 float ShadowsEnabled;
 float3 LightDirection;
 float3 TankPosition;
@@ -72,7 +73,8 @@ float ShadowVisibility(float3 worldPosition, float normalDotLight)
         lightNdc.z <= 0.0f || lightNdc.z >= 1.0f)
         return 1.0f;
 
-    float bias = ShadowBias * (1.25f - saturate(normalDotLight));
+    float shadowBias = IsCloseShadow ? CloseShadowBias : FarShadowBias;
+    float bias = shadowBias * (1.25f - saturate(normalDotLight));
     float receiverDepth = lightNdc.z - bias;
     float2 halfTexel = ShadowTexelSize * 0.5f;
 

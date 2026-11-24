@@ -203,7 +203,7 @@ public sealed class ShadowMapRenderer : IDisposable
                 _effect.CurrentTechnique.Passes[0].Apply();
 
 
-                if (model is Tank tank)
+                if (model is Tank tank && !tank.esEnemigo)
                 {
                     _graphicsDevice.SetVertexBuffer(tank._dynamicVertexBuffers[part]);
                     _graphicsDevice.Indices = part.IndexBuffer;

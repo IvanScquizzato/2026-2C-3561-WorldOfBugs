@@ -13,7 +13,10 @@ namespace TGC.MonoGame.TP.Renderers
         public Effect _effect { get; set; }
         private readonly Texture2D _grassNormalMap;
         private readonly Texture2D _groundNormalMap;
-        private DepthStencilState occluderState;
+        public enum TerrainPart { All, FlatOnly, TiltedOnly }
+
+        public TerrainPart Part { get; set; } = TerrainPart.All;
+
 
         public TerrainRenderer(GraphicsDevice graphicsDevice, Effect effect,
             Texture2D grassNormalMap, Texture2D groundNormalMap)
@@ -22,21 +25,7 @@ namespace TGC.MonoGame.TP.Renderers
             _effect = effect;
             _grassNormalMap = grassNormalMap;
             _groundNormalMap = groundNormalMap;
-            occluderState =
-                new DepthStencilState
-                {
-                    DepthBufferEnable = true,
-                    DepthBufferWriteEnable = true,
-                    DepthBufferFunction = CompareFunction.Less,
 
-                    StencilEnable = true,
-                    StencilFunction = CompareFunction.Always,
-                    StencilPass = StencilOperation.Replace,
-                    StencilFail = StencilOperation.Keep,
-                    StencilDepthBufferFail = StencilOperation.Keep,
-
-                    ReferenceStencil = 2
-                };
         }
 
         public void Draw(SimpleTerrain terrain, Matrix view, Matrix projection)
@@ -73,20 +62,10 @@ namespace TGC.MonoGame.TP.Renderers
                 (terrain.vbTerrain.VertexCount - terrain.flatTriangleVertexCount) / 3;
 
             _graphicsDevice.DepthStencilState = DepthStencilState.Default;
-
-            CallGraphics(graphicsDevice, 0, flatTriangleCount);
-
-            if (terrain.ShouldOcclude)
-            {
-                _graphicsDevice.DepthStencilState = occluderState;
-                //_graphicsDevice.DepthStencilState = DepthStencilState.Default;
-
-            }
-            else
-            {
-                _graphicsDevice.DepthStencilState = DepthStencilState.Default;
-            }
-            CallGraphics(graphicsDevice, terrain.flatTriangleVertexCount, tiltedTriangleCount);
+            if (Part != TerrainPart.TiltedOnly)
+                CallGraphics(graphicsDevice, 0, flatTriangleCount);
+            if (Part != TerrainPart.FlatOnly)
+                CallGraphics(graphicsDevice, terrain.flatTriangleVertexCount, tiltedTriangleCount);
 
             _graphicsDevice.DepthStencilState = DepthStencilState.Default;
 
