@@ -110,6 +110,7 @@ namespace TGC.MonoGame.TP.Tanks
         {
             desiredHeight = Height * 0.35f;
             health = maxHealth;
+            
             maxDeformation = Width * 0.15f;
         }
         public override void CreateHitbox(Effect effect, GraphicsDevice graphicsDevice)
@@ -453,6 +454,11 @@ namespace TGC.MonoGame.TP.Tanks
 
                 Vector3 cambioDeVelocidad = -normal * breakImpulse * this.InverseMass();
                 _collider.ApplyImpulse(UtilsClass.ToNumericVector(cambioDeVelocidad), UtilsClass.ToNumericVector(contactPointOffset));
+                if(TGCGame.GodMode && !esEnemigo)
+                {
+                    return;
+                }
+                
                 health -= 10f;
 
             }
@@ -492,7 +498,10 @@ namespace TGC.MonoGame.TP.Tanks
         public override void CollidedWithMissil(Missil missil)
         {
             Vector3 missilLocal = Vector3.Transform(missil.Position, Matrix.Invert(_world));
-
+            if(TGCGame.GodMode && !esEnemigo)
+                {
+                    return;
+                }
             health -= 10f;
 
 

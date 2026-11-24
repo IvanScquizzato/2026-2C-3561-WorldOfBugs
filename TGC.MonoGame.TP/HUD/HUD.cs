@@ -24,7 +24,7 @@ namespace TGC.MonoGame.TP.HUD
 
         public void Draw(SpriteBatch spriteBatch, Tank player, List<Tank> tanks , float fps, float remainingTime)
         {
-
+                
             int screenWidth =
         spriteBatch.GraphicsDevice.Viewport.Width;
 
@@ -142,15 +142,21 @@ namespace TGC.MonoGame.TP.HUD
             mapSize),
         Color.Black * 0.5f);
 
-    float worldSize = 12000f;
+    const float worldMinX = -17000f;
+const float worldMaxX = 17000f;
 
-    int mapX =
-        (int)((player.Position.X + 6000f)
-            / worldSize * mapSize);
+const float worldMinZ = -17000f;
+const float worldMaxZ = 17000f;
 
-    int mapY =
-        (int)((player.Position.Z + 6000f)
-            / worldSize * mapSize);
+    int mapX = (int)(
+    ((player.Position.X - worldMinX) /
+    (worldMaxX - worldMinX))
+    * mapSize);
+
+int mapY = (int)(
+    ((player.Position.Z - worldMinZ) /
+    (worldMaxZ - worldMinZ))
+    * mapSize);
 
     Vector2 dir =
         new Vector2(
@@ -202,12 +208,12 @@ namespace TGC.MonoGame.TP.HUD
             continue;
 
         int enemyMapX =
-            (int)((tank.Position.X + 6000f)
-                / worldSize * mapSize);
+            (int)(((tank.Position.X + 6000f)
+                / (worldMaxX - worldMinX)) * mapSize);
 
         int enemyMapY =
-            (int)((tank.Position.Z + 6000f)
-                / worldSize * mapSize);
+            (int)(((tank.Position.Z + 6000f)
+                / (worldMaxZ - worldMinZ)) * mapSize);
 
         spriteBatch.Draw(
             _pixel,
