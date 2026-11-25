@@ -246,7 +246,7 @@ public class TGCGame : Game
         _modelosEnEscenario.Add(_tanks);
 
         _bufferPool = new BufferPool();
-        _graphics.IsFullScreen = true;
+        _graphics.IsFullScreen = false;
         _graphics.ApplyChanges();
         base.Initialize();
     }
