@@ -89,7 +89,7 @@ dotnet run --project TGC.MonoGame.TP
 
 ## Game Play
 
-[![Gameplay](docs/screenshots/screenshot1.jpg)](https://www.youtube.com/watch?v=REEMPLAZAR)
+[![Gameplay](docs/screenshots/screenshot1.jpg)](https://youtu.be/bgXhpe8JQ4M)
 
 ## Sonidos
 
