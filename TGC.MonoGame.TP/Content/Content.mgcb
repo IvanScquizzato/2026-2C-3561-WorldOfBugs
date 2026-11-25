@@ -31,6 +31,12 @@
 /processorParam:DebugMode=Auto
 /build:Effects/DebugShader.fx
 
+#begin Effects/LampBloom.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Effects/LampBloom.fx
+
 #begin Effects/OutlineEffect.fx
 /importer:EffectImporter
 /processor:EffectProcessor
@@ -42,6 +48,12 @@
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
 /build:Effects/PBRShader.fx
+
+#begin Effects/PointShadowGenerate.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Effects/PointShadowGenerate.fx
 
 #begin Effects/ShadowMapGenerate.fx
 /importer:EffectImporter
@@ -877,6 +889,97 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Models/RocksMedium/source/Rocks_medium/Rocks/Rocks/Rocks1_diffuse.jpg
+
+#begin Models/street-lamp/StreetLamp.fbx
+/importer:FbxImporter
+/processor:ModelProcessor
+/processorParam:ColorKeyColor=0,0,0,0
+/processorParam:ColorKeyEnabled=True
+/processorParam:DefaultEffect=BasicEffect
+/processorParam:GenerateMipmaps=True
+/processorParam:GenerateTangentFrames=False
+/processorParam:PremultiplyTextureAlpha=True
+/processorParam:PremultiplyVertexColors=True
+/processorParam:ResizeTexturesToPowerOfTwo=False
+/processorParam:RotationX=0
+/processorParam:RotationY=0
+/processorParam:RotationZ=0
+/processorParam:Scale=1
+/processorParam:SwapWindingOrder=False
+/processorParam:TextureFormat=Compressed
+/build:Models/street-lamp/StreetLamp.fbx
+
+#begin Models/street-lamp/textures/StreetLamp_01 - Default_AO.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Models/street-lamp/textures/StreetLamp_01 - Default_AO.png
+
+#begin Models/street-lamp/textures/StreetLamp_01 - Default_BaseColor.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Models/street-lamp/textures/StreetLamp_01 - Default_BaseColor.png
+
+#begin Models/street-lamp/textures/StreetLamp_01 - Default_Metallic.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Models/street-lamp/textures/StreetLamp_01 - Default_Metallic.png
+
+#begin Models/street-lamp/textures/StreetLamp_01 - Default_Normal.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Models/street-lamp/textures/StreetLamp_01 - Default_Normal.png
+
+#begin Models/street-lamp/textures/StreetLamp_01 - Default_Opacity.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Models/street-lamp/textures/StreetLamp_01 - Default_Opacity.png
+
+#begin Models/street-lamp/textures/StreetLamp_01 - Default_Roughness.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Models/street-lamp/textures/StreetLamp_01 - Default_Roughness.png
 
 #begin Models/Tanks/Panzer/Panzer old.fbx
 /importer:FbxImporter

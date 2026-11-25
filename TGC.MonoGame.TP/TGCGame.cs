@@ -168,7 +168,7 @@ public class TGCGame : Game
     private double _lastShadowMapTime = 0.0;
     private float _farShadowAreaSize = 9000f;
     private float _closeShadowAreaSize = 1500f;
-    
+
     // luces
     private const int MaxPointLights = 4;
     private readonly Lamp[] _pointLamps = new Lamp[MaxPointLights];
